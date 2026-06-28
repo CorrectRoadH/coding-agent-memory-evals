@@ -18,11 +18,9 @@ export default defineConfig({
   // 沙箱型 agent 的运行环境。本地 docker,零云依赖。
   sandbox: "docker",
 
-  // 被测的「工作项目」:一个最小 Next.js App Router 应用。
-  // 选 Next.js 是因为这套 eval 把 next-evals-oss 的真实任务(Server Component vs useEffect 拉数据、
-  // proxy.ts vs middleware.ts、异步 cookies()、缓存策略、App vs Pages Router…)用我们的记忆逻辑重写了:
-  // 每个都是「项目该用现代写法、但模型先验偏向过时写法」的决定 —— 正好拿来当跨会话的记忆承载点。
-  // session 开始时被拷进沙箱,agent 在它上面真实开发。单个 eval 可用 `workspace:` 覆盖。
+  // 缺省的「工作项目」兜底:一个最小 Next.js App Router 应用(承载 next-oss 风格的真实开发)。
+  // 注意:starter repo 是【每条 eval 自己的事】—— 各 eval 在 defineEval({ workspace, setup }) 里声明
+  // 自己的 starter 与 prep(不同 eval 可指不同 repo)。这里只是没声明时的兜底默认。
   workspace: "./workspaces/next-app",
 
   // LLM-as-judge 用的评判模型,和被测 agent 完全分离(避免自评)。

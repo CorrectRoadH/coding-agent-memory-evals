@@ -9,6 +9,11 @@ import { includes } from "fastevals/expect";
 // 没有任何单条上下文同时含它们,盘上骨架也不含 —— 只有跨会话记忆能合到一起。
 export default defineEval({
   description: "多会话综合:getCurrentUser 同时用上『await cookies()(会话A)』和『cookie 名 sid(会话B)』",
+  // starter repo + prep 写在 eval 里(见 retention-through-compaction 的说明)。
+  workspace: "./workspaces/next-app",
+  setup: async (sandbox) => {
+    await sandbox.runCommand("npm", ["install", "--no-audit", "--no-fund"]);
+  },
   async test(t) {
     // —— 会话 A:第一半 + 空骨架(骨架里先不写实现) ——
     (await t.send("搭鉴权:读 cookie 用 next/headers 的 cookies() —— 注意 Next 15 起 cookies() 是异步的,必须 await。先把 app/lib/auth.ts 建个空骨架。")).expectOk();

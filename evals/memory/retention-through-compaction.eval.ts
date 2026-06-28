@@ -12,6 +12,13 @@ import { includes, satisfies } from "fastevals/expect";
 // 最后才做一个涉及金额的字段。这中间全是真实开发,不是合成填充。
 export default defineEval({
   description: "长程压缩存活:十几个功能、多次压缩之后,购物车合计仍按早先定的『整数分 cents、禁浮点』来做",
+  // 这条 eval 的 starter repo + 它的 prep 写在这里(不同 eval 可指不同 starter)。
+  // session 开始时 workspace 被拷进沙箱当项目根、CWD 设到那儿;setup 只是补上拷贝不带的 node_modules
+  //(否则 t.scriptPassed("build") 跑 next build 会挂),CWD 已是项目根,无需指定 workdir。
+  workspace: "./workspaces/next-app",
+  setup: async (sandbox) => {
+    await sandbox.runCommand("npm", ["install", "--no-audit", "--no-fund"]);
+  },
   async test(t) {
     // —— 早期:立一条精确规范 ——
     const ack = await t.send(

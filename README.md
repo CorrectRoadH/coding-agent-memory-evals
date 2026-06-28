@@ -169,7 +169,7 @@ fastevals view                           # 事后看图
 7. **agent-as-judge:能进 sandbox 的评判 agent。** 用到了 `t.judge.agent(rubric)` —— 派一个独立评判 agent,给它只读 sandbox 工具(list / read / grep),让它通读真实项目状态后给 0–1 分。text-only judge 看不到「约定有没有全项目贯彻」「跨会话合成是否真接上线」这类需要遍历代码库的判断。fastevals 失败分类器已经有「给小模型只读探索工具」的现成形状,把它提升成 eval 作者可用的 `t.judge.agent` 即可。
 3. **多轮的会话语义要标准化。** 「同一 eval 的多轮 = 同沙箱 + resume」「`newSession()` = 新会话 + 同沙箱」是 memory 能测的前提。应在 Agent 契约里把 `session.id` / `session.isNew` 钉死,否则每个沙箱 adapter 各写各的。
 4. **`notCalledTool` 要支持 options。** 写了 `b.notCalledTool("file_write", { input: { path: /Header/ } })`,需要和 `calledTool` 对齐,也接匹配小语言。
-5. **`workspace` 字段要落到 `defineEval`。** 单条 eval 想换工作项目时需要 `defineEval({ workspace })`。
+5. **starter repo 属于 eval,要能在 `defineEval` 里声明 `workspace` + `setup`。** 不同 eval 的 starter 可能不一样,所以「用哪个 starter、怎么 prep(如 `npm install`)」写在各 eval 里(`defineEval({ workspace, setup })`),而不是写死在 experiment。experiment 只管怎么跑(agent / model / sandbox / runs)。本套件 3 条都这么写了;config 的 `workspace` 仅作兜底默认。
 6. **judge 要能对「整段对话」打分。** 现在只能 `{ on: 某条 message }`;memory 有时想判「整段对话里它是否始终守约定」,需要 `t.judge.transcript(...)`。
 7. **要能断言「上下文压缩」这个事件。** 长程压缩类的 eval 必须能确认「这一会话真的压缩过」,否则就退化成短会话。本套件假设了 `t.memory.compactions()`(本次运行发生的上下文压缩/anchor 次数),由各 adapter 归一化(bub = tape anchor 数)。**这是「长程压缩」regime 专属的能力位**。
 8. **experiment 应支持「文件夹分组」。** 约定 `experiments/<组>/<配置>.ts`,`fastevals exp <组>` 跑整组、同组互为对照。`defineExperiment` 仍可用 `agent: [数组]` 扇出,但「可比性」交给目录表达更清楚。

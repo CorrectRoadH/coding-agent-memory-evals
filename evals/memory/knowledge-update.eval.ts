@@ -11,6 +11,11 @@ import { satisfies } from "fastevals/expect";
 // proxy.ts 可抄,且必须熬过中间的多次压缩。只有把它留住的 agent 会写 proxy.ts。
 export default defineEval({
   description: "更新熬过压缩:一串功能、多次压缩后,中间件仍用项目定的 proxy.ts,不退回模型先验的 middleware.ts",
+  // starter repo + prep 写在 eval 里(见 retention-through-compaction 的说明)。
+  workspace: "./workspaces/next-app",
+  setup: async (sandbox) => {
+    await sandbox.runCommand("npm", ["install", "--no-audit", "--no-fund"]);
+  },
   async test(t) {
     // —— 早期:讲清项目决定 ——
     const ack = await t.send(
