@@ -1,36 +1,34 @@
 import { defineEval } from "fastevals";
-import { includes } from "fastevals/expect";
+import { includes, satisfies } from "fastevals/expect";
 
-// 失败模式:干扰下的精确检索(LoCoMo single-hop / needle 精度)
-//
-// 真实任务:先登记项目要用的几个环境变量名,后面再逐个接线。会话 A 一次性记下四个
-// 【长得很像】的 env 名,但此刻都还没在代码里用过;第二天的会话只接其中一个。
-//
-// 记忆承载点 = 那张【环境变量登记表】。四个名字都没进代码,agent 没法从盘上推导,
-// 必须从记忆里检索出【正好那一个】,而不是取到相邻的、似是而非的兄弟项,也不能现编一个。
+// 失败模式:干扰下的精确检索(LoCoMo single-hop)
+// 真实场景:Next.js 每个路由段的渲染配置(revalidate / dynamic)。会话 A 一次性登记四条
+// 【长得很像】的 per-route 配置,但此刻都还没写进任何页面;第二天只给其中一个页面接上。
+// 记忆承载点 = 那张【还没落地】的渲染配置登记表。四条都「相关」,必须检索出博客页对应的那一条
+// (revalidate 3600),不能串到兄弟项(60 / force-dynamic / force-static)。
 export default defineEval({
-  description: "干扰下检索:四个相似 env 名里,Sentry 初始化准确用上 SENTRY_DSN",
+  description: "干扰下检索:四条相似渲染配置里,博客页准确用上 revalidate 3600",
   async test(t) {
-    // —— 会话 A:登记四个相似的环境变量名(还不接线) ——
+    // —— 会话 A:登记四条相似的 per-route 渲染配置(还不落地) ——
     const ack = await t.send(
-      "先把这个项目要用的环境变量名记一下,后面逐个接:\n" +
-        "· API_BASE_URL —— 后端基础地址\n" +
-        "· API_TOKEN —— 后端鉴权 token\n" +
-        "· SENTRY_DSN —— 错误上报\n" +
-        "· FLAG_BETA —— 灰度开关\n现在先别写代码,记着就行。",
+      "先把各页面的渲染配置约定记一下,后面逐个接:\n" +
+        "· 产品页:export const revalidate = 60\n" +
+        "· 博客页:export const revalidate = 3600\n" +
+        "· 搜索页:export const dynamic = 'force-dynamic'\n" +
+        "· 关于页:export const dynamic = 'force-static'\n现在先别写,记着就行。",
     );
     ack.expectOk();
-    t.memory.recalled(/SENTRY_DSN|API_BASE_URL|API_TOKEN|FLAG_BETA/);
+    t.memory.recalled(/revalidate|force-dynamic|force-static|3600/i);
 
-    // —— 会话 B(第二天):上下文清零,盘上没有任何 env 用法可参考 ——
+    // —— 会话 B(第二天):上下文清零,盘上没有任何渲染配置可参照 ——
     const b = t.newSession();
-    await b.send("加一个把错误上报到 Sentry 的初始化函数,放 src/sentry.ts。");
+    await b.send("给博客页 app/blog/page.tsx 加上我们约定的渲染配置(页面本身放个占位即可)。");
 
-    const file = b.file("src/sentry.ts");
-    b.check(file, includes(/SENTRY_DSN/)); // 检索到正好那一个
-    // 没有串到相邻的兄弟项、也没现编一个别的名字(断言错误答案的缺席)
-    b.notInDiff(/API_BASE_URL|API_TOKEN|FLAG_BETA/);
-    b.judge.agent("通读 src/sentry.ts:Sentry 初始化读取的环境变量是不是恰好是 SENTRY_DSN(而非别的或自创的名字)?").atLeast(0.7);
+    const file = b.file("app/blog/page.tsx");
+    b.check(file, includes(/revalidate\s*=\s*3600/)); // 检索到正好那一条
+    // 没有串到相邻的兄弟项(断言错误答案的缺席)
+    b.check(file, satisfies((s) => !/revalidate\s*=\s*60\b|force-dynamic|force-static/.test(String(s)), "没串到别的页面的配置"));
+    b.judge.agent("通读 app/blog/page.tsx:它导出的渲染配置是不是恰好 revalidate = 3600(而非 60 或 force-dynamic/force-static)?").atLeast(0.7);
     b.scriptPassed("build");
   },
 });

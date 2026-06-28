@@ -18,10 +18,12 @@ export default defineConfig({
   // 沙箱型 agent 的运行环境。本地 docker,零云依赖。
   sandbox: "docker",
 
-  // 被测的「工作项目」:取自 agent-eval 的通用 fixture(一个最小 React/TSX 应用)。
-  // session 开始时被拷进沙箱,memory eval 让 agent 在这个真实代码库上干活,
-  // 借此观察它是否记住并沿用跨轮 / 跨会话的偏好。单个 eval 可用 `workspace:` 覆盖。
-  workspace: "./workspaces/react-greeting",
+  // 被测的「工作项目」:一个最小 Next.js App Router 应用。
+  // 选 Next.js 是因为这套 eval 把 next-evals-oss 的真实任务(Server Component vs useEffect 拉数据、
+  // proxy.ts vs middleware.ts、异步 cookies()、缓存策略、App vs Pages Router…)用我们的记忆逻辑重写了:
+  // 每个都是「项目该用现代写法、但模型先验偏向过时写法」的决定 —— 正好拿来当跨会话的记忆承载点。
+  // session 开始时被拷进沙箱,agent 在它上面真实开发。单个 eval 可用 `workspace:` 覆盖。
+  workspace: "./workspaces/next-app",
 
   // LLM-as-judge 用的评判模型,和被测 agent 完全分离(避免自评)。
   judge: { model: "anthropic/claude-haiku-4-5" },

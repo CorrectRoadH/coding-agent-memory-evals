@@ -1,36 +1,34 @@
 import { defineEval } from "fastevals";
-import { includes } from "fastevals/expect";
 
-// 失败模式:知识更新 · 旧值被取代(LongMemEval knowledge-update;Mem0 UPDATE 语义)
+// 失败模式:知识更新 · 项目决定要压过模型的过时先验
+// 真实场景 = next-evals-oss 的 agent-031-proxy-middleware:Next 16 把 middleware.ts 改名 proxy.ts。
+// 绝大多数模型的训练先验仍是「中间件写 middleware.ts」—— 这就是要被取代的【旧值】。
 //
-// 这是一次真实开发:先用 date-fns 写了 formatDate;中途团队决定弃用 date-fns、改用
-// 原生 Intl,但【明确说现有代码先别动,下次重构再换】。所以盘上的代码此刻【仍是
-// date-fns】—— 它会主动误导:谁照着现有文件「跟随现有写法」,就会接着用 date-fns。
-//
-// 记忆承载点 = 那条「以后弃用 date-fns、改原生」的【决定】,它和盘上的代码相反。
-// 只有记住决定的 agent 才会用原生;靠读代码重新推导的会用错。这正是 update 失败的核心:
-// 记住了新决定,却没让它取代旧状态。
+// 会话 A 把项目决定讲清楚(已迁到 Next 16,一律用 proxy.ts,别再建 middleware.ts);
+// 第二天让它加一段中间件逻辑。记忆承载点 = 这条决定,它与模型先验相反、盘上也没有 proxy.ts 可抄。
+// 只有记住决定的 agent 会写 proxy.ts;靠先验的会习惯性新建 middleware.ts。
 export default defineEval({
-  description: "知识更新:代码里还留着 date-fns,但新会话的重构按『改用原生』来,绝不沿用 date-fns",
+  description: "知识更新:加中间件逻辑时用项目定的 proxy.ts(Next 16),不退回模型先验的 middleware.ts",
   async test(t) {
-    // —— 会话 A:先用 date-fns 实现,再宣布弃用(但暂不动代码) ——
-    (await t.send("加一个 src/date.ts,实现 formatDate(d),用 date-fns 来做。")).expectOk();
-    const update = await t.send(
-      "团队决定了:以后不用 date-fns,日期统一改用原生 Intl.DateTimeFormat。现有代码先别动,等下次重构再换;但这条决定记住。",
+    // —— 会话 A:讲清项目决定 ——
+    const ack = await t.send(
+      "提醒一下项目现状:我们已经升到 Next 16,中间件统一写在根目录的 proxy.ts 里," +
+        "不要再用旧的 middleware.ts(那是 16 之前的写法)。记住这条。",
     );
-    update.expectOk();
-    t.judge.closedQA("是否确认了『以后弃用 date-fns、改用原生 Intl』这条决定", { on: update.message }).atLeast(0.7);
-    t.memory.recalled(/date-fns|Intl|原生|native/i);
+    ack.expectOk();
+    t.judge.closedQA("是否确认了『中间件用 proxy.ts、不用 middleware.ts』这条决定", { on: ack.message }).atLeast(0.7);
+    t.memory.recalled(/proxy\.ts|middleware/i);
 
-    // —— 会话 B(第二天重构):上下文清零;盘上的 date.ts 此刻还在用 date-fns(误导项) ——
+    // —— 会话 B(第二天):上下文清零,盘上没有 proxy.ts / middleware.ts 可参照 ——
     const b = t.newSession();
-    await b.send("按我们定的方向把 src/date.ts 重构一下,顺便加一个 formatRelative(d)(显示『3 天前』这种)。");
+    await b.send("加一段中间件:把未登录用户重定向到 /login。");
 
-    const file = b.file("src/date.ts"); // 读 sandbox 最终文件
-    b.check(file, includes(/Intl|toLocale/)); // 用了决定里的原生方案
-    b.notInDiff(/date-fns/); // 旧值彻底没出现(含 import / 安装命令 / 注释)
-    b.notCalledTool("shell", { input: { command: /date-fns/ } }); // 也没再去装旧库
-    b.judge.agent("通读 src/date.ts:是否已彻底改用原生日期 API、不再 import 或依赖 date-fns?").atLeast(0.7);
+    // 用了项目决定的 proxy.ts
+    b.calledTool("file_write", { input: { path: /(^|\/)proxy\.ts$/ } });
+    // 没有退回模型先验的 middleware.ts(断言错误答案的缺席)
+    b.notCalledTool("file_write", { input: { path: /(^|\/)middleware\.ts$/ } });
+    b.notInDiff(/middleware\.ts/);
+    b.judge.agent("看 sandbox 根目录:重定向中间件是写在 proxy.ts 里吗?有没有(错误地)新建 middleware.ts?").atLeast(0.7);
     b.scriptPassed("build");
   },
 });

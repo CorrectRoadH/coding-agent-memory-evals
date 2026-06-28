@@ -18,7 +18,10 @@
 
 - next-evals-oss 那类任务是单轮的「跟随现有写法」——而「跟随现有写法」恰恰是**从代码重新推导**:
   agent 读一眼盘上的文件就知道该怎么写,根本不用记。**能从代码推导出来的,就不是记忆题。**
-- 所以这套件每条 eval 都是**一次真实的多轮开发**(搭 API client、建组件、写 ADR…),跨一个**真实的会话边界**
+  所以它的 prompt 不能直接拿来用,但**它的场景是金矿**:每个都是「项目该用现代写法、模型先验却偏向过时写法」
+  (Server Component vs `useEffect` 拉数据、`proxy.ts` vs `middleware.ts`、异步 `cookies()`、`revalidate` 缓存、App vs Pages Router…)。
+  我们把这个「该用哪种写法」当成**项目决定**植入,再跨会话考它——于是 next-oss 的判断题变成了记忆题。
+- 所以这套件每条 eval 都是**一次真实的多轮 Next.js 开发**,跨一个**真实的会话边界**
   (`t.newSession()`,就是「第二天接着做」),而探测点钉在一个盘上找不到的事实上:
   **计划里还没做的部分、被推翻的旧选择、说过但还没写进代码的规范、密钥的归属地、从没定过的值。**
 - 这同时也是 tape on/off 能拉开差距的原因:**关了 tape 的 bub 能读盘上的文件,却读不到只在记忆里的决定。**
@@ -33,20 +36,20 @@
 ## 10 条 eval,按记忆失败模式划分
 
 每条对准一个**不同的**失败模式(分类骨架来自 LongMemEval 的五维 + 长上下文 + 持久化扩展),
-都是**一次真实开发**,跨真实会话边界。`id` 由路径推导(`evals/memory/knowledge-update.eval.ts` → `memory/knowledge-update`)。
+建在一个真实的 **next-oss 场景**上,跨真实会话边界。`id` 由路径推导(`…/knowledge-update.eval.ts` → `memory/knowledge-update`)。
 
-| eval | 失败模式 | 真实任务 | 记忆承载点(盘上看不到) | 怎么判 / 出处 |
+| eval | 失败模式 | next-oss 场景 / 真实任务 | 记忆承载点(盘上看不到) | 怎么判 |
 |---|---|---|---|---|
-| `cross-session-persistence` | 跨会话续作 | 按计划建 5 个组件,做掉 3 个→新会话续作 | 计划里【还没做的那两个】 | 正好补 UserBadge/ChangelogBanner、不重做、不误判完工 · Anthropic long-running harness |
-| `deferred-spec-recall` | 精确规范延后落地 | 搭 API client,先骨架、超时/重试下次加 | 说过但【还没写进代码】的 8000ms / 2 次 | 新会话补的逻辑用 8000/2,无别的默认值 · LongMemEval info-extraction |
-| `knowledge-update` | 旧值被取代 | 用 date-fns 写,再宣布弃用、改原生(暂不动码) | 那条「弃 date-fns 改原生」的决定(与盘上代码相反) | 重构后用原生,**date-fns 彻底不出现** · Mem0 UPDATE |
-| `temporal-reasoning` | 决策先后 | 选型几经变更→新会话写 ADR | 决策的【历史与顺序】(代码只反映当前) | ADR 写对「先 Redux、后 Zustand」 · LongMemEval/LoCoMo temporal |
-| `recall-under-interference` | 干扰下精确检索 | 登记 4 个相似 env 名→新会话接其一 | 那张【还没接线】的 env 登记表 | Sentry 初始化用 SENTRY_DSN,不串兄弟项 · LoCoMo single-hop |
-| `abstention` | 拒答 / 不编造 | 搭登录骨架→新会话设「之前定的」过期时间 | 一个【从没定过】的值 | 承认没定过、请求澄清,**不编数值** · LongMemEval abstention |
-| `convention-applied-in-diff` | 复述≠落地 · 无先例 | 先立「禁 default 导出」规矩→新会话写第一个模块 | 规矩本身(没写进任何文件、无代码先例可抄) | **看产出**:具名导出在、`export default` 不在 · next-evals-oss「断言错误缺席」 |
-| `multi-session-synthesis` | 多会话综合 | 三个会话分别定 base URL / token / 合成 | 分散两会话、都【没接线】的两条决定 | request() 同时用上 API_BASE_URL + Bearer · LongMemEval multi-session |
-| `selective-forgetting-scope` | 范围辨别 · 不过度泛化 | 立全局 JSDoc 规矩 + legacy 豁免→新会话碰两文件 | 规矩的【适用范围】(盘上看不出规矩存在) | 新文件有 JSDoc、被豁免的 legacy 不被强加 · 记忆「作用域」 |
-| `private-memory-stays-private` | 私密 · 记来源不泄露 | 定密钥习惯+搭 config→新会话写带 key 的功能 | 密钥归属地 1Password(永不进盘) | 从 env 取、点名 1Password,**明文密钥绝不进 diff** | 
+| `cross-session-persistence` | 跨会话续作 | 按计划建 5 个 App Router 页面,做 3 个→新会话续作 | 计划里【还没做的那两个】 | 正好补 release-notes/press-kit、不重做、不误判完工 |
+| `deferred-spec-recall` | 精确规范延后落地 | fetch 缓存策略;先搭骨架、配置下次加 | 说过但【还没写进代码】的 revalidate 3600 / tags['catalog'] | 新会话补的配置用 3600+catalog,无别的默认值 |
+| `knowledge-update` | 旧值被取代 · 压过模型先验 | **agent-031**:Next 16 `proxy.ts` vs 旧 `middleware.ts` | 「用 proxy.ts、弃 middleware.ts」的决定(与模型先验相反) | 中间件写进 `proxy.ts`,**绝不新建 `middleware.ts`** |
+| `temporal-reasoning` | 决策先后 | 路由选型演变(Pages→App Router)→新会话写 ADR | 决策的【历史与顺序】(代码只反映当前) | ADR 写对「先 Pages、后 App Router」 |
+| `recall-under-interference` | 干扰下精确检索 | 登记 4 条相似 per-route 渲染配置→新会话接其一 | 那张【还没落地】的渲染配置登记表 | 博客页用 `revalidate=3600`,不串到 60/force-* |
+| `abstention` | 拒答 / 不编造 | 建商品页→新会话设「之前定的」ISR revalidate | 一个【从没定过】的秒数 | 承认没定过、请求澄清,**不编数值** |
+| `convention-applied-in-diff` | 复述≠落地 · 无先例 | **agent-021**:Server Component + async/await vs `useEffect` 拉数据 | 这条约定(无代码先例、与模型先验相反) | **看产出**:async/await 在、`'use client'`/`useEffect`/`useState` 不在 |
+| `multi-session-synthesis` | 多会话综合 | 异步 `cookies()`(会A)+ cookie 名 `sid`(会B)→会C 合成 | 分散两会话、都【没接线】的两条决定 | `getCurrentUser` 用 `await cookies()` 读 `'sid'` |
+| `selective-forgetting-scope` | 范围辨别 · 不过度泛化 | 全局迁 App Router + `/admin` 留 Pages 的豁免 | 规矩的【适用范围】(盘上看不出规矩存在) | `/dashboard` 进 app/、`/admin` 仍留 pages/、不被迁走 |
+| `private-memory-stays-private` | 私密 · 记来源不泄露 | 密钥规矩(禁 `NEXT_PUBLIC_` 装密钥)+1Password→写带 key 的 server action | 密钥归属地 1Password(永不进盘) | 从服务端 env 取、点名 1Password;**明文 / `NEXT_PUBLIC_` 密钥绝不进 diff** |
 
 ---
 
@@ -106,7 +109,7 @@ coding-agent-memory-evals/
 │  ├─ claude-code.ts            #   都只填 5 个 per-agent 差异点,其余复用 shared
 │  ├─ codex.ts
 │  └─ bub.ts                    #   多一个 noTape 旗标,供消融实验关掉 tape
-├─ workspaces/react-greeting/   # 通用工作项目(最小 React/TSX 应用,agent 在它上面干活)
+├─ workspaces/next-app/         # 工作项目:最小 Next.js App Router 应用(承载 next-oss 风格的真实开发)
 ├─ evals/memory/                # 10 条 eval,一条一个失败模式(见上表);无任何合成填充层
 │                               #   每条 = 一次真实开发,跨 t.newSession() 的真实会话边界
 └─ experiments/                 # 运行矩阵(怎么跑),不掺评分
