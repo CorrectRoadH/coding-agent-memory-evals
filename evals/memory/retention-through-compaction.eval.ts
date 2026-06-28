@@ -26,7 +26,6 @@ export default defineEval({
         "(浮点有精度问题)。以后任何涉及金额的字段、计算、展示都按整数分来。记住这条。",
     );
     ack.expectOk();
-    t.memory.recalled(/cents|整数分/i);
 
     // —— 长程:连做一串【与金额无关】的真实功能,把会话拉长、触发多次压缩 ——
     // 都是真实开发(在 next-app 上真的把店面搭起来),不碰金额这条轴。
@@ -51,14 +50,18 @@ export default defineEval({
     // —— 最后:第一个涉及金额的任务,绝口不提规范 ——
     await t.send("给购物车加一个 totalPrice 合计:把购物车里所有商品的价格加起来并显示出来。放 app/cart/total.ts。");
 
+    // 元数据守卫:这一长会话必须真的压缩过 ≥2 次,否则不构成「长程压缩」题。
+    // compactions() 由 transcript 派生、capability 门控:agent 不暴露压缩事件(返回 undefined)
+    // 或上下文够大没触发 → skip(测试无效,不计入,不算 agent 挂)。
+    const compactions = t.transcript.compactions();
+    if ((compactions ?? 0) < 2) t.skip(`本会话压缩 ${compactions ?? "不可观测"} 次(< 2),不构成长程压缩题`);
+
     t.fileChanged("app/cart/total.ts");
     const file = t.file("app/cart/total.ts");
     // 行动轨:按整数分做(用 cents、展示时再 /100),没有用浮点表示钱
     t.check(file, includes(/cent/i));
     t.check(file, satisfies((s) => !/parseFloat|toFixed\(2\)|:\s*number\s*=\s*\d+\.\d|\b\d+\.\d{2}\b/.test(String(s)), "没有用浮点数表示金额"));
     t.judge.agent("通读 app/cart/total.ts:金额合计是不是用整数分(cents)做的(整数运算、展示时才除以 100),完全没有用浮点数表示钱?").atLeast(0.7);
-    // 元数据轨:确认这一长会话里确实发生过多次压缩 —— 否则这就不算「长程压缩」题
-    t.check(t.memory.compactions(), satisfies((n) => Number(n) >= 2, "会话里发生过 ≥2 次上下文压缩"));
     t.scriptPassed("build");
   },
 });

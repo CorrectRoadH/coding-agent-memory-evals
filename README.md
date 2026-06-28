@@ -42,12 +42,12 @@
 
 | # | eval | 记忆能力 | 遗忘机制 | 任务(next-oss 场景) | 怎么验 |
 |---|---|---|---|---|---|
-| 1 | `retention-through-compaction` | 信息保持 | 🌀 长程压缩(单会话) | 早期定「金额一律整数分 cents、禁浮点」,连做 ~12 个无关真实功能(触发多次压缩),最后给购物车加合计 | ✅合计用整数分、`notInDiff(/parseFloat\|toFixed\(2\)\|\.\d{2}\b/)`、build 过 · 🔍`t.memory.recalled(/cents/)` · 🧪`t.memory.compactions()≥2`(确实压缩过) |
-| 2 | `knowledge-update` | 更新 / 抗陈旧 · 压过模型先验 | 🌀 长程压缩 | **agent-031**:早讲「用 `proxy.ts` 弃 `middleware.ts`」,做一串真实活(压缩),最后加中间件 | ✅写进 `proxy.ts`、`notInDiff(/middleware\.ts/)`、`notCalledTool` 建 middleware.ts · 🧪决定与模型先验相反+盘上无可抄、`compactions()≥1` |
+| 1 | `retention-through-compaction` | 信息保持 | 🌀 长程压缩(单会话) | 早期定「金额一律整数分 cents、禁浮点」,连做 ~12 个无关真实功能(触发多次压缩),最后给购物车加合计 | ✅合计用整数分、`notInDiff(/parseFloat\|toFixed\(2\)\|\.\d{2}\b/)`、build 过 · 🧪守卫 `t.transcript.compactions()≥2`,不足则 skip(测试无效,非 agent 挂) |
+| 2 | `knowledge-update` | 更新 / 抗陈旧 · 压过模型先验 | 🌀 长程压缩 | **agent-031**:早讲「用 `proxy.ts` 弃 `middleware.ts`」,做一串真实活(压缩),最后加中间件 | ✅写进 `proxy.ts`、`notInDiff(/middleware\.ts/)`、`notCalledTool` 建 middleware.ts · 🧪决定与模型先验相反+盘上无可抄、守卫 `t.transcript.compactions()≥1`(不足则 skip) |
 | 3 | `multi-session-synthesis` | 多源综合 / multi-hop | 🚪 跨会话(唯一一条) | 异步 `cookies()`(会A)+ cookie 名 `sid`(会B)→ 会C 写 `getCurrentUser` 合成 | ✅`t.file` 同含 `await cookies()`+`'sid'`、agent-judge 查真接线 · 🧪两条决定分散两会话、会C 都不在上下文 |
 
-**横切验证**:tape on/off 配对 delta 是头号信号;报 pass^k;检索轨(`recalled`)与行动轨(diff)分开;每条都断言「错误答案缺席」;
-长程类用 `t.memory.compactions()≥N` 证明真压缩过;tape 是否在发力,看 compare 组里 bub(tape)对 codex 的差异。
+**横切验证**:tape on/off 配对 delta 是头号信号;报 pass^k;每条都断言「错误答案缺席」;
+长程类用守卫 `t.transcript.compactions()≥N` 确认真压缩过(不足或不可观测则 skip,不误判);tape 是否在发力,看 compare 组里 bub(tape)对 codex 的差异。
 
 ---
 
@@ -62,10 +62,13 @@
    (借鉴 fastevals 失败分类器「给小模型只读探索工具」的做法)。它是 soft 质量分,硬断言仍当 gate——两层叠着用:gate 兜底正确性,agent-judge 抓全局漂移。
 2. **断言「错误答案的缺席」,不止「正确答案的存在」。** 这是 next-evals-oss 的签名招式,也是反作弊的命门:
    `knowledge-update` 的真正考点是 `t.notInDiff(/middleware\.ts/)`,`retention-through-compaction` 的是「合计里没有浮点表示钱」。
-3. **检索 / 行动 / 元数据,三轨分开。** 像 LongMemEval 把「检索到了吗」和「答对了吗」拆开:
-   `t.memory.recalled(...)` 查事实是否真进了持久记忆(检索轨),diff 断言查产出的代码是否照做(行动轨);
-   长程类再加一条元数据轨 `t.memory.compactions()≥N` —— 证明这一会话**真的压缩过**,否则它就不算「长程压缩」题。
-   失败时能归因:没记住 / 记住了没用上 / 根本没触发压缩。
+3. **行动轨 + 元数据守卫,不去探「检索轨」。** 早期想学 LongMemEval 把「检索到了吗」与「答对了吗」拆开,
+   假设了 `t.memory.recalled(/…/)`——但 coding agent **没有一个 agent 无关、被陈述的事实会落地的可查记忆**:
+   claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置,只有 bub 的 tape 是私有持久记忆。
+   grep 这些位置恒返回与「记没记住」无关的结果,且放在「陈述事实之后」恒为真。**所以检索轨直接砍掉**——
+   记忆是否生效的唯一可信证据是**行动**(产出的代码 / 工具调用:`t.file` / `notInDiff` / `calledTool`)。
+   只保留一条**元数据守卫** `t.transcript.compactions()≥N`(事件流派生、capability 门控):确认这一会话**真的压缩过**,
+   否则不算「长程压缩」题——不足或不可观测就 **skip**(测试无效,不计、不算 agent 挂)。失败归因落在行动轨上。
 4. **报 pass^k,不报 pass@k。** 对标 τ-bench:`runs≥5 + earlyExit:false` 取完整分布。
    pass^k(k 次独立运行【全过】的概率)随 k **下降**,奖励的是**稳定复现**召回——这才是记忆机制该被衡量的样子。
    pass@k 会奖励「跑得多总有一次蒙对」,对记忆是错的指标。
@@ -137,8 +140,9 @@ fastevals view                           # 事后看图
 - **fastevals 本身还没实现**(`../fastevals` 目前是设计文档)。所以这套件是「对着设计中的 DSL 写出来的、可读可评审的真实用例」,
   目的之一就是用最刁钻的多轮记忆场景去压这套 DSL,看它扛不扛得住(下面的 DX 反馈)。
 - 几个 eval 用到了 DSL 里**尚待实现**的便利层(都列在下面 DX 反馈里,这里是真用上了):
-  `t.memory.recalled(/…/)`、`t.memory.compactions()`(本会话压缩了几次)、读 sandbox 最终文件的 `t.file(path)`、
+  `t.transcript.compactions()`(本会话压缩了几次,capability 门控)、读 sandbox 最终文件的 `t.file(path)`、
   可查询的 `t.diff`、`notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
+  (早期还假设过 `t.memory.recalled(/…/)`,已证明做不到也用不上,**砍掉**——理由见 DX 反馈第 1 条。)
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
 - **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
@@ -146,7 +150,7 @@ fastevals view                           # 事后看图
   (`wire_api = "responses"` → 打到 `{base}/responses`),由 `agents/codex.ts` 在每次 send 时写进 `~/.codex/config.toml`
   ——**不放实验的 `setup`**,因为 adapter 每次都会重写该文件、会盖掉 setup。base_url/key 属 adapter 本地配,model 仍由实验 `ctx.model` 给。
 - **承载点放在【盘上看不到】的决定上,而不是靠塞满上下文**:这样即便会话不长也是真记忆题(代码里推不出答案)。
-  长程压缩类的会话要足够长才会触发压缩——轮数按模型上下文调,并用 `t.memory.compactions()≥N` 把「真的压缩过」断言出来。
+  长程压缩类的会话要足够长才会触发压缩——轮数按模型上下文调,并用守卫 `t.transcript.compactions()≥N` 确认「真的压缩过」(不足则 skip)。
   默认实验是 bub(tape)对 codex 的同模型对比;想要 tape 自身净贡献的硬证据,可用 bub channel 的 `noTape` 旗标临时做 within-bub A/B。
 
 ---
@@ -164,17 +168,17 @@ fastevals view                           # 事后看图
 
 ### 试出来的缺口 / 待定 ⚠️(给 fastevals 的需求)
 
-1. **记忆探针要 agent 无关。** 私人记忆位置每个 agent 不同(`~/.claude` vs `~/.bub/tapes` …),eval 不该硬编码路径。本套件假设了 `t.memory.recalled(/.../)`,由各 adapter 的 `readMemory()` 归一化。**这是 memory 评测专门需要的能力位**(类似 transcript 的归一化)。
+1. **别做 `t.memory.recalled`——记忆「检索轨」探不到(已砍)。** 早期假设了一个 agent 无关的 `t.memory.recalled(/.../)`(由各 adapter `readMemory()` 归一化),想直接查「事实进没进持久记忆」。**做不到**:claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置;只有 bub 的 tape 是私有持久记忆。grep 这些位置恒返回与「记没记住」无关的结果,而且断言放在「陈述事实之后」恒为真——在三条 eval 里它非承重、还有一条压根没用。**结论:探针和各 adapter 的 `readMemory()` 一起删掉,记忆是否生效只认行动轨**(`t.file`/`notInDiff`/`calledTool`)。fastevals 不必提供 `t.memory`。
 2. **`t.diff` 需要查询助手 + 直接读 sandbox 最终文件。** 用到了 `t.diff.get(path)` / `t.notInDiff(re)`(查改动),以及 `t.file(path)`(读 sandbox 里的最终文件内容)。正向内容断言查最终文件比查 diff 文本更稳(diff 带 +/− 前缀、hunk 头);「错误答案的缺席」才查 diff。建议:`t.diff` 做成可查询对象(`get` / `isEmpty` / `matches` / `notInDiff`),并正式提供 `t.file(path)` 作为 `t.sandbox.readFile` 的高层封装。
 7. **agent-as-judge:能进 sandbox 的评判 agent。** 用到了 `t.judge.agent(rubric)` —— 派一个独立评判 agent,给它只读 sandbox 工具(list / read / grep),让它通读真实项目状态后给 0–1 分。text-only judge 看不到「约定有没有全项目贯彻」「跨会话合成是否真接上线」这类需要遍历代码库的判断。fastevals 失败分类器已经有「给小模型只读探索工具」的现成形状,把它提升成 eval 作者可用的 `t.judge.agent` 即可。
 3. **多轮的会话语义要标准化。** 「同一 eval 的多轮 = 同沙箱 + resume」「`newSession()` = 新会话 + 同沙箱」是 memory 能测的前提。应在 Agent 契约里把 `session.id` / `session.isNew` 钉死,否则每个沙箱 adapter 各写各的。
 4. **`notCalledTool` 要支持 options。** 写了 `b.notCalledTool("file_write", { input: { path: /Header/ } })`,需要和 `calledTool` 对齐,也接匹配小语言。
 5. **starter repo 属于 eval,要能在 `defineEval` 里声明 `workspace` + `setup`。** 不同 eval 的 starter 可能不一样,所以「用哪个 starter、怎么 prep(如 `npm install`)」写在各 eval 里(`defineEval({ workspace, setup })`),而不是写死在 experiment。experiment 只管怎么跑(agent / model / sandbox / runs)。本套件 3 条都这么写了;config 的 `workspace` 仅作兜底默认。
 6. **judge 要能对「整段对话」打分。** 现在只能 `{ on: 某条 message }`;memory 有时想判「整段对话里它是否始终守约定」,需要 `t.judge.transcript(...)`。
-7. **要能断言「上下文压缩」这个事件。** 长程压缩类的 eval 必须能确认「这一会话真的压缩过」,否则就退化成短会话。本套件假设了 `t.memory.compactions()`(本次运行发生的上下文压缩/anchor 次数),由各 adapter 归一化(bub = tape anchor 数)。**这是「长程压缩」regime 专属的能力位**。
+7. **要能从事件流数「上下文压缩」次数(capability 门控、当守卫用)。** 长程压缩类 eval 必须确认「这一会话真的压缩过」,否则退化成短会话。这是 **transcript / o11y 派生**的信号(不是「记忆」),应作 `t.transcript.compactions()`,由 `compactionObservability` 能力位门控、各 adapter 从自己的事件流归一化(bub = tape anchor 数;claude = 自动压缩事件;codex 取决于其 `--json` 是否带标记)。用法是**守卫而非硬断言**:不足 N 或不可观测就 `t.skip`(测试无效,不算 agent 挂)。
 8. **experiment 应支持「文件夹分组」。** 约定 `experiments/<组>/<配置>.ts`,`fastevals exp <组>` 跑整组、同组互为对照。`defineExperiment` 仍可用 `agent: [数组]` 扇出,但「可比性」交给目录表达更清楚。
 
-> 结论:多轮记忆这个最刁钻的场景,**核心的 `t.send` / `judge` / `calledTool` / diff 完全扛得住**;真正缺的是几块 memory 专属便利层——归一化记忆探针(含 `compactions()`)、可查询 diff、能进 sandbox 的 agent-judge、标准化会话语义。补上这些,memory 评测就完全顺了。
+> 结论:多轮记忆这个最刁钻的场景,**核心的 `t.send` / `judge` / `calledTool` / diff 完全扛得住**;真正缺的是几块便利层——事件流派生的 `t.transcript.compactions()`(capability 门控的有效性守卫)、可查询 diff、能进 sandbox 的 agent-judge、标准化会话语义。**而 `t.memory.recalled` 被证明做不到也用不上,已砍**:记忆是否生效只认行动轨。补上前几样,memory 评测就顺了。
 
 ## 参考
 

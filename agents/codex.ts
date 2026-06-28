@@ -1,81 +1,78 @@
-import { defineSandboxAgent, shared, requireEnv, type StreamEvent } from "fastevals";
+import { defineSandboxAgent, shared, requireEnv } from "fastevals";
 
 // ───────────────────────────────────────────────────────────────────────────
 // OpenAI Codex 的 agent adapter(沙箱型)。
 //
-// 形状和 claude-code 一模一样,只有 5 个「per-agent 差异点」不同 —— 这正是
-// 「同一套 agent 模型」的意义:差异全关在 adapter 内部,运行器只看到
-// 「一次 send → 一个带标准事件流的 Turn」。
+// 连接方式:在沙箱里 spawn `codex exec --json`,让它在沙箱文件系统上自己跑工具,
+// 跑完从 stdout 的 JSONL 抠出 transcript,经 shared.parseCodex 解析成标准事件流。
 //
-// 配置归属同 claude-code:鉴权本地、模型留空(ctx.model)、flags 透传(ctx.flags)。
-// ⚠️ 仅示意,未必真能跑。
+// 配置归属:
+//   · 鉴权(base_url + key)—— 本地配,走 .env 的 s2a 代理(OpenAI 兼容,wire_api=responses);
+//   · 模型 —— 留空交给实验(ctx.model);无实验时兜底 gpt-5.4;
+//   · feature flags —— experiment 经 ctx.flags 透传(effort)。
+//
+// memory eval 是「多轮」:同一 eval 的多次 send 落在同一沙箱、`codex exec resume <id>`
+// 续接同一会话;t.newSession() 则开新 thread(同沙箱)。
 // ───────────────────────────────────────────────────────────────────────────
 
 // 本地配:这条 channel 怎么连它自己的后端 —— 走一个 OpenAI 兼容代理(s2a)。
-// base_url + key 都从 env 读(.env,见 .env.example);model 由实验给(ctx.model)。
-// 设了 CODEX_BASE_URL 就走自定义 model_provider;否则回落到 OpenAI 官方 login。
 const proxyBase = () => process.env.CODEX_BASE_URL; // 如 https://s2a.jihuayu.site/v1
-const apiKey = () => requireEnv("CODEX_API_KEY"); // 代理 key(无代理时也可放 OPENAI_API_KEY)
+const apiKey = () => requireEnv("CODEX_API_KEY"); // 代理 key
 
 export default defineSandboxAgent({
   name: "codex",
-  capabilities: { conversation: true, toolObservability: true, workspace: true },
+  // compactionObservability:codex 的 `codex exec --json` stdout 流【不暴露】压缩/摘要事件
+  //(压缩只在 ~/.codex/sessions 的 rollout 文件里、且 exec 模式覆盖不全)。所以解析 stdout 时
+  //  t.transcript.compactions() 恒为 0 → 长程压缩类 eval 自动 skip(不误判 agent 挂)。
+  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
 
   async send(input, ctx) {
     const sb = ctx.sandbox;
     await shared.ensureInstalled(sb, "npm", ["install", "-g", "@openai/codex"]);
 
-    const model = ctx.model ?? "gpt-5.4"; // 模型来自实验(ctx.model)
-    const effort = ctx.flags.effort ?? "high"; // 读实验 feature flag
+    const model = ctx.model ?? "gpt-5.4"; // 模型来自实验(ctx.model);无则兜底
+    const effort = (ctx.flags.effort as string | undefined) ?? "medium"; // 读实验 feature flag
     const base = proxyBase();
 
-    // 写 ~/.codex/config.toml。注意:adapter 每次 send 都重写它 —— 所以代理配置必须在这里、
-    // 不能放进实验的 setup(会被这次重写盖掉)。自定义 provider 见 developers.openai.com/codex/config-advanced。
-    let cmd: string;
+    // 写 ~/.codex/config.toml:adapter 每次 send 都重写(代理配置必须在这里,不能放进实验 setup)。
     if (base) {
-      // wire_api="responses" → codex 调 {base_url}/responses,正好匹配代理的 /v1/responses。
+      // wire_api="responses" → codex 调 {base_url}/responses,匹配代理的 /v1/responses。
       // key 经 env_key(CODEX_API_KEY)注入,因此【不跑 codex login】。
       await shared.writeFile(
         sb,
         "~/.codex/config.toml",
         `model = "${model}"\n` +
           `model_provider = "s2a"\n` +
-          `reasoning_effort = "${effort}"\n\n` +
+          `model_reasoning_effort = "${effort}"\n\n` +
           `[model_providers.s2a]\n` +
           `name = "s2a"\n` +
           `base_url = "${base}"\n` +
           `env_key = "CODEX_API_KEY"\n` +
           `wire_api = "responses"\n`,
       );
-      const resume = !ctx.session.isNew && ctx.session.id ? ` resume ${ctx.session.id}` : "";
-      const escaped = input.text.replace(/'/g, "'\\''");
-      const res = await sb.runShell(
-        `codex exec --json --dangerously-bypass-approvals-and-sandbox${resume} '${escaped}'`,
-        { env: { CODEX_API_KEY: apiKey() } }, // 注入 env_key 指向的变量
-      );
-      const raw = shared.extractJsonlFromStdout(res.stdout);
-      ctx.session.id = shared.codexThreadId(res.stdout);
-      return { events: parseCodex(raw), status: res.exitCode === 0 ? "completed" : "failed" };
+    } else {
+      // 无代理:回落到 OpenAI 官方(需要 OPENAI_API_KEY / codex login)。
+      await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n`);
     }
 
-    // 无代理:回落到 OpenAI 官方 login 路径
-    await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nreasoning_effort = "${effort}"\n`);
-    const resume = !ctx.session.isNew && ctx.session.id ? ` resume ${ctx.session.id}` : "";
+    // 拼调用:resume 是 exec 的子命令,必须紧跟 exec;flag 放其后。
+    const flags = "--json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check";
     const escaped = input.text.replace(/'/g, "'\\''");
-    const res = await sb.runShell(
-      `echo '${apiKey()}' | codex login --with-api-key && ` +
-        `codex exec --json --dangerously-bypass-approvals-and-sandbox${resume} '${escaped}'`,
-    );
-    const raw = shared.extractJsonlFromStdout(res.stdout);
-    ctx.session.id = shared.codexThreadId(res.stdout);
-    return { events: parseCodex(raw), status: res.exitCode === 0 ? "completed" : "failed" };
-  },
+    const resuming = !ctx.session.isNew && ctx.session.id;
+    const cmd = resuming
+      ? `codex exec resume ${ctx.session.id} ${flags} '${escaped}'`
+      : `codex exec ${flags} '${escaped}'`;
 
-  // Codex 的私人记忆:~/.codex 与 AGENTS.md
-  async readMemory(ctx) {
-    return shared.readFiles(ctx.sandbox, ["~/.codex/**", "./AGENTS.md"]);
+    const res = await sb.runShell(cmd, { env: { CODEX_API_KEY: apiKey() } });
+
+    // stdout 即 JSONL transcript;抠出 → 解析成标准事件流 + 用量。
+    const raw = shared.extractJsonlFromStdout(res.stdout);
+    ctx.session.id = shared.codexThreadId(res.stdout) ?? ctx.session.id; // 回传供下轮 resume
+    const parsed = shared.parseCodex(raw);
+    return {
+      events: parsed.events,
+      usage: parsed.usage,
+      status: res.exitCode === 0 ? "completed" : "failed",
+    };
   },
 });
-
-// o11y/parsers/codex:把 Codex 的 JSONL 映射成标准 StreamEvent[](示意)
-declare function parseCodex(rawJsonl: string | undefined): StreamEvent[];

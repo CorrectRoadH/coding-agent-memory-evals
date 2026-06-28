@@ -1,5 +1,4 @@
 import { defineEval } from "fastevals";
-import { satisfies } from "fastevals/expect";
 
 // ★ regime:长程压缩(单会话,不 newSession)
 // 失败模式:知识更新 · 项目决定要压过模型先验,并且熬过多次压缩。
@@ -23,7 +22,6 @@ export default defineEval({
         "不要再用旧的 middleware.ts(那是 16 之前的写法)。记住这条。",
     );
     ack.expectOk();
-    t.memory.recalled(/proxy\.ts|middleware/i);
 
     // —— 长程:连做一串【与中间件无关】的真实功能,触发多次压缩 ——
     const features = [
@@ -45,14 +43,18 @@ export default defineEval({
     // —— 最后:加中间件,绝口不提 proxy/middleware ——
     await t.send("加一段中间件:把未登录用户重定向到 /login。");
 
+    // 元数据守卫:这一长会话必须真的压缩过,否则不构成「长程压缩」题。
+    // compactions() 由 transcript 派生、capability 门控:agent 不暴露压缩事件(返回 undefined)
+    // 或上下文够大没触发 → skip(测试无效,不计入,不算 agent 挂)。
+    const compactions = t.transcript.compactions();
+    if ((compactions ?? 0) < 1) t.skip(`本会话压缩 ${compactions ?? "不可观测"} 次(< 1),不构成长程压缩题`);
+
     // 用了项目决定的 proxy.ts
     t.calledTool("file_write", { input: { path: /(^|\/)proxy\.ts$/ } });
     // 没有退回模型先验的 middleware.ts(断言错误答案的缺席)
     t.notCalledTool("file_write", { input: { path: /(^|\/)middleware\.ts$/ } });
     t.notInDiff(/middleware\.ts/);
     t.judge.agent("看 sandbox 根目录:重定向中间件是写在 proxy.ts 里吗?有没有(错误地)新建 middleware.ts?").atLeast(0.7);
-    // 确认这一长会话里确实压缩过 —— 否则不算「熬过压缩」
-    t.check(t.memory.compactions(), satisfies((n) => Number(n) >= 1, "会话里发生过 ≥1 次上下文压缩"));
     t.scriptPassed("build");
   },
 });

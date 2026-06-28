@@ -1,4 +1,4 @@
-import { defineSandboxAgent, shared, requireEnv, type StreamEvent } from "fastevals";
+import { defineSandboxAgent, shared, requireEnv } from "fastevals";
 
 // ───────────────────────────────────────────────────────────────────────────
 // Claude Code 的 agent adapter(沙箱型)。
@@ -22,7 +22,9 @@ const auth = () => ({ ANTHROPIC_API_KEY: requireEnv("ANTHROPIC_API_KEY") });
 
 export default defineSandboxAgent({
   name: "claude-code",
-  capabilities: { conversation: true, toolObservability: true, workspace: true },
+  // compactionObservability:transcript 解析器能数出本会话的自动压缩次数,
+  // 供长程压缩类 eval 的 t.transcript.compactions() 守卫用。
+  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
   // 注意:没有 defaultModel、没有 apiKeyEnvVar —— 模型留空交给实验,鉴权本地自理
 
   async send(input, ctx) {
@@ -38,18 +40,12 @@ export default defineSandboxAgent({
     const res = await sb.runCommand("claude", args, { env: auth() }); // 鉴权来自本地 auth()
 
     const raw = await shared.captureLatestJsonl(sb, "~/.claude/projects");
-    ctx.session.id = shared.sessionIdFromClaudeTranscript(raw);      // 回传供下一轮 resume
+    ctx.session.id = shared.sessionIdFromClaudeTranscript(raw) ?? ctx.session.id; // 回传供下一轮 resume
+    const parsed = shared.parseClaudeCode(raw); // ← 原始 JSONL → 标准 StreamEvent[] + token 用量
     return {
-      events: parseClaudeCode(raw), // ← 原始 JSONL → 标准 StreamEvent[](token 用量也从这抠)
+      events: parsed.events,
+      usage: parsed.usage,
       status: res.exitCode === 0 ? "completed" : "failed",
     };
   },
-
-  // t.memory.* 的归一化探针:Claude Code 的私人记忆在 ~/.claude(及项目 CLAUDE.md)
-  async readMemory(ctx) {
-    return shared.readFiles(ctx.sandbox, ["~/.claude/CLAUDE.md", "~/.claude/memory/**", "./CLAUDE.md"]);
-  },
 });
-
-// o11y/parsers/claude-code:把 Claude Code 的 JSONL 映射成标准 StreamEvent[](示意)
-declare function parseClaudeCode(rawJsonl: string | undefined): StreamEvent[];

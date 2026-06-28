@@ -24,7 +24,10 @@ export default defineConfig({
   workspace: "./workspaces/next-app",
 
   // LLM-as-judge 用的评判模型,和被测 agent 完全分离(避免自评)。
-  judge: { model: "anthropic/claude-haiku-4-5" },
+  // 注:本环境只有 s2a 代理(OpenAI 兼容,无 Anthropic key),所以评判模型用代理上的
+  // gpt-5.4-mini(便宜、与被测的 gpt-5.4 codex 分离)。judge client 自动复用 CODEX_BASE_URL/KEY。
+  // 若要用 Anthropic 评判,在 .env 加 ANTHROPIC_API_KEY 并把 model 改回 anthropic/claude-haiku-4-5。
+  judge: { model: "gpt-5.4-mini" },
 
   // memory 测试天然慢(多轮 + 真实安装/构建),给宽一点。
   timeoutMs: 600_000,
