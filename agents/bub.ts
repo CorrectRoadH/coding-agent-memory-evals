@@ -34,9 +34,13 @@ const BUB = "$HOME/.local/bin/bub";
 async function ensureBub(sb: import("fastevals").Sandbox): Promise<void> {
   const has = await sb.runShell(`test -x $HOME/.local/bin/bub && echo yes || true`);
   if (has.stdout.includes("yes")) return;
+  // --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
+  // bub-tapestore-otel 没上 PyPI(在 bub-contrib monorepo 里),所以走 git 子目录直引。
+  const otelPlugin =
+    "bub-tapestore-otel @ git+https://github.com/bubbuild/bub-contrib.git#subdirectory=packages/bub-tapestore-otel";
   const install = await sb.runShell(
     `curl -LsSf https://astral.sh/uv/install.sh | sh && ` +
-      `${UV} tool install --python 3.12 --prerelease allow 'bub>=0.3.0a1'`,
+      `${UV} tool install --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${otelPlugin}'`,
   );
   if (install.exitCode !== 0) {
     throw new Error(`bub 安装失败:\n${(install.stdout + install.stderr).split("\n").slice(-15).join("\n")}`);
@@ -55,7 +59,9 @@ export default defineSandboxAgent({
   name: "bub",
   // compactionObservability:tape 的 "anchor" 条目就是压缩检查点(republic 用它缩短历史)。
   // shared.parseBub 目前是通用解析器,未必抠得出 anchor → compactions() 可能返回 0(自动 skip,不误判)。
-  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
+  // tracing:bub-tapestore-otel 插件把 tape 装饰成 OpenTelemetry span(invoke_agent / agent.step /
+  //  chat / execute_tool),经标准 OTEL_EXPORTER_OTLP_TRACES_* env 导出 → view 里看瀑布图。
+  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true, tracing: true },
 
   // ── agent lifecycle:装 uv + bub,每个沙箱一次(不在 send 里)。──
   async setup(sb) {
@@ -77,6 +83,15 @@ export default defineSandboxAgent({
       ...auth(),
       BUB_MODEL: `openai:${model}`, // provider:model_id;openai 前缀走 BUB_API_BASE 代理
       BUB_HOME,
+      // OTLP traces:只在运行器给了端点时开。bub(Python)的 HTTP 出口只有 protobuf,
+      // 走标准 OTEL env;端点要带 /v1/traces 全路径,宿主接收器同时认 protobuf。
+      ...(ctx.telemetry?.endpoint
+        ? {
+            BUB_TAPESTORE_OTEL_ENABLED: "true",
+            OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ctx.telemetry.endpoint,
+            OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: "http/protobuf",
+          }
+        : {}),
     };
     const escaped = input.text.replace(/'/g, "'\\''");
     // stream: true → bub 的 stdout tee 进容器主日志(`docker logs` 可见)。

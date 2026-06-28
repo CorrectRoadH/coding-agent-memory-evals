@@ -24,7 +24,9 @@ export default defineSandboxAgent({
   // compactionObservability:codex 的 `codex exec --json` stdout 流【不暴露】压缩/摘要事件
   //(压缩只在 ~/.codex/sessions 的 rollout 文件里、且 exec 模式覆盖不全)。所以解析 stdout 时
   //  t.transcript.compactions() 恒为 0 → 长程压缩类 eval 自动 skip(不误判 agent 挂)。
-  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
+  // tracing:codex 经 OpenTelemetry 导出 OTLP traces(config.toml 的 [otel.trace_exporter]),
+  //  运行器起本机接收器、把端点经 ctx.telemetry.endpoint 给到 setup → 跑完 view 里看瀑布图。
+  capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true, tracing: true },
 
   // ── agent lifecycle:装 CLI + 写 config.toml,每个沙箱一次(不在 send 里)。──
   // model/effort/base 在一条 eval 内都不变(来自 ctx),所以写一次就够 —— 这也正是为什么
@@ -35,6 +37,20 @@ export default defineSandboxAgent({
     const model = ctx.model ?? "gpt-5.4"; // 模型来自实验(ctx.model);无则兜底
     const effort = (ctx.flags.effort as string | undefined) ?? "medium"; // 读实验 feature flag
     const base = proxyBase();
+
+    // OTLP traces:只在运行器给了端点时开。protocol="json" → 宿主接收器免 protobuf 解析;
+    // 只导出 traces(logs/metrics 关掉,且 codex exec 本就不发 metrics)。端点要带 /v1/traces 全路径。
+    // 注:[otel.trace_exporter.otlp-http] 是子表,必须放在所有上层表之后,所以拼在末尾。
+    const otel = ctx.telemetry?.endpoint
+      ? `\n[otel]\n` +
+        `environment = "fastevals"\n` +
+        `exporter = "none"\n` +
+        `metrics_exporter = "none"\n\n` +
+        `[otel.trace_exporter.otlp-http]\n` +
+        `endpoint = "${ctx.telemetry.endpoint}"\n` +
+        `protocol = "json"\n`
+      : "";
+
     if (base) {
       // wire_api="responses" → codex 调 {base_url}/responses,匹配代理的 /v1/responses。
       // key 经 env_key(CODEX_API_KEY)注入,因此【不跑 codex login】。
@@ -48,11 +64,12 @@ export default defineSandboxAgent({
           `name = "s2a"\n` +
           `base_url = "${base}"\n` +
           `env_key = "CODEX_API_KEY"\n` +
-          `wire_api = "responses"\n`,
+          `wire_api = "responses"\n` +
+          otel,
       );
     } else {
       // 无代理:回落到 OpenAI 官方(需要 OPENAI_API_KEY / codex login)。
-      await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n`);
+      await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n${otel}`);
     }
   },
 

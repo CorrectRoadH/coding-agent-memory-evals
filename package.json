@@ -6,7 +6,7 @@
   "description": "用 fastevals 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
   "scripts": {
     "list": "fastevals list",
-    "smoke": "fastevals exp dev memory/multi-session-synthesis",
+    "smoke": "fastevals exp dev memory/agent-029-use-cache-directive",
     "dev": "fastevals exp dev",
     "compare": "fastevals exp compare",
     "codex": "fastevals --agent codex",

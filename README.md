@@ -34,20 +34,19 @@
 
 ---
 
-## 3 条 eval(各极具代表性)+ 怎么验
+## 3 条 eval(当前实现)+ 怎么验
 
-从早期 10 条压到 3 条:每条代表一个**不可再约的记忆能力**,且**刻意覆盖两种 regime**(2 长程压缩 + 1 跨会话)。
-被砍掉的 7 条不丢——失败模式 + 任务 + 验收都留在 [`docs/benchmarks.md`](docs/benchmarks.md) 的候选池里。
-`id` 由路径推导(`…/knowledge-update.eval.ts` → `memory/knowledge-update`)。
+当前这版先把 3 条 `next-evals-oss` 任务搬进 fastevals,用于检查我们的 TS DSL 能否覆盖真实 Next eval 的验收表达。
+它们暂时保持 next-evals 的单轮任务形状,还没有改写成长程 / 跨会话剧本;下一步可以再把这些场景包装成记忆题。
+`id` 由路径推导(`…/use-cache-directive.eval.ts` → `memory/use-cache-directive`)。
 
-| # | eval | 记忆能力 | 遗忘机制 | 任务(next-oss 场景) | 怎么验 |
-|---|---|---|---|---|---|
-| 1 | `retention-through-compaction` | 信息保持 | 🌀 长程压缩(单会话) | 早期定「金额一律整数分 cents、禁浮点」,连做 ~12 个无关真实功能(触发多次压缩),最后给购物车加合计 | ✅合计用整数分、`notInDiff(/parseFloat\|toFixed\(2\)\|\.\d{2}\b/)`、build 过 · 🧪守卫 `t.transcript.compactions()≥2`,不足则 skip(测试无效,非 agent 挂) |
-| 2 | `knowledge-update` | 更新 / 抗陈旧 · 压过模型先验 | 🌀 长程压缩 | **agent-031**:早讲「用 `proxy.ts` 弃 `middleware.ts`」,做一串真实活(压缩),最后加中间件 | ✅写进 `proxy.ts`、`notInDiff(/middleware\.ts/)`、`notCalledTool` 建 middleware.ts · 🧪决定与模型先验相反+盘上无可抄、守卫 `t.transcript.compactions()≥1`(不足则 skip) |
-| 3 | `multi-session-synthesis` | 多源综合 / multi-hop | 🚪 跨会话(唯一一条) | 异步 `cookies()`(会A)+ cookie 名 `sid`(会B)→ 会C 写 `getCurrentUser` 合成 | ✅`t.file` 同含 `await cookies()`+`'sid'`、agent-judge 查真接线 · 🧪两条决定分散两会话、会C 都不在上下文 |
+| # | eval | 来源 | 任务 | 怎么验 |
+|---|---|---|---|---|
+| 1 | `app-router-migration-hard` | `agent-030` | 把复杂 Pages Router 应用迁到 App Router | ✅最终文件树包含 `app/layout.tsx`、页面、route handlers、error/not-found;旧 API(`getServerSideProps`/`getStaticProps`/`next/head`/`next/router`)缺席;`build` 过 |
+| 2 | `use-cache-directive` | `agent-029` | 读多写少的商品目录使用 `use cache` + `cacheTag("products")`,同步动作走 eventual consistency | ✅源码树含 `use cache`、`cacheTag("products")`、`getAllProducts`;表单触发 inline Server Action;用 `revalidateTag("products", profile)`,不用 `updateTag`;`build` 过 |
+| 3 | `updatetag-cache` | `agent-037` | 创建 post 后必须 read-your-own-writes,不能给用户 stale cache | ✅Server Action 中导入并调用 `updateTag`;不要退回只用 `revalidateTag`;包含创建 post/form 逻辑;`build` 过 |
 
-**横切验证**:tape on/off 配对 delta 是头号信号;报 pass^k;每条都断言「错误答案缺席」;
-长程类用守卫 `t.transcript.compactions()≥N` 确认真压缩过(不足或不可观测则 skip,不误判);tape 是否在发力,看 compare 组里 bub(tape)对 codex 的差异。
+**当前暴露的 DSL 需求**:next-evals 的验收经常要“扫描整个源码树”,所以这版在 `evals/memory/source-helpers.ts` 里临时用 `t.sandbox` 手写了源码遍历。后续 fastevals 可能需要更高层的 `t.sourceFiles()` / `t.source()` API。
 
 ---
 
@@ -61,7 +60,7 @@
    `t.judge.agent(rubric)` 派一个独立评判 agent,给它**只读** sandbox 工具(list / read / grep),让它通读真实项目状态再给 0–1 分
    (借鉴 fastevals 失败分类器「给小模型只读探索工具」的做法)。它是 soft 质量分,硬断言仍当 gate——两层叠着用:gate 兜底正确性,agent-judge 抓全局漂移。
 2. **断言「错误答案的缺席」,不止「正确答案的存在」。** 这是 next-evals-oss 的签名招式,也是反作弊的命门:
-   `knowledge-update` 的真正考点是 `t.notInDiff(/middleware\.ts/)`,`retention-through-compaction` 的是「合计里没有浮点表示钱」。
+   `use-cache-directive` 要求 eventual refresh 场景不用 `updateTag`;`app-router-migration-hard` 要求旧 Pages Router API 缺席。
 3. **行动轨 + 元数据守卫,不去探「检索轨」。** 早期想学 LongMemEval 把「检索到了吗」与「答对了吗」拆开,
    假设了 `t.memory.recalled(/…/)`——但 coding agent **没有一个 agent 无关、被陈述的事实会落地的可查记忆**:
    claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置,只有 bub 的 tape 是私有持久记忆。
@@ -101,7 +100,7 @@ fastevals view          # 并列看通过率 / pass^k / 质量×成本
 
 - 两边**同模型(gpt-5.4)、同一批记忆 eval**,差异就落在 agent 与其记忆机制上。bub(tape)在记忆题上若**稳定高于** codex,就是 tape 价值的证据。
 - 报 **pass^k**(`runs≥5 + earlyExit:false`):记忆要的是稳定复现,不是偶尔蒙对。
-- **想要更硬的因果证据(tape 自身的净贡献)**:bub channel 留了 `noTape` 旗标,可临时跑一次「bub 关 tape」做 within-bub 的 A/B(`--flag noTape`),delta 即 tape 净贡献。本套件默认不把它作为常驻实验,保持实验集精简。
+- **想要更硬的因果证据(tape 自身的净贡献)**:应做 within-bub 的 memory-store A/B。真实 bub 没有内置 `noTape` 旗标,需要通过插件或 adapter 配置替换成 in-memory store。
 
 ---
 
@@ -113,12 +112,16 @@ coding-agent-memory-evals/
 ├─ agents/                      # 三个 coding agent 的 adapter(沙箱型,示意为主)
 │  ├─ claude-code.ts            #   都只填 5 个 per-agent 差异点,其余复用 shared
 │  ├─ codex.ts
-│  └─ bub.ts                    #   多一个 noTape 旗标,供消融实验关掉 tape
-├─ workspaces/next-app/         # 工作项目:最小 Next.js App Router 应用(承载 next-oss 风格的真实开发)
-├─ evals/memory/                # 3 条 eval(见上表);无任何合成填充层
-│  ├─ retention-through-compaction.eval.ts   # 🌀 长程压缩:精确约束熬过多次压缩
-│  ├─ knowledge-update.eval.ts               # 🌀 长程压缩:proxy.ts 取代 middleware.ts、压过先验
-│  └─ multi-session-synthesis.eval.ts        # 🚪 跨会话:两源合成
+│  └─ bub.ts                    #   PyPI bub adapter,读取 tape transcript
+├─ workspaces/                  # 每条 eval 自己的 starter repo
+│  ├─ agent-030-app-router-migration-hard/
+│  ├─ agent-029-use-cache-directive/
+│  └─ agent-037-updatetag-cache/
+├─ evals/memory/                # 3 条当前 eval(从 next-evals-oss 搬入)
+│  ├─ app-router-migration-hard.eval.ts
+│  ├─ use-cache-directive.eval.ts
+│  ├─ updatetag-cache.eval.ts
+│  └─ source-helpers.ts         # 临时源码树扫描 helper
 └─ experiments/compare/         # 唯一一组可对比实验:bub-gpt-5.4 vs codex-gpt-5.4(见上一节)
 ```
 
@@ -129,7 +132,7 @@ coding-agent-memory-evals/
 
 ```sh
 fastevals exp compare                    # 跑整组实验(bub vs codex)
-fastevals --agent bub memory/retention   # 临时:只跑 id 以 memory/retention 开头的
+fastevals --agent codex memory/use-cache-directive   # 临时:只跑一条 eval
 fastevals view                           # 事后看图
 ```
 
@@ -142,27 +145,18 @@ fastevals view                           # 事后看图
   装 codex CLI、走 `.env` 里的 s2a 代理(`wire_api=responses`,gpt-5.4)跑多轮 / `codex exec resume` 续接、采 `git diff`、
   跑 `next build`、用 judge 打分、出判决。下面 DX 反馈里列的便利层(`t.transcript.compactions()` / `t.file` /
   可查询 `t.diff` / `notCalledTool(opts)` / `t.judge.agent` / 标准会话语义 / 文件夹分组)**都已在 fastevals 实现**。
-- **实测结果 —— 核心对照已跑出来(bub ✓ vs codex ✗)**。同一条 `multi-session-synthesis`、同模型:
-
-  | agent | gpt-5.4 | gpt-5.4-mini(dev) | 为什么 |
-  |---|---|---|---|
-  | **codex** | ✗ failed | ✗ failed | 无持久存储,`newSession` = 新 thread,记不起只在会话 B【对话】里说过的 `'sid'`(盘上没有) |
-  | **bub** | ✓ **passed** | ✓ **passed** | **tape 跨 `newSession` 持续**(整条 eval 共用一个 tape)→ 会话 C 记起 `'sid'` 并写对 |
-
-  这正是本套件存在的意义——*「bub 换上 tape 记忆机制后效果有没有变好?」*——给出了**可区分**的答案。在 gpt-5.4-mini 上整组对照只花 **~$0.04 / ~100s**(便宜模型复现同一结论,见「分层跑法」)。
-  - `knowledge-update` / `retention-through-compaction`(长程压缩)对 **codex** → **skipped**:`codex exec --json` 的 stdout 不暴露压缩事件,`t.transcript.compactions()` 恒为 0 → 守卫 `skip`(诚实,不误判)。对 **bub** 默认也多半 `skip`:bub 是**全量重放**(每轮重载整条 tape,不自动 `tape.handoff`),所以「压缩」本就没发生——`t.transcript.compactions()` 现在能读出 handoff anchor 数,但模型没触发就如实记 0。两条都**正确跑通**、只是判为「测试无效」。
-- **分层跑法(便宜验证 / 贵出结果)**:`experiments/dev/`(`gpt-5.4-mini`)用来**开发期快速跑通**——便宜、快;`experiments/compare/`(`gpt-5.4`)出**正式数字**。bub 全量重放让长程题 token 随轮数滚雪球(单轮可达数十万 tok),所以最省的验证是 `fastevals exp dev memory/multi-session-synthesis`(3 轮即复现核心对照)。
+- **当前实测状态**:这版刚把 `agent-030` / `agent-029` / `agent-037` 搬成 fastevals TS 写法,已通过 `fastevals list` 加载检查;正式 agent 运行结果待跑。
+- **分层跑法(便宜验证 / 贵出结果)**:`experiments/dev/`(`gpt-5.4-mini`)用来**开发期快速跑通**——便宜、快;`experiments/compare/`(`gpt-5.4`)出**正式数字**。dev 组现在只跑 `memory/use-cache-directive`。
 - **judge 模型**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),judge 用代理上的 `gpt-5.4-mini`(`fastevals.config.ts` 已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
 - **bub 现实校正(已接通)**:bub **不是** npm `@bub/cli`,而是 PyPI 的 `bub`(alpha,Python 3.12,hook-first,github.com/bubbuild/bub;tape = republic 审计轨)。`agents/bub.ts` 按**真实形状**实现并跑通:uv 免 root 装、`bub run "<prompt>" --session-id`、`BUB_MODEL=openai:<m>` + `BUB_API_BASE/KEY`、tape 读自绝对路径 `/home/node/.bub/tapes/<md5(ws)__md5(sess)>.jsonl`。**bub 无任何跨 tape 记忆**(查证源码),所以「跨会话记忆」靠整条 eval 共用一个 tape 实现;`BUB_TAPE_DISABLED` 在真实 bub 里不存在(tape 总是开,只能用插件换 in-memory store)。
-- `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
-  bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
+- `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径仍需要随真实 CLI 演进校正;真实 bub 没有 `BUB_TAPE_DISABLED`,tape-off 消融需要 adapter 层另接 in-memory store。
 - **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
   codex 按 [config-advanced](https://developers.openai.com/codex/config-advanced) 配成自定义 `model_provider`
   (`wire_api = "responses"` → 打到 `{base}/responses`),由 `agents/codex.ts` 在每次 send 时写进 `~/.codex/config.toml`
   ——**不放实验的 `setup`**,因为 adapter 每次都会重写该文件、会盖掉 setup。base_url/key 属 adapter 本地配,model 仍由实验 `ctx.model` 给。
 - **承载点放在【盘上看不到】的决定上,而不是靠塞满上下文**:这样即便会话不长也是真记忆题(代码里推不出答案)。
   长程压缩类的会话要足够长才会触发压缩——轮数按模型上下文调,并用守卫 `t.transcript.compactions()≥N` 确认「真的压缩过」(不足则 skip)。
-  默认实验是 bub(tape)对 codex 的同模型对比;想要 tape 自身净贡献的硬证据,可用 bub channel 的 `noTape` 旗标临时做 within-bub A/B。
+  当前三条先保持 next-evals 的单轮形状,用于验证 DSL 覆盖面;真正的 tape 净贡献实验需要另做 within-bub memory-store A/B。
 
 ---
 
@@ -174,7 +168,7 @@ fastevals view                           # 事后看图
 2. **「agent 无关」的 eval 很值。** 一份 memory 用例,`--agent` 一换就测三个;写 eval 时完全不用想被测的是谁。
 3. **gate / soft 分得清。** 行为类断言(`calledTool`、`notInDiff`)天然是 gate,质量类(`judge.closedQA`)天然是 soft。
 4. **judge 写法自然。** `t.judge.closedQA("…", { on: ack.message }).atLeast(0.7)` 一行就把「确认语气」这种说不清的判断交出去了。
-5. **配置归属清晰,agent 可复用。** 同一个 bub adapter,既能在 `compare/` 里默认 tape-on 跑,也能用 `noTape` 旗标临时关掉做 A/B,没改一行 agent。
+5. **配置归属清晰,agent 可复用。** 同一个 bub adapter 可在 `compare/` 与 `dev/` 复用;如果要做 tape-off 消融,应在 adapter / memory store 层显式建一个实验条件。
 6. **「文件夹 = 可对比组」很顺手。** experiment 按文件夹分组、一文件一配置(`<agent>-<model>-<feature>`),「哪些该并排比」直接由目录结构表达,比「一个文件塞数组」更说得清意图;配对 A/B(只差一行 flag)尤其清爽。
 
 ### 试出来的缺口 / 待定 ⚠️(给 fastevals 的需求)
