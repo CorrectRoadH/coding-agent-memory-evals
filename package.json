@@ -5,13 +5,7 @@
   "type": "module",
   "description": "用 fastevals 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
   "scripts": {
-    "ablation": "fastevals exp tape-ablation",
-    "ablation:off": "fastevals exp tape-off",
-    "compare": "fastevals exp compare-agents",
-    "smoke": "fastevals exp claude-smoke",
-    "eval:claude": "fastevals --agent claude-code",
-    "eval:codex": "fastevals --agent codex",
-    "eval:bub": "fastevals --agent bub",
+    "compare": "fastevals exp compare",
     "view": "fastevals view"
   },
   "devDependencies": {

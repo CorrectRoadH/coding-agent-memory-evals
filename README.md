@@ -9,47 +9,45 @@
 
 ---
 
-## 核心论点:记忆的承载点必须在【代码看不到的地方】
+## 核心论点
 
-很多「记忆 eval」是**第 1 轮立约定 → 第 2 轮就用**。这测不出记忆——约定还躺在上文里,没记忆机制的 agent 也能过。
-我一开始的修法是在中间塞「干扰轮」凑长度(gap),但那是**合成填充**,不是真实开发,也不对味。
+### 一、记忆有两种遗忘,两种都要测
 
-真正的关键是另一件事:**让后面那一步依赖一个「代码里看不到、只存在记忆里」的决定。**
+记忆不是只有「多会话」。它有两种 regime,这套件**刻意都覆盖**(而且重心放在更被低估的前者):
 
-- next-evals-oss 那类任务是单轮的「跟随现有写法」——而「跟随现有写法」恰恰是**从代码重新推导**:
-  agent 读一眼盘上的文件就知道该怎么写,根本不用记。**能从代码推导出来的,就不是记忆题。**
-  所以它的 prompt 不能直接拿来用,但**它的场景是金矿**:每个都是「项目该用现代写法、模型先验却偏向过时写法」
-  (Server Component vs `useEffect` 拉数据、`proxy.ts` vs `middleware.ts`、异步 `cookies()`、`revalidate` 缓存、App vs Pages Router…)。
-  我们把这个「该用哪种写法」当成**项目决定**植入,再跨会话考它——于是 next-oss 的判断题变成了记忆题。
-- 所以这套件每条 eval 都是**一次真实的多轮 Next.js 开发**,跨一个**真实的会话边界**
-  (`t.newSession()`,就是「第二天接着做」),而探测点钉在一个盘上找不到的事实上:
-  **计划里还没做的部分、被推翻的旧选择、说过但还没写进代码的规范、密钥的归属地、从没定过的值。**
-- 这同时也是 tape on/off 能拉开差距的原因:**关了 tape 的 bub 能读盘上的文件,却读不到只在记忆里的决定。**
-  要是承载点能从代码推出来,tape-off 也能过,delta 归零——既测不出记忆、也测不出 tape。
+- 🌀 **长程压缩(单会话)** —— 会话太长,上下文被**反复压缩 / 摘要**;一条早早定下的决定,得熬过这一次次压缩、在很后面被需要时还在。对 bub 来说这直接考 **tape 的 anchor(压缩检查点)**:压缩时把关键约束留下了吗?
+- 🚪 **跨会话** —— `t.newSession()` 上下文清零,只有**落盘的持久记忆(tape handoff)**能跨过来。
 
-> 不再用合成 gap;**真实会话边界**就是天然的「缺口」——它保证植入的事实确已离开上下文,且本身就是真实开发的一部分。
+> 早期版本几乎全用 `newSession`,漏掉了「长程压缩」这一半。现在 3 条里 **2 条是长程压缩、1 条是跨会话**。
 
-这和 [LongMemEval](https://arxiv.org/abs/2410.10813) 把证据埋进真实对话、并测「abstention(没说过就别编)」是同一套思路。
+### 二、承载点必须在【代码看不到的地方】
+
+无论哪种 regime,要真考记忆(而不是「读代码重新推导」),探测点必须钉在一个**只在记忆里、盘上看不到**的事实上:
+**被推翻的旧决定、说过但还没写进代码的规范、计划里还没做的部分、从没定过的值。**
+
+- 能从盘上的代码推出来的,关了记忆的 agent 也能读盘推出来 → tape on/off 的 **delta 归零** → 既测不出记忆、也测不出 tape。
+- next-evals-oss 那类任务是单轮的「跟随现有写法」=**从代码重新推导**,所以它的 prompt 不能直接用——
+  但**它的场景是金矿**:每个都是「项目该用现代写法、模型先验却偏过时」(`proxy.ts` vs `middleware.ts`、Server Component vs `useEffect`…)。
+  把「该用哪种写法」当成**项目决定**植入,再让它**熬过压缩 / 跨会话**,next-oss 的判断题就成了记忆题。
+
+这和 [LongMemEval](https://arxiv.org/abs/2410.10813) 把证据埋进真实对话是同一套思路;长程那一半也对应 Anthropic 讲的「压缩要留住关键约束」。
 
 ---
 
-## 10 条 eval,按记忆失败模式划分
+## 3 条 eval(各极具代表性)+ 怎么验
 
-每条对准一个**不同的**失败模式(分类骨架来自 LongMemEval 的五维 + 长上下文 + 持久化扩展),
-建在一个真实的 **next-oss 场景**上,跨真实会话边界。`id` 由路径推导(`…/knowledge-update.eval.ts` → `memory/knowledge-update`)。
+从早期 10 条压到 3 条:每条代表一个**不可再约的记忆能力**,且**刻意覆盖两种 regime**(2 长程压缩 + 1 跨会话)。
+被砍掉的 7 条不丢——失败模式 + 任务 + 验收都留在 [`docs/benchmarks.md`](docs/benchmarks.md) 的候选池里。
+`id` 由路径推导(`…/knowledge-update.eval.ts` → `memory/knowledge-update`)。
 
-| eval | 失败模式 | next-oss 场景 / 真实任务 | 记忆承载点(盘上看不到) | 怎么判 |
-|---|---|---|---|---|
-| `cross-session-persistence` | 跨会话续作 | 按计划建 5 个 App Router 页面,做 3 个→新会话续作 | 计划里【还没做的那两个】 | 正好补 release-notes/press-kit、不重做、不误判完工 |
-| `deferred-spec-recall` | 精确规范延后落地 | fetch 缓存策略;先搭骨架、配置下次加 | 说过但【还没写进代码】的 revalidate 3600 / tags['catalog'] | 新会话补的配置用 3600+catalog,无别的默认值 |
-| `knowledge-update` | 旧值被取代 · 压过模型先验 | **agent-031**:Next 16 `proxy.ts` vs 旧 `middleware.ts` | 「用 proxy.ts、弃 middleware.ts」的决定(与模型先验相反) | 中间件写进 `proxy.ts`,**绝不新建 `middleware.ts`** |
-| `temporal-reasoning` | 决策先后 | 路由选型演变(Pages→App Router)→新会话写 ADR | 决策的【历史与顺序】(代码只反映当前) | ADR 写对「先 Pages、后 App Router」 |
-| `recall-under-interference` | 干扰下精确检索 | 登记 4 条相似 per-route 渲染配置→新会话接其一 | 那张【还没落地】的渲染配置登记表 | 博客页用 `revalidate=3600`,不串到 60/force-* |
-| `abstention` | 拒答 / 不编造 | 建商品页→新会话设「之前定的」ISR revalidate | 一个【从没定过】的秒数 | 承认没定过、请求澄清,**不编数值** |
-| `convention-applied-in-diff` | 复述≠落地 · 无先例 | **agent-021**:Server Component + async/await vs `useEffect` 拉数据 | 这条约定(无代码先例、与模型先验相反) | **看产出**:async/await 在、`'use client'`/`useEffect`/`useState` 不在 |
-| `multi-session-synthesis` | 多会话综合 | 异步 `cookies()`(会A)+ cookie 名 `sid`(会B)→会C 合成 | 分散两会话、都【没接线】的两条决定 | `getCurrentUser` 用 `await cookies()` 读 `'sid'` |
-| `selective-forgetting-scope` | 范围辨别 · 不过度泛化 | 全局迁 App Router + `/admin` 留 Pages 的豁免 | 规矩的【适用范围】(盘上看不出规矩存在) | `/dashboard` 进 app/、`/admin` 仍留 pages/、不被迁走 |
-| `private-memory-stays-private` | 私密 · 记来源不泄露 | 密钥规矩(禁 `NEXT_PUBLIC_` 装密钥)+1Password→写带 key 的 server action | 密钥归属地 1Password(永不进盘) | 从服务端 env 取、点名 1Password;**明文 / `NEXT_PUBLIC_` 密钥绝不进 diff** |
+| # | eval | 记忆能力 | 遗忘机制 | 任务(next-oss 场景) | 怎么验 |
+|---|---|---|---|---|---|
+| 1 | `retention-through-compaction` | 信息保持 | 🌀 长程压缩(单会话) | 早期定「金额一律整数分 cents、禁浮点」,连做 ~12 个无关真实功能(触发多次压缩),最后给购物车加合计 | ✅合计用整数分、`notInDiff(/parseFloat\|toFixed\(2\)\|\.\d{2}\b/)`、build 过 · 🔍`t.memory.recalled(/cents/)` · 🧪`t.memory.compactions()≥2`(确实压缩过) |
+| 2 | `knowledge-update` | 更新 / 抗陈旧 · 压过模型先验 | 🌀 长程压缩 | **agent-031**:早讲「用 `proxy.ts` 弃 `middleware.ts`」,做一串真实活(压缩),最后加中间件 | ✅写进 `proxy.ts`、`notInDiff(/middleware\.ts/)`、`notCalledTool` 建 middleware.ts · 🧪决定与模型先验相反+盘上无可抄、`compactions()≥1` |
+| 3 | `multi-session-synthesis` | 多源综合 / multi-hop | 🚪 跨会话(唯一一条) | 异步 `cookies()`(会A)+ cookie 名 `sid`(会B)→ 会C 写 `getCurrentUser` 合成 | ✅`t.file` 同含 `await cookies()`+`'sid'`、agent-judge 查真接线 · 🧪两条决定分散两会话、会C 都不在上下文 |
+
+**横切验证**:tape on/off 配对 delta 是头号信号;报 pass^k;检索轨(`recalled`)与行动轨(diff)分开;每条都断言「错误答案缺席」;
+长程类用 `t.memory.compactions()≥N` 证明真压缩过;tape 是否在发力,看 compare 组里 bub(tape)对 codex 的差异。
 
 ---
 
@@ -63,40 +61,44 @@
    `t.judge.agent(rubric)` 派一个独立评判 agent,给它**只读** sandbox 工具(list / read / grep),让它通读真实项目状态再给 0–1 分
    (借鉴 fastevals 失败分类器「给小模型只读探索工具」的做法)。它是 soft 质量分,硬断言仍当 gate——两层叠着用:gate 兜底正确性,agent-judge 抓全局漂移。
 2. **断言「错误答案的缺席」,不止「正确答案的存在」。** 这是 next-evals-oss 的签名招式,也是反作弊的命门:
-   `knowledge-update` 的真正考点是 `t.notInDiff(/date-fns/)`,`convention-applied-in-diff` 的是「新文件里没有 `export default`」。
-3. **检索 vs 行动,两轨分开。** 像 LongMemEval 把「检索到了吗」和「答对了吗」拆开:
-   `t.memory.recalled(...)` 查事实是否真进了持久记忆(检索轨),diff 断言查产出的代码是否照做(行动轨)。
-   失败时能归因:到底是没记住,还是记住了没用上。
+   `knowledge-update` 的真正考点是 `t.notInDiff(/middleware\.ts/)`,`retention-through-compaction` 的是「合计里没有浮点表示钱」。
+3. **检索 / 行动 / 元数据,三轨分开。** 像 LongMemEval 把「检索到了吗」和「答对了吗」拆开:
+   `t.memory.recalled(...)` 查事实是否真进了持久记忆(检索轨),diff 断言查产出的代码是否照做(行动轨);
+   长程类再加一条元数据轨 `t.memory.compactions()≥N` —— 证明这一会话**真的压缩过**,否则它就不算「长程压缩」题。
+   失败时能归因:没记住 / 记住了没用上 / 根本没触发压缩。
 4. **报 pass^k,不报 pass@k。** 对标 τ-bench:`runs≥5 + earlyExit:false` 取完整分布。
    pass^k(k 次独立运行【全过】的概率)随 k **下降**,奖励的是**稳定复现**召回——这才是记忆机制该被衡量的样子。
    pass@k 会奖励「跑得多总有一次蒙对」,对记忆是错的指标。
 
 ---
 
-## 怎么验证 tape 真的有用:消融 A/B
+## 实验怎么组织:一个文件夹 = 一组可对比的实验
 
-光看「bub 通过率高不高」不够——分不清是模型本身强,还是 tape 在起作用。
-所以做**配对消融**(对标 next-evals-oss 的 `<model>` vs `<model>--agents-md` delta):
+eval(测什么)和 experiment(怎么跑)分开。experiment 的组织借了 next-evals-oss 的「一条件一文件」,
+并用**文件夹**把「可比性」显式化:
+
+```
+experiments/
+└─ compare/                  # 唯一一组可对比实验:同一模型下 bub vs codex
+   ├─ bub-gpt-5.4.ts         #   单一配置,文件名 = <agent>-<model>;bub 默认 tape 开
+   └─ codex-gpt-5.4.ts
+```
+
+- **文件夹 = 一组可对比的实验**;**同一文件夹下的文件才互相对比**。`fastevals exp compare` 跑整组。
+- **文件 = 单一配置**,文件名按 `<agent>-<model>` 命名。两个配置钉**同一个模型(gpt-5.4)**,差异才干净地归因到 agent / 记忆机制。
+- 为什么不用「一个文件里 `agent: [数组]` 扇出」?——**文件夹把「这一组就是要被并排比较的」这层语义说清楚了**
+  (next-oss 的「一条件一文件」也是这个思路);数组扇出适合随手扫,但表达不了「可比性」。
+
+### 验证 tape 真的有用
 
 ```sh
-fastevals exp tape-ablation   # treatment:bub 开 tape + claude-code/codex 参照
-fastevals exp tape-off        # floor:同一批 eval,bub 关掉 tape(flags.noTape)
-fastevals view                # 并列看通过率 / pass^k / 质量×成本
+fastevals exp compare   # 同模型下 bub(带 tape)vs codex(无对应持久记忆机制)
+fastevals view          # 并列看通过率 / pass^k / 质量×成本
 ```
 
-逐 eval 相减:
-
-```
-delta(eval) = passRate(bub, tape on) − passRate(bub, tape off)
-```
-
-- **delta 大**的 eval = tape 真正在发力的地方(跨会话、长程召回)。这是 tape 的**净贡献**,且是因果证据:除 tape 外全相同。
-- **delta ≈ 0**的 eval(承载点其实能从代码推出来的)说明那条题没真考记忆——反过来帮你校准承载点设计。
-- **claude-code / codex** 是外部参照系:bub+tape 站在业界 coding agent 的什么位置。
-
-> **上限(Oracle)/ 下限(floor)的读法**:`tape-off` 是下限(零持久记忆)。要上限可在实验的 `setup` 里
-> 把植入的事实**预置**进 agent 记忆位置(免检索的理想态);Oracle 与真实运行的差,就是「检索 / 压缩」环节的损耗。
-> 本套件先落地最关键的那条因果链(下限 A/B),Oracle 作为方法记在这里。
+- 两边**同模型(gpt-5.4)、同一批记忆 eval**,差异就落在 agent 与其记忆机制上。bub(tape)在记忆题上若**稳定高于** codex,就是 tape 价值的证据。
+- 报 **pass^k**(`runs≥5 + earlyExit:false`):记忆要的是稳定复现,不是偶尔蒙对。
+- **想要更硬的因果证据(tape 自身的净贡献)**:bub channel 留了 `noTape` 旗标,可临时跑一次「bub 关 tape」做 within-bub 的 A/B(`--flag noTape`),delta 即 tape 净贡献。本套件默认不把它作为常驻实验,保持实验集精简。
 
 ---
 
@@ -110,14 +112,11 @@ coding-agent-memory-evals/
 │  ├─ codex.ts
 │  └─ bub.ts                    #   多一个 noTape 旗标,供消融实验关掉 tape
 ├─ workspaces/next-app/         # 工作项目:最小 Next.js App Router 应用(承载 next-oss 风格的真实开发)
-├─ evals/memory/                # 10 条 eval,一条一个失败模式(见上表);无任何合成填充层
-│                               #   每条 = 一次真实开发,跨 t.newSession() 的真实会话边界
-└─ experiments/                 # 运行矩阵(怎么跑),不掺评分
-   ├─ tape-ablation.experiment.ts   # ★ tape 开(treatment)+ 参照
-   ├─ tape-off.experiment.ts        # ★ tape 关(floor)—— 配对 A/B
-   ├─ compare-agents.experiment.ts  # 三 agent 质量×成本对比
-   ├─ research-mode.experiment.ts   # opus + 联网 + 严格模式(演示 model/flags)
-   └─ claude-smoke.experiment.ts    # claude 单跑冒烟
+├─ evals/memory/                # 3 条 eval(见上表);无任何合成填充层
+│  ├─ retention-through-compaction.eval.ts   # 🌀 长程压缩:精确约束熬过多次压缩
+│  ├─ knowledge-update.eval.ts               # 🌀 长程压缩:proxy.ts 取代 middleware.ts、压过先验
+│  └─ multi-session-synthesis.eval.ts        # 🚪 跨会话:两源合成
+└─ experiments/compare/         # 唯一一组可对比实验:bub-gpt-5.4 vs codex-gpt-5.4(见上一节)
 ```
 
 **eval(测什么)和 experiment(怎么跑)分开**是这套 DX 的关键:eval **agent 无关**(从不写死被测的是谁),
@@ -126,9 +125,8 @@ coding-agent-memory-evals/
 经 `ctx.flags`(agent)和 `t.flags`(eval)透传。
 
 ```sh
-fastevals exp tape-ablation              # 跑实验(推荐)
-fastevals --agent bub memory/knowledge   # 临时:只跑 id 以 memory/knowledge 开头的
-fastevals exp claude-smoke               # 快速冒烟
+fastevals exp compare                    # 跑整组实验(bub vs codex)
+fastevals --agent bub memory/retention   # 临时:只跑 id 以 memory/retention 开头的
 fastevals view                           # 事后看图
 ```
 
@@ -139,13 +137,13 @@ fastevals view                           # 事后看图
 - **fastevals 本身还没实现**(`../fastevals` 目前是设计文档)。所以这套件是「对着设计中的 DSL 写出来的、可读可评审的真实用例」,
   目的之一就是用最刁钻的多轮记忆场景去压这套 DSL,看它扛不扛得住(下面的 DX 反馈)。
 - 几个 eval 用到了 DSL 里**尚待实现**的便利层(都列在下面 DX 反馈里,这里是真用上了):
-  `t.memory.recalled(/…/)`、读 sandbox 最终文件的 `t.file(path)`、可查询的 `t.diff`、
-  `notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
+  `t.memory.recalled(/…/)`、`t.memory.compactions()`(本会话压缩了几次)、读 sandbox 最终文件的 `t.file(path)`、
+  可查询的 `t.diff`、`notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
-- **不靠「塞满上下文」来制造缺口**:每条 eval 把记忆承载点放在【盘上看不到】的决定上,再跨一个真实会话边界。
-  这样即使会话不算很长,也是真记忆题(代码里推不出答案);要更狠可以把每条的真实开发拉长到 N 步。
-  消融 A/B 也不依赖「一定塞满」——只要 tape-off 这条线确实没有跨会话记忆,delta 就成立。
+- **承载点放在【盘上看不到】的决定上,而不是靠塞满上下文**:这样即便会话不长也是真记忆题(代码里推不出答案)。
+  长程压缩类的会话要足够长才会触发压缩——轮数按模型上下文调,并用 `t.memory.compactions()≥N` 把「真的压缩过」断言出来。
+  默认实验是 bub(tape)对 codex 的同模型对比;想要 tape 自身净贡献的硬证据,可用 bub channel 的 `noTape` 旗标临时做 within-bub A/B。
 
 ---
 
@@ -157,7 +155,8 @@ fastevals view                           # 事后看图
 2. **「agent 无关」的 eval 很值。** 一份 memory 用例,`--agent` 一换就测三个;写 eval 时完全不用想被测的是谁。
 3. **gate / soft 分得清。** 行为类断言(`calledTool`、`notInDiff`)天然是 gate,质量类(`judge.closedQA`)天然是 soft。
 4. **judge 写法自然。** `t.judge.closedQA("…", { on: ack.message }).atLeast(0.7)` 一行就把「确认语气」这种说不清的判断交出去了。
-5. **配置归属清晰,agent 可复用。** 同一个 bub adapter 被 `tape-ablation` 和 `tape-off` 两个实验以不同 flags 复用,没改一行 agent —— 消融 A/B 几乎是免费的。
+5. **配置归属清晰,agent 可复用。** 同一个 bub adapter,既能在 `compare/` 里默认 tape-on 跑,也能用 `noTape` 旗标临时关掉做 A/B,没改一行 agent。
+6. **「文件夹 = 可对比组」很顺手。** experiment 按文件夹分组、一文件一配置(`<agent>-<model>-<feature>`),「哪些该并排比」直接由目录结构表达,比「一个文件塞数组」更说得清意图;配对 A/B(只差一行 flag)尤其清爽。
 
 ### 试出来的缺口 / 待定 ⚠️(给 fastevals 的需求)
 
@@ -168,8 +167,10 @@ fastevals view                           # 事后看图
 4. **`notCalledTool` 要支持 options。** 写了 `b.notCalledTool("file_write", { input: { path: /Header/ } })`,需要和 `calledTool` 对齐,也接匹配小语言。
 5. **`workspace` 字段要落到 `defineEval`。** 单条 eval 想换工作项目时需要 `defineEval({ workspace })`。
 6. **judge 要能对「整段对话」打分。** 现在只能 `{ on: 某条 message }`;memory 有时想判「整段对话里它是否始终守约定」,需要 `t.judge.transcript(...)`。
+7. **要能断言「上下文压缩」这个事件。** 长程压缩类的 eval 必须能确认「这一会话真的压缩过」,否则就退化成短会话。本套件假设了 `t.memory.compactions()`(本次运行发生的上下文压缩/anchor 次数),由各 adapter 归一化(bub = tape anchor 数)。**这是「长程压缩」regime 专属的能力位**。
+8. **experiment 应支持「文件夹分组」。** 约定 `experiments/<组>/<配置>.ts`,`fastevals exp <组>` 跑整组、同组互为对照。`defineExperiment` 仍可用 `agent: [数组]` 扇出,但「可比性」交给目录表达更清楚。
 
-> 结论:多轮记忆这个最刁钻的场景,**核心的 `t.send` / `judge` / `calledTool` / diff 完全扛得住**;真正缺的是三块 memory 专属便利层——归一化记忆探针、可查询 diff、标准化会话语义。补上这三块,memory 评测就完全顺了。
+> 结论:多轮记忆这个最刁钻的场景,**核心的 `t.send` / `judge` / `calledTool` / diff 完全扛得住**;真正缺的是几块 memory 专属便利层——归一化记忆探针(含 `compactions()`)、可查询 diff、能进 sandbox 的 agent-judge、标准化会话语义。补上这些,memory 评测就完全顺了。
 
 ## 参考
 
