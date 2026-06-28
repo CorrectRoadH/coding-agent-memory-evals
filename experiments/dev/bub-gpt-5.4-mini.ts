@@ -11,6 +11,8 @@ export default defineExperiment({
   agent: "bub",
   model: "gpt-5.4-mini", // → ctx.model → agents/bub.ts 的 BUB_MODEL=openai:gpt-5.4-mini
   sandbox: "docker",
+  // 锁在便宜那条:bub 全量重放,长程压缩题 token 滚雪球,dev 期只跑 multi-session。
+  evals: ["memory/multi-session-synthesis"],
   runs: 1,
   earlyExit: true,
   budget: 2,

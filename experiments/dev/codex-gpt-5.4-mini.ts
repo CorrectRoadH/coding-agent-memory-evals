@@ -11,6 +11,9 @@ export default defineExperiment({
   agent: "codex",
   model: "gpt-5.4-mini", // → ctx.model → agents/codex.ts 写进 ~/.codex/config.toml
   sandbox: "docker",
+  // 把 dev 锁在便宜那条上:跨会话综合(3 轮),复现 bub✓/codex✗ 又不烧长程压缩题的钱。
+  // 想 dev-跑别的就把 id 加进这个数组(或临时 `fastevals --agent codex <id>` 绕过实验)。
+  evals: ["memory/multi-session-synthesis"],
   runs: 1,
   earlyExit: true,
   budget: 2, // 估算成本上限 $2,超了停止派发(避免烧爆)
