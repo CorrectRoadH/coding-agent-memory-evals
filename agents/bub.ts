@@ -19,6 +19,7 @@ import { createHash } from "node:crypto";
 // ───────────────────────────────────────────────────────────────────────────
 
 const SANDBOX_WORKSPACE = "/home/sandbox/workspace"; // = docker 沙箱 CWD
+const BUB_HOME = "/home/node/.bub"; // 绝对路径:sb.readFile 走 `cat <arg>`(不过 shell),~ 不会展开
 
 // 本地配:走同一个 OpenAI 兼容代理(.env 的 BUB_API_BASE / BUB_API_KEY)。
 const auth = () => ({
@@ -43,10 +44,11 @@ async function ensureBub(sb: import("fastevals").Sandbox): Promise<void> {
 }
 
 // tape 文件名:md5(resolve(workspace))[:16] + "__" + md5(session_id)[:16](见 bub src/bub/builtin/tape.py)。
+// 返回绝对路径(BUB_HOME/tapes/...),否则 sb.readFile 的 `cat ~/...` 读不到。
 function tapePath(workspace: string, sessionId: string): string {
   const w = createHash("md5").update(workspace).digest("hex").slice(0, 16);
   const s = createHash("md5").update(sessionId).digest("hex").slice(0, 16);
-  return `~/.bub/tapes/${w}__${s}.jsonl`;
+  return `${BUB_HOME}/tapes/${w}__${s}.jsonl`;
 }
 
 export default defineSandboxAgent({
@@ -70,7 +72,7 @@ export default defineSandboxAgent({
     const env = {
       ...auth(),
       BUB_MODEL: `openai:${model}`, // provider:model_id;openai 前缀走 BUB_API_BASE 代理
-      BUB_HOME: "/home/node/.bub",
+      BUB_HOME,
     };
     const escaped = input.text.replace(/'/g, "'\\''");
     const res = await sb.runShell(
