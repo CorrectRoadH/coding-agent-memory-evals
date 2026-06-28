@@ -11,8 +11,11 @@ import { defineSandboxAgent, shared, requireEnv, type StreamEvent } from "fastev
 // ⚠️ 仅示意,未必真能跑。
 // ───────────────────────────────────────────────────────────────────────────
 
-// 本地配:Codex 用 `codex login --with-api-key` 鉴权,key 在这里读
-const apiKey = () => requireEnv("OPENAI_API_KEY");
+// 本地配:这条 channel 怎么连它自己的后端 —— 走一个 OpenAI 兼容代理(s2a)。
+// base_url + key 都从 env 读(.env,见 .env.example);model 由实验给(ctx.model)。
+// 设了 CODEX_BASE_URL 就走自定义 model_provider;否则回落到 OpenAI 官方 login。
+const proxyBase = () => process.env.CODEX_BASE_URL; // 如 https://s2a.jihuayu.site/v1
+const apiKey = () => requireEnv("CODEX_API_KEY"); // 代理 key(无代理时也可放 OPENAI_API_KEY)
 
 export default defineSandboxAgent({
   name: "codex",
@@ -22,25 +25,50 @@ export default defineSandboxAgent({
     const sb = ctx.sandbox;
     await shared.ensureInstalled(sb, "npm", ["install", "-g", "@openai/codex"]);
 
-    // 模型/参数写进 profile(Codex 的 CLI 默认会回落到 "low",必须显式写)。
-    // 模型来自 ctx.model(实验给);省略则不写 model 行,用 Codex 原生默认。
-    const modelLine = ctx.model ? `model = "${ctx.model}"\n` : "";
+    const model = ctx.model ?? "gpt-5.4"; // 模型来自实验(ctx.model)
     const effort = ctx.flags.effort ?? "high"; // 读实验 feature flag
-    await shared.writeFile(sb, "~/.codex/default.config.toml", `${modelLine}reasoning_effort = "${effort}"\n`);
+    const base = proxyBase();
 
+    // 写 ~/.codex/config.toml。注意:adapter 每次 send 都重写它 —— 所以代理配置必须在这里、
+    // 不能放进实验的 setup(会被这次重写盖掉)。自定义 provider 见 developers.openai.com/codex/config-advanced。
+    let cmd: string;
+    if (base) {
+      // wire_api="responses" → codex 调 {base_url}/responses,正好匹配代理的 /v1/responses。
+      // key 经 env_key(CODEX_API_KEY)注入,因此【不跑 codex login】。
+      await shared.writeFile(
+        sb,
+        "~/.codex/config.toml",
+        `model = "${model}"\n` +
+          `model_provider = "s2a"\n` +
+          `reasoning_effort = "${effort}"\n\n` +
+          `[model_providers.s2a]\n` +
+          `name = "s2a"\n` +
+          `base_url = "${base}"\n` +
+          `env_key = "CODEX_API_KEY"\n` +
+          `wire_api = "responses"\n`,
+      );
+      const resume = !ctx.session.isNew && ctx.session.id ? ` resume ${ctx.session.id}` : "";
+      const escaped = input.text.replace(/'/g, "'\\''");
+      const res = await sb.runShell(
+        `codex exec --json --dangerously-bypass-approvals-and-sandbox${resume} '${escaped}'`,
+        { env: { CODEX_API_KEY: apiKey() } }, // 注入 env_key 指向的变量
+      );
+      const raw = shared.extractJsonlFromStdout(res.stdout);
+      ctx.session.id = shared.codexThreadId(res.stdout);
+      return { events: parseCodex(raw), status: res.exitCode === 0 ? "completed" : "failed" };
+    }
+
+    // 无代理:回落到 OpenAI 官方 login 路径
+    await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nreasoning_effort = "${effort}"\n`);
     const resume = !ctx.session.isNew && ctx.session.id ? ` resume ${ctx.session.id}` : "";
     const escaped = input.text.replace(/'/g, "'\\''");
     const res = await sb.runShell(
       `echo '${apiKey()}' | codex login --with-api-key && ` +
-        `codex exec --profile default --json --dangerously-bypass-approvals-and-sandbox${resume} '${escaped}'`,
+        `codex exec --json --dangerously-bypass-approvals-and-sandbox${resume} '${escaped}'`,
     );
-
-    const raw = shared.extractJsonlFromStdout(res.stdout); // --json stdout 即 JSONL
+    const raw = shared.extractJsonlFromStdout(res.stdout);
     ctx.session.id = shared.codexThreadId(res.stdout);
-    return {
-      events: parseCodex(raw), // ← 原始 JSONL → 标准 StreamEvent[]
-      status: res.exitCode === 0 ? "completed" : "failed",
-    };
+    return { events: parseCodex(raw), status: res.exitCode === 0 ? "completed" : "failed" };
   },
 
   // Codex 的私人记忆:~/.codex 与 AGENTS.md

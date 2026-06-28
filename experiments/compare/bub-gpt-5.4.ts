@@ -7,6 +7,7 @@ export default defineExperiment({
   description: "bub · gpt-5.4(tape on)",
   agent: "bub",
   model: "gpt-5.4", // 两边钉同一个模型,差异才归因到 agent / 记忆机制
+  sandbox: "docker", // 本地 docker 沙箱,零云依赖
   runs: 5,
   earlyExit: false, // 要完整通过率分布,以便报 pass^k
   budget: 15,

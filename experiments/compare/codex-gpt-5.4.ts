@@ -5,7 +5,9 @@ import { defineExperiment } from "fastevals";
 export default defineExperiment({
   description: "codex · gpt-5.4",
   agent: "codex",
-  model: "gpt-5.4",
+  model: "gpt-5.4", // → ctx.model → agents/codex.ts 写进 config.toml 的 model 行
+  sandbox: "docker", // 本地 docker 沙箱
+  // 代理(base_url + key)走 .env,由 agents/codex.ts 配成自定义 model_provider(wire_api=responses)
   runs: 5,
   earlyExit: false,
   budget: 15,

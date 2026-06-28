@@ -10,7 +10,12 @@ import { defineSandboxAgent, shared, requireEnv, type StreamEvent } from "fastev
 // ⚠️ CLI 名 / 参数 / transcript 路径都是假设,真接 bub 时按其文档校正。
 // ───────────────────────────────────────────────────────────────────────────
 
-const auth = () => ({ BUB_API_KEY: requireEnv("BUB_API_KEY") });
+// 本地配:走同一个 OpenAI 兼容代理(.env 里的 BUB_API_BASE / BUB_API_KEY);
+// 模型由实验给(ctx.model → 下面的 --model),compare/ 里钉的是 gpt-5.4。
+const auth = () => ({
+  BUB_API_KEY: requireEnv("BUB_API_KEY"),
+  BUB_API_BASE: requireEnv("BUB_API_BASE"),
+});
 
 export default defineSandboxAgent({
   name: "bub",

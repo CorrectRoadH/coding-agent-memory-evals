@@ -141,6 +141,10 @@ fastevals view                           # 事后看图
   可查询的 `t.diff`、`notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
+- **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
+  codex 按 [config-advanced](https://developers.openai.com/codex/config-advanced) 配成自定义 `model_provider`
+  (`wire_api = "responses"` → 打到 `{base}/responses`),由 `agents/codex.ts` 在每次 send 时写进 `~/.codex/config.toml`
+  ——**不放实验的 `setup`**,因为 adapter 每次都会重写该文件、会盖掉 setup。base_url/key 属 adapter 本地配,model 仍由实验 `ctx.model` 给。
 - **承载点放在【盘上看不到】的决定上,而不是靠塞满上下文**:这样即便会话不长也是真记忆题(代码里推不出答案)。
   长程压缩类的会话要足够长才会触发压缩——轮数按模型上下文调,并用 `t.memory.compactions()≥N` 把「真的压缩过」断言出来。
   默认实验是 bub(tape)对 codex 的同模型对比;想要 tape 自身净贡献的硬证据,可用 bub channel 的 `noTape` 旗标临时做 within-bub A/B。
