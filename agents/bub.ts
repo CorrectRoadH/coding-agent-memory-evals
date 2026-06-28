@@ -35,16 +35,24 @@ async function ensureBub(sb: import("fastevals").Sandbox): Promise<void> {
   const has = await sb.runShell(`test -x $HOME/.local/bin/bub && echo yes || true`);
   if (has.stdout.includes("yes")) return;
   // --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
-  // bub-tapestore-otel 没上 PyPI(在 bub-contrib monorepo 里),所以走 git 子目录直引。
+  // 用 PR #49 的分支:bub 在 04960b1 用自家 bub.tape 替掉了 republic,旧版插件仍
+  // `from republic import TapeEntry`,运行时 bub.tape.TapeEntry 过不了 isinstance/pydantic
+  // 校验 → 每条 append 抛错、导出 0 span(见 bub-contrib#47)。该分支把插件迁到 bub.tape,
+  // 兼容 bub HEAD,无需钉版本。等 PR 合并进 main 可改回 bubbuild/bub-contrib 主仓。
   const otelPlugin =
-    "bub-tapestore-otel @ git+https://github.com/bubbuild/bub-contrib.git#subdirectory=packages/bub-tapestore-otel";
-  const install = await sb.runShell(
-    `curl -LsSf https://astral.sh/uv/install.sh | sh && ` +
-      `${UV} tool install --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${otelPlugin}'`,
-  );
-  if (install.exitCode !== 0) {
-    throw new Error(`bub 安装失败:\n${(install.stdout + install.stderr).split("\n").slice(-15).join("\n")}`);
+    "git+https://github.com/CorrectRoadH/bub-contrib.git@fix/tapestore-otel-tape-entry-validation" +
+    "#subdirectory=packages/bub-tapestore-otel";
+  await sb.runShell(`test -x ${UV} || (curl -LsSf https://astral.sh/uv/install.sh | sh)`);
+  // tool install 重试几次:bub + 插件 + 传递依赖都从 github clone,容器里 github 偶发抽风。
+  let last = { stdout: "", stderr: "" };
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const install = await sb.runShell(
+      `${UV} tool install --reinstall --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${otelPlugin}'`,
+    );
+    if (install.exitCode === 0) return;
+    last = install;
   }
+  throw new Error(`bub 安装失败(重试 3 次):\n${(last.stdout + last.stderr).split("\n").slice(-15).join("\n")}`);
 }
 
 // tape 文件名:md5(resolve(workspace))[:16] + "__" + md5(session_id)[:16](见 bub src/bub/builtin/tape.py)。
