@@ -142,20 +142,18 @@ fastevals view                           # 事后看图
   装 codex CLI、走 `.env` 里的 s2a 代理(`wire_api=responses`,gpt-5.4)跑多轮 / `codex exec resume` 续接、采 `git diff`、
   跑 `next build`、用 judge 打分、出判决。下面 DX 反馈里列的便利层(`t.transcript.compactions()` / `t.file` /
   可查询 `t.diff` / `notCalledTool(opts)` / `t.judge.agent` / 标准会话语义 / 文件夹分组)**都已在 fastevals 实现**。
-- **实测结果(codex · gpt-5.4,`fastevals exp compare/codex-gpt-5.4 --runs 1`)**:
-  - `multi-session-synthesis` → **failed**:codex 无跨会话记忆,正是该题要测的——`'sid'` 这条只在会话 B 的【对话】里、盘上没有,
-    所以会话 C 接不上(`includes(/['"]sid['"]/)` 挂、judge 0 分);而 `await cookies()` 这种盘上能推的它写对了、`next build` 也过。
-  - `knowledge-update` / `retention-through-compaction` → **skipped**:codex 的 `codex exec --json` **stdout 流不暴露压缩事件**
-    (压缩只在 `~/.codex/sessions` 的 rollout 文件里、且 exec 模式覆盖不全),所以 `t.transcript.compactions()` 恒为 0 →
-    守卫触发 `skip`(诚实降级,**不误判 agent 挂**)。这两条仍真跑了 12 / 14 轮 `codex exec resume`(各 ~5M token),只是判为「测试无效」。
-  - 一句话:三条都**正确跑通**并给出有意义的判决(`0 passed / 1 failed / 2 skipped`)。codex 没有持久记忆,本就该这样;
-    bub(tape)的对照见下。
-- **judge 模型改了**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),所以 judge 用代理上的 `gpt-5.4-mini`
-  (`fastevals.config.ts` 里已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
-- **bub 现实校正**:调研发现 bub **不是** npm `@bub/cli`,而是 PyPI 上的 `bub`(alpha,Python 3.12,hook-first framework,
-  github.com/bubbuild/bub;tape = republic 的审计轨)。`agents/bub.ts` 已按**真实形状**重写(uv 免 root 装、`bub run "<prompt>" --session-id`、
-  model 走 `BUB_MODEL=openai:<m>` + `BUB_API_BASE/KEY`、tape 落 `~/.bub/tapes/<md5(ws)__md5(sess)>.jsonl`),
-  但它需要在 node 沙箱里现装 Python(uv),仍是**实验性**;`BUB_TAPE_DISABLED` 这个旗标在真实 bub 里不存在(tape 总是开)。
+- **实测结果 —— 核心对照已跑出来(bub ✓ vs codex ✗)**。同一条 `multi-session-synthesis`、同模型:
+
+  | agent | gpt-5.4 | gpt-5.4-mini(dev) | 为什么 |
+  |---|---|---|---|
+  | **codex** | ✗ failed | ✗ failed | 无持久存储,`newSession` = 新 thread,记不起只在会话 B【对话】里说过的 `'sid'`(盘上没有) |
+  | **bub** | ✓ **passed** | ✓ **passed** | **tape 跨 `newSession` 持续**(整条 eval 共用一个 tape)→ 会话 C 记起 `'sid'` 并写对 |
+
+  这正是本套件存在的意义——*「bub 换上 tape 记忆机制后效果有没有变好?」*——给出了**可区分**的答案。在 gpt-5.4-mini 上整组对照只花 **~$0.04 / ~100s**(便宜模型复现同一结论,见「分层跑法」)。
+  - `knowledge-update` / `retention-through-compaction`(长程压缩)对 **codex** → **skipped**:`codex exec --json` 的 stdout 不暴露压缩事件,`t.transcript.compactions()` 恒为 0 → 守卫 `skip`(诚实,不误判)。对 **bub** 默认也多半 `skip`:bub 是**全量重放**(每轮重载整条 tape,不自动 `tape.handoff`),所以「压缩」本就没发生——`t.transcript.compactions()` 现在能读出 handoff anchor 数,但模型没触发就如实记 0。两条都**正确跑通**、只是判为「测试无效」。
+- **分层跑法(便宜验证 / 贵出结果)**:`experiments/dev/`(`gpt-5.4-mini`)用来**开发期快速跑通**——便宜、快;`experiments/compare/`(`gpt-5.4`)出**正式数字**。bub 全量重放让长程题 token 随轮数滚雪球(单轮可达数十万 tok),所以最省的验证是 `fastevals exp dev memory/multi-session-synthesis`(3 轮即复现核心对照)。
+- **judge 模型**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),judge 用代理上的 `gpt-5.4-mini`(`fastevals.config.ts` 已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
+- **bub 现实校正(已接通)**:bub **不是** npm `@bub/cli`,而是 PyPI 的 `bub`(alpha,Python 3.12,hook-first,github.com/bubbuild/bub;tape = republic 审计轨)。`agents/bub.ts` 按**真实形状**实现并跑通:uv 免 root 装、`bub run "<prompt>" --session-id`、`BUB_MODEL=openai:<m>` + `BUB_API_BASE/KEY`、tape 读自绝对路径 `/home/node/.bub/tapes/<md5(ws)__md5(sess)>.jsonl`。**bub 无任何跨 tape 记忆**(查证源码),所以「跨会话记忆」靠整条 eval 共用一个 tape 实现;`BUB_TAPE_DISABLED` 在真实 bub 里不存在(tape 总是开,只能用插件换 in-memory store)。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
 - **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
