@@ -1,4 +1,4 @@
-import { defineConfig } from "fastevals";
+import { defineConfig } from "fasteval";
 
 // 三个 coding-agent(adapter 见 ./agents/*)。
 // 都是「沙箱型 agent」:在沙箱里 spawn 各自的 CLI、跨轮 resume、跑完读回 transcript 并解析成标准事件流。
@@ -8,10 +8,10 @@ import bub from "./agents/bub.js";
 
 export default defineConfig({
   // 注册三个 agent。evals/ 里的 eval「agent 无关」——
-  // 同一批 memory eval 用 `fastevals --agent <name>` 分别测三个:
-  //   fastevals --agent claude-code
-  //   fastevals --agent codex
-  //   fastevals --agent bub
+  // 同一批 memory eval 用 `fasteval --agent <name>` 分别测三个:
+  //   fasteval --agent claude-code
+  //   fasteval --agent codex
+  //   fasteval --agent bub
   agents: [claudeCode, codex, bub],
   defaultAgent: "claude-code",
 

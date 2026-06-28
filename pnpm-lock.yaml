@@ -8,6 +8,6 @@ importers:
 
   .:
     devDependencies:
-      fastevals:
+      fasteval:
         specifier: link:../fastevals
         version: link:../fastevals

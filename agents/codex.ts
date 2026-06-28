@@ -1,4 +1,4 @@
-import { defineSandboxAgent, shared, requireEnv } from "fastevals";
+import { defineSandboxAgent, shared, requireEnv } from "fasteval";
 
 // ───────────────────────────────────────────────────────────────────────────
 // OpenAI Codex 的 agent adapter(沙箱型)。
@@ -43,7 +43,7 @@ export default defineSandboxAgent({
     // 注:[otel.trace_exporter.otlp-http] 是子表,必须放在所有上层表之后,所以拼在末尾。
     const otel = ctx.telemetry?.endpoint
       ? `\n[otel]\n` +
-        `environment = "fastevals"\n` +
+        `environment = "fasteval"\n` +
         `exporter = "none"\n` +
         `metrics_exporter = "none"\n\n` +
         `[otel.trace_exporter.otlp-http]\n` +

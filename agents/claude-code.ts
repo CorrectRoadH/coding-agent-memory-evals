@@ -1,4 +1,4 @@
-import { defineSandboxAgent, shared, requireEnv } from "fastevals";
+import { defineSandboxAgent, shared, requireEnv } from "fasteval";
 
 // ───────────────────────────────────────────────────────────────────────────
 // Claude Code 的 agent adapter(沙箱型)。

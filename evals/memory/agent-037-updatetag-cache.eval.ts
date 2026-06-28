@@ -1,5 +1,5 @@
-import { defineEval } from "fastevals";
-import { includes, isDefined, isFalse, isTrue } from "fastevals/expect";
+import { defineEval } from "fasteval";
+import { includes, isDefined, isFalse, isTrue } from "fasteval/expect";
 
 export default defineEval({
   description: "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",

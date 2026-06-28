@@ -1,5 +1,5 @@
-import { defineEval } from "fastevals";
-import { excludes, includes, isTrue } from "fastevals/expect";
+import { defineEval } from "fasteval";
+import { excludes, includes, isTrue } from "fasteval/expect";
 
 export default defineEval({
   description: "next-evals agent-030: migrate a complex Pages Router app to App Router",

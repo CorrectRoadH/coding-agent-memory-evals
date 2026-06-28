@@ -1,4 +1,4 @@
-import { defineSandboxAgent, requireEnv, shared } from "fastevals";
+import { defineSandboxAgent, requireEnv, shared } from "fasteval";
 import { createHash } from "node:crypto";
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ const UV = "$HOME/.local/bin/uv";
 const BUB = "$HOME/.local/bin/bub";
 
 // 首轮装 uv + bub(免 root,uv 自带下载 python 3.12)。幂等:已装则跳过。
-async function ensureBub(sb: import("fastevals").Sandbox): Promise<void> {
+async function ensureBub(sb: import("fasteval").Sandbox): Promise<void> {
   const has = await sb.runShell(`test -x $HOME/.local/bin/bub && echo yes || true`);
   if (has.stdout.includes("yes")) return;
   // --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
@@ -110,6 +110,10 @@ export default defineSandboxAgent({
     );
 
     // stdout 无 JSON;transcript / 用量在 tape JSONL 里。
+    // 注:bub 当前 tape 的 run 事件只记 {status, model},不含 usage —— 故 token 恒为 0
+    //(已对 ~100KB tape 校验:无 prompt/completion_tokens;官方 otel 插件读的也是这条空路径)。
+    // 这是 bub 上游不落用量的限制,非解析问题;parseBub 已对「任意事件挂 usage」做兜底,
+    // 等 bub 哪天补上用量即可自动生效。
     const raw = await sb.readFile(tapePath(SANDBOX_WORKSPACE, sessionId)).catch(() => undefined);
     const parsed = shared.parseBub(raw);
     return {

@@ -1,6 +1,6 @@
 # coding-agent-memory-evals
 
-用 [fastevals](../fastevals) 写的一套**记忆能力**评测,跨三个 coding agent(**claude-code / codex / bub**)。
+用 [fasteval](../fasteval) 写的一套**记忆能力**评测,跨三个 coding agent(**claude-code / codex / bub**)。
 
 **这套件要回答一个具体问题**:bub 换上 tape 记忆机制后,在**长程、多轮开发**下效果到底有没有变好?
 为此它不只是「写几条用例」——它是一个有方法论的小 benchmark,设计直接对标
@@ -36,7 +36,7 @@
 
 ## 3 条 eval(当前实现)+ 怎么验
 
-当前这版先把 3 条 `next-evals-oss` 任务搬进 fastevals,用于检查我们的 TS DSL 能否覆盖真实 Next eval 的验收表达。
+当前这版先把 3 条 `next-evals-oss` 任务搬进 fasteval,用于检查我们的 TS DSL 能否覆盖真实 Next eval 的验收表达。
 它们暂时保持 next-evals 的单轮任务形状,还没有改写成长程 / 跨会话剧本;下一步可以再把这些场景包装成记忆题。
 `id` 由路径推导(`…/use-cache-directive.eval.ts` → `memory/use-cache-directive`)。
 
@@ -46,7 +46,7 @@
 | 2 | `use-cache-directive` | `agent-029` | 读多写少的商品目录使用 `use cache` + `cacheTag("products")`,同步动作走 eventual consistency | ✅源码树含 `use cache`、`cacheTag("products")`、`getAllProducts`;表单触发 inline Server Action;用 `revalidateTag("products", profile)`,不用 `updateTag`;`build` 过 |
 | 3 | `updatetag-cache` | `agent-037` | 创建 post 后必须 read-your-own-writes,不能给用户 stale cache | ✅Server Action 中导入并调用 `updateTag`;不要退回只用 `revalidateTag`;包含创建 post/form 逻辑;`build` 过 |
 
-**当前暴露的 DSL 需求**:next-evals 的验收经常要“扫描整个源码树”,所以这版在 `evals/memory/source-helpers.ts` 里临时用 `t.sandbox` 手写了源码遍历。后续 fastevals 可能需要更高层的 `t.sourceFiles()` / `t.source()` API。
+**当前暴露的 DSL 需求**:next-evals 的验收经常要“扫描整个源码树”,所以这版在 `evals/memory/source-helpers.ts` 里临时用 `t.sandbox` 手写了源码遍历。后续 fasteval 可能需要更高层的 `t.sourceFiles()` / `t.source()` API。
 
 ---
 
@@ -58,7 +58,7 @@
    正向内容查最终文件比查 diff 文本更稳(diff 带 +/− 前缀、hunk 头);「错误答案的缺席」才查 diff(只看改动)。
 5. **judge 也能是个能进 sandbox 的 agent。** 有些事 text-only judge 看不到——比如「约定有没有在【整个代码库】贯彻」「跨会话合成是不是真接上了线」。
    `t.judge.agent(rubric)` 派一个独立评判 agent,给它**只读** sandbox 工具(list / read / grep),让它通读真实项目状态再给 0–1 分
-   (借鉴 fastevals 失败分类器「给小模型只读探索工具」的做法)。它是 soft 质量分,硬断言仍当 gate——两层叠着用:gate 兜底正确性,agent-judge 抓全局漂移。
+   (借鉴 fasteval 失败分类器「给小模型只读探索工具」的做法)。它是 soft 质量分,硬断言仍当 gate——两层叠着用:gate 兜底正确性,agent-judge 抓全局漂移。
 2. **断言「错误答案的缺席」,不止「正确答案的存在」。** 这是 next-evals-oss 的签名招式,也是反作弊的命门:
    `use-cache-directive` 要求 eventual refresh 场景不用 `updateTag`;`app-router-migration-hard` 要求旧 Pages Router API 缺席。
 3. **行动轨 + 元数据守卫,不去探「检索轨」。** 早期想学 LongMemEval 把「检索到了吗」与「答对了吗」拆开,
@@ -86,7 +86,7 @@ experiments/
    └─ codex-gpt-5.4.ts
 ```
 
-- **文件夹 = 一组可对比的实验**;**同一文件夹下的文件才互相对比**。`fastevals exp compare` 跑整组。
+- **文件夹 = 一组可对比的实验**;**同一文件夹下的文件才互相对比**。`fasteval exp compare` 跑整组。
 - **文件 = 单一配置**,文件名按 `<agent>-<model>` 命名。两个配置钉**同一个模型(gpt-5.4)**,差异才干净地归因到 agent / 记忆机制。
 - 为什么不用「一个文件里 `agent: [数组]` 扇出」?——**文件夹把「这一组就是要被并排比较的」这层语义说清楚了**
   (next-oss 的「一条件一文件」也是这个思路);数组扇出适合随手扫,但表达不了「可比性」。
@@ -94,8 +94,8 @@ experiments/
 ### 验证 tape 真的有用
 
 ```sh
-fastevals exp compare   # 同模型下 bub(带 tape)vs codex(无对应持久记忆机制)
-fastevals view          # 并列看通过率 / pass^k / 质量×成本
+fasteval exp compare   # 同模型下 bub(带 tape)vs codex(无对应持久记忆机制)
+fasteval view          # 并列看通过率 / pass^k / 质量×成本
 ```
 
 - 两边**同模型(gpt-5.4)、同一批记忆 eval**,差异就落在 agent 与其记忆机制上。bub(tape)在记忆题上若**稳定高于** codex,就是 tape 价值的证据。
@@ -108,7 +108,7 @@ fastevals view          # 并列看通过率 / pass^k / 质量×成本
 
 ```
 coding-agent-memory-evals/
-├─ fastevals.config.ts          # 注册 3 个 agent + 默认 workspace + judge + 超时
+├─ fasteval.config.ts          # 注册 3 个 agent + 默认 workspace + judge + 超时
 ├─ agents/                      # 三个 coding agent 的 adapter(沙箱型,示意为主)
 │  ├─ claude-code.ts            #   都只填 5 个 per-agent 差异点,其余复用 shared
 │  ├─ codex.ts
@@ -131,23 +131,23 @@ coding-agent-memory-evals/
 经 `ctx.flags`(agent)和 `t.flags`(eval)透传。
 
 ```sh
-fastevals exp compare                    # 跑整组实验(bub vs codex)
-fastevals --agent codex memory/use-cache-directive   # 临时:只跑一条 eval
-fastevals view                           # 事后看图
+fasteval exp compare                    # 跑整组实验(bub vs codex)
+fasteval --agent codex memory/use-cache-directive   # 临时:只跑一条 eval
+fasteval view                           # 事后看图
 ```
 
 ---
 
 ## 诚实声明
 
-- **fastevals 已实现并接通**(`../fastevals`,经 `pnpm link`(`link:../fastevals`)连上,以 TS 源码经 `tsx` 运行,无编译步骤)。
-  这套件**现在真的能跑**:`pnpm codex`(= `fastevals --agent codex`)/ `fastevals exp compare/codex-gpt-5.4` 会起 docker 沙箱、
+- **fasteval 已实现并接通**(`../fasteval`,经 `pnpm link`(`link:../fasteval`)连上,以 TS 源码经 `tsx` 运行,无编译步骤)。
+  这套件**现在真的能跑**:`pnpm codex`(= `fasteval --agent codex`)/ `fasteval exp compare/codex-gpt-5.4` 会起 docker 沙箱、
   装 codex CLI、走 `.env` 里的 s2a 代理(`wire_api=responses`,gpt-5.4)跑多轮 / `codex exec resume` 续接、采 `git diff`、
   跑 `next build`、用 judge 打分、出判决。下面 DX 反馈里列的便利层(`t.transcript.compactions()` / `t.file` /
-  可查询 `t.diff` / `notCalledTool(opts)` / `t.judge.agent` / 标准会话语义 / 文件夹分组)**都已在 fastevals 实现**。
-- **当前实测状态**:这版刚把 `agent-030` / `agent-029` / `agent-037` 搬成 fastevals TS 写法,已通过 `fastevals list` 加载检查;正式 agent 运行结果待跑。
+  可查询 `t.diff` / `notCalledTool(opts)` / `t.judge.agent` / 标准会话语义 / 文件夹分组)**都已在 fasteval 实现**。
+- **当前实测状态**:这版刚把 `agent-030` / `agent-029` / `agent-037` 搬成 fasteval TS 写法,已通过 `fasteval list` 加载检查;正式 agent 运行结果待跑。
 - **分层跑法(便宜验证 / 贵出结果)**:`experiments/dev/`(`gpt-5.4-mini`)用来**开发期快速跑通**——便宜、快;`experiments/compare/`(`gpt-5.4`)出**正式数字**。dev 组现在只跑 `memory/use-cache-directive`。
-- **judge 模型**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),judge 用代理上的 `gpt-5.4-mini`(`fastevals.config.ts` 已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
+- **judge 模型**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),judge 用代理上的 `gpt-5.4-mini`(`fasteval.config.ts` 已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
 - **bub 现实校正(已接通)**:bub **不是** npm `@bub/cli`,而是 PyPI 的 `bub`(alpha,Python 3.12,hook-first,github.com/bubbuild/bub;tape = republic 审计轨)。`agents/bub.ts` 按**真实形状**实现并跑通:uv 免 root 装、`bub run "<prompt>" --session-id`、`BUB_MODEL=openai:<m>` + `BUB_API_BASE/KEY`、tape 读自绝对路径 `/home/node/.bub/tapes/<md5(ws)__md5(sess)>.jsonl`。**bub 无任何跨 tape 记忆**(查证源码),所以「跨会话记忆」靠整条 eval 共用一个 tape 实现;`BUB_TAPE_DISABLED` 在真实 bub 里不存在(tape 总是开,只能用插件换 in-memory store)。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径仍需要随真实 CLI 演进校正;真实 bub 没有 `BUB_TAPE_DISABLED`,tape-off 消融需要 adapter 层另接 in-memory store。
 - **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
@@ -160,7 +160,7 @@ fastevals view                           # 事后看图
 
 ---
 
-## DX 反馈(对着 fastevals DSL 写这套件的产出)
+## DX 反馈(对着 fasteval DSL 写这套件的产出)
 
 ### 顺手的地方 👍
 
@@ -171,22 +171,22 @@ fastevals view                           # 事后看图
 5. **配置归属清晰,agent 可复用。** 同一个 bub adapter 可在 `compare/` 与 `dev/` 复用;如果要做 tape-off 消融,应在 adapter / memory store 层显式建一个实验条件。
 6. **「文件夹 = 可对比组」很顺手。** experiment 按文件夹分组、一文件一配置(`<agent>-<model>-<feature>`),「哪些该并排比」直接由目录结构表达,比「一个文件塞数组」更说得清意图;配对 A/B(只差一行 flag)尤其清爽。
 
-### 试出来的缺口 / 待定 ⚠️(给 fastevals 的需求)
+### 试出来的缺口 / 待定 ⚠️(给 fasteval 的需求)
 
-> ✅ **更新**:下面这些当时对着设计 DSL 提的需求,**现在都已在 fastevals 实现**并被本套件真实跑过
+> ✅ **更新**:下面这些当时对着设计 DSL 提的需求,**现在都已在 fasteval 实现**并被本套件真实跑过
 > (`t.transcript.compactions()` 的 capability 门控 + skip 守卫、可查询 `t.diff` + `t.file`、`notCalledTool(opts)`、
-> 能进 sandbox 的 `t.judge.agent`、标准会话语义、文件夹分组实验)。映射见 [`../fastevals/docs/source-map.md`](../fastevals/docs/source-map.md)。
+> 能进 sandbox 的 `t.judge.agent`、标准会话语义、文件夹分组实验)。映射见 [`../fasteval/docs/source-map.md`](../fasteval/docs/source-map.md)。
 > 下面保留作为「需求是怎么试出来的」的记录。
 
-1. **别做 `t.memory.recalled`——记忆「检索轨」探不到(已砍)。** 早期假设了一个 agent 无关的 `t.memory.recalled(/.../)`(由各 adapter `readMemory()` 归一化),想直接查「事实进没进持久记忆」。**做不到**:claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置;只有 bub 的 tape 是私有持久记忆。grep 这些位置恒返回与「记没记住」无关的结果,而且断言放在「陈述事实之后」恒为真——在三条 eval 里它非承重、还有一条压根没用。**结论:探针和各 adapter 的 `readMemory()` 一起删掉,记忆是否生效只认行动轨**(`t.file`/`notInDiff`/`calledTool`)。fastevals 不必提供 `t.memory`。
+1. **别做 `t.memory.recalled`——记忆「检索轨」探不到(已砍)。** 早期假设了一个 agent 无关的 `t.memory.recalled(/.../)`(由各 adapter `readMemory()` 归一化),想直接查「事实进没进持久记忆」。**做不到**:claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置;只有 bub 的 tape 是私有持久记忆。grep 这些位置恒返回与「记没记住」无关的结果,而且断言放在「陈述事实之后」恒为真——在三条 eval 里它非承重、还有一条压根没用。**结论:探针和各 adapter 的 `readMemory()` 一起删掉,记忆是否生效只认行动轨**(`t.file`/`notInDiff`/`calledTool`)。fasteval 不必提供 `t.memory`。
 2. **`t.diff` 需要查询助手 + 直接读 sandbox 最终文件。** 用到了 `t.diff.get(path)` / `t.notInDiff(re)`(查改动),以及 `t.file(path)`(读 sandbox 里的最终文件内容)。正向内容断言查最终文件比查 diff 文本更稳(diff 带 +/− 前缀、hunk 头);「错误答案的缺席」才查 diff。建议:`t.diff` 做成可查询对象(`get` / `isEmpty` / `matches` / `notInDiff`),并正式提供 `t.file(path)` 作为 `t.sandbox.readFile` 的高层封装。
-7. **agent-as-judge:能进 sandbox 的评判 agent。** 用到了 `t.judge.agent(rubric)` —— 派一个独立评判 agent,给它只读 sandbox 工具(list / read / grep),让它通读真实项目状态后给 0–1 分。text-only judge 看不到「约定有没有全项目贯彻」「跨会话合成是否真接上线」这类需要遍历代码库的判断。fastevals 失败分类器已经有「给小模型只读探索工具」的现成形状,把它提升成 eval 作者可用的 `t.judge.agent` 即可。
+7. **agent-as-judge:能进 sandbox 的评判 agent。** 用到了 `t.judge.agent(rubric)` —— 派一个独立评判 agent,给它只读 sandbox 工具(list / read / grep),让它通读真实项目状态后给 0–1 分。text-only judge 看不到「约定有没有全项目贯彻」「跨会话合成是否真接上线」这类需要遍历代码库的判断。fasteval 失败分类器已经有「给小模型只读探索工具」的现成形状,把它提升成 eval 作者可用的 `t.judge.agent` 即可。
 3. **多轮的会话语义要标准化。** 「同一 eval 的多轮 = 同沙箱 + resume」「`newSession()` = 新会话 + 同沙箱」是 memory 能测的前提。应在 Agent 契约里把 `session.id` / `session.isNew` 钉死,否则每个沙箱 adapter 各写各的。
 4. **`notCalledTool` 要支持 options。** 写了 `b.notCalledTool("file_write", { input: { path: /Header/ } })`,需要和 `calledTool` 对齐,也接匹配小语言。
 5. **starter repo 属于 eval,要能在 `defineEval` 里声明 `workspace` + `setup`。** 不同 eval 的 starter 可能不一样,所以「用哪个 starter、怎么 prep(如 `npm install`)」写在各 eval 里(`defineEval({ workspace, setup })`),而不是写死在 experiment。experiment 只管怎么跑(agent / model / sandbox / runs)。本套件 3 条都这么写了;config 的 `workspace` 仅作兜底默认。
 6. **judge 要能对「整段对话」打分。** 现在只能 `{ on: 某条 message }`;memory 有时想判「整段对话里它是否始终守约定」,需要 `t.judge.transcript(...)`。
 7. **要能从事件流数「上下文压缩」次数(capability 门控、当守卫用)。** 长程压缩类 eval 必须确认「这一会话真的压缩过」,否则退化成短会话。这是 **transcript / o11y 派生**的信号(不是「记忆」),应作 `t.transcript.compactions()`,由 `compactionObservability` 能力位门控、各 adapter 从自己的事件流归一化(bub = tape anchor 数;claude = 自动压缩事件;codex 取决于其 `--json` 是否带标记)。用法是**守卫而非硬断言**:不足 N 或不可观测就 `t.skip`(测试无效,不算 agent 挂)。
-8. **experiment 应支持「文件夹分组」。** 约定 `experiments/<组>/<配置>.ts`,`fastevals exp <组>` 跑整组、同组互为对照。`defineExperiment` 仍可用 `agent: [数组]` 扇出,但「可比性」交给目录表达更清楚。
+8. **experiment 应支持「文件夹分组」。** 约定 `experiments/<组>/<配置>.ts`,`fasteval exp <组>` 跑整组、同组互为对照。`defineExperiment` 仍可用 `agent: [数组]` 扇出,但「可比性」交给目录表达更清楚。
 
 > 结论:多轮记忆这个最刁钻的场景,**核心的 `t.send` / `judge` / `calledTool` / diff 完全扛得住**;真正缺的是几块便利层——事件流派生的 `t.transcript.compactions()`(capability 门控的有效性守卫)、可查询 diff、能进 sandbox 的 agent-judge、标准化会话语义。**而 `t.memory.recalled` 被证明做不到也用不上,已砍**:记忆是否生效只认行动轨。补上前几样,memory 评测就顺了。
 

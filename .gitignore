@@ -1,5 +1,5 @@
 node_modules/
-.fastevals/
+.fasteval/
 *.log
 .DS_Store
 .env

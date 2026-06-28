@@ -1,5 +1,5 @@
-import { defineEval } from "fastevals";
-import { excludes, includes, isDefined } from "fastevals/expect";
+import { defineEval } from "fasteval";
+import { excludes, includes, isDefined } from "fasteval/expect";
 
 export default defineEval({
   description: "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
