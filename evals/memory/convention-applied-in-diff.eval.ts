@@ -1,36 +1,33 @@
 import { defineEval } from "fastevals";
 import { includes, satisfies } from "fastevals/expect";
-import { realWork } from "../_support/gap.js";
 
-// 失败模式:复述 ≠ 落地(recite vs. act)
-// 立一条编码约定,隔长程后让它写新组件。命门在于:很多 agent 嘴上说「我会用具名导出」,
-// 手底下还是写了 export default。所以这道题【完全不看回复文本】,只看真实 diff:
-// 约定必须体现在产出的代码里,而不是体现在它的嘴上。
-// 这把「记得」和「按记得的做」彻底分开 —— 后者才是 coding agent 的价值。
+// 失败模式:复述 ≠ 落地,且约定【没有代码先例】可抄
+//
+// 真实场景:技术负责人在动手写代码【之前】先立一条规矩,下一个会话团队才开始写第一个模块。
+// 规矩:禁止 export default,只用具名导出 —— 这恰好和模型的训练先验相反(模型爱写 default)。
+//
+// 记忆承载点 = 这条规矩本身。它【只在对话里说过,没写进任何文件】(没有 .eslintrc、没有
+// 已有模块可参照)。所以盘上没有先例可「跟随现有写法」,agent 必须靠记住规矩来压过自己的默认。
+// 而且只看产出的 diff,不看它嘴上说什么 —— 复述会用具名导出,不等于真写成了具名导出。
 export default defineEval({
-  description: "复述≠落地:长程后新组件在 diff 里只用具名导出,绝无 export default",
+  description: "无先例的约定落地:新会话写第一个模块,只用具名导出、绝无 export default",
   async test(t) {
-    // —— Plant:一条会被「训练先验」往回拽的约定(模型默认爱写 default export) ——
+    // —— 会话 A:动手前先立规矩(纯约定,不落任何文件) ——
     const ack = await t.send(
-      "这个项目的硬约定:所有 React 组件只用具名导出(named export),禁止 export default。记住,以后建组件都这样。",
+      "开工前先定个项目规矩:禁止 export default,所有模块一律只用具名导出。从下一个文件开始就这么执行。",
     );
     ack.expectOk();
     t.memory.recalled(/named|具名|default/i);
 
-    // —— Gap:做几件【不产生新导出符号】的真实活(文档 / 配置 / 代码审查),
-    //    让「具名导出」这条约定真正进入休眠 —— 而不是靠刚建过组件来提醒它 ——
-    await realWork(t, 5, { avoid: ["export"] });
+    // —— 会话 B(开始写第一个模块):上下文清零,盘上没有任何模块可参照导出风格 ——
+    const b = t.newSession();
+    await b.send("写 src/storage.ts,封装一下 localStorage 的读写(get/set/remove)。");
 
-    // —— Probe:建个新组件,不重述约定 ——
-    await t.send("加一个 Spinner 组件,显示一个加载中的转圈。放到 src/Spinner.tsx。");
-
-    // 只认产出:具名导出在、default 导出不在(读 sandbox 最终文件,限定到新文件不被既有 App.tsx 干扰)
-    t.fileChanged("src/Spinner.tsx");
-    const file = t.file("src/Spinner.tsx");
-    t.check(file, includes(/export\s+(function|const)\s+Spinner/));
-    t.check(file, satisfies((s) => !/export\s+default/.test(String(s)), "新组件文件里没有 export default"));
-    // agent-judge:通读整个 sandbox 的组件,查约定有没有【全项目贯彻】(长程里最容易发生的是悄悄漂移)
-    t.judge.agent("通读 sandbox 里 src 下所有 React 组件文件:除了 App.tsx 既有的那个,是否都用具名导出、没有任何新的 export default?").atLeast(0.7);
-    t.scriptPassed("build");
+    b.fileChanged("src/storage.ts");
+    const file = b.file("src/storage.ts"); // 读 sandbox 最终文件
+    b.check(file, includes(/export\s+(function|const)\s/)); // 用了具名导出
+    b.check(file, satisfies((s) => !/export\s+default/.test(String(s)), "没有 export default"));
+    b.judge.agent("通读 src/storage.ts:它是否只用具名导出、完全没有 export default?").atLeast(0.7);
+    b.scriptPassed("build");
   },
 });

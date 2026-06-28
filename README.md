@@ -9,46 +9,44 @@
 
 ---
 
-## 核心论点:大多数「记忆 eval」其实在测上下文,不是记忆
+## 核心论点:记忆的承载点必须在【代码看不到的地方】
 
-一种很常见的写法:**第 1 轮立约定 → 第 2 轮就用**。这测不出记忆——约定还躺在上文里,
-一个**完全没有记忆机制**的 agent 也能过。要看出记忆,植入的事实必须**已经离开实时上下文**。
+很多「记忆 eval」是**第 1 轮立约定 → 第 2 轮就用**。这测不出记忆——约定还躺在上文里,没记忆机制的 agent 也能过。
+我一开始的修法是在中间塞「干扰轮」凑长度(gap),但那是**合成填充**,不是真实开发,也不对味。
 
-所以这套件每条 eval 都是三段式:
+真正的关键是另一件事:**让后面那一步依赖一个「代码里看不到、只存在记忆里」的决定。**
 
-```
-Plant(植入)  →  Gap(缺口)  →  Probe(探测)
-```
+- next-evals-oss 那类任务是单轮的「跟随现有写法」——而「跟随现有写法」恰恰是**从代码重新推导**:
+  agent 读一眼盘上的文件就知道该怎么写,根本不用记。**能从代码推导出来的,就不是记忆题。**
+- 所以这套件每条 eval 都是**一次真实的多轮开发**(搭 API client、建组件、写 ADR…),跨一个**真实的会话边界**
+  (`t.newSession()`,就是「第二天接着做」),而探测点钉在一个盘上找不到的事实上:
+  **计划里还没做的部分、被推翻的旧选择、说过但还没写进代码的规范、密钥的归属地、从没定过的值。**
+- 这同时也是 tape on/off 能拉开差距的原因:**关了 tape 的 bub 能读盘上的文件,却读不到只在记忆里的决定。**
+  要是承载点能从代码推出来,tape-off 也能过,delta 归零——既测不出记忆、也测不出 tape。
 
-- **Gap 用真实开发任务,不用合成填充。** 对标 next-evals-oss——它每个 case 都是真实编码任务。
-  缺口是一串**真实的、自包含的功能开发**(`evals/_support/gap.ts` 的 `realWork`:建组件、加工具函数、调配置、做代码审查…),
-  让整段对话像一次真实的长跑开发:早期定个决定,中间做几件真实的活(决定进入休眠),后面一个真实任务必须把它捞回来。
-  这正是现实里的失败:「很多轮以前定的事,现在忘了」。跨会话的题则直接用 `t.newSession()` 作缺口。
-- **缺口任务避开被测决定那条轴**(`realWork` 的 `avoid`),否则就成了「你 1 轮前刚做过同一件事」而不是记忆测试:
-  测「日期库」就用建 UI 组件来填,测「具名导出」就用文档 / 配置 / 代码审查来填。
-- 跨过缺口还能答对的,只可能是**真的记住了**(对 bub 就是 tape 的 anchor / handoff / search)。
+> 不再用合成 gap;**真实会话边界**就是天然的「缺口」——它保证植入的事实确已离开上下文,且本身就是真实开发的一部分。
 
-这正是 [LongMemEval](https://arxiv.org/abs/2410.10813) 的 haystack 思路(把证据埋进真实对话里),也是下文 tape 消融实验能测出差异的前提。
+这和 [LongMemEval](https://arxiv.org/abs/2410.10813) 把证据埋进真实对话、并测「abstention(没说过就别编)」是同一套思路。
 
 ---
 
 ## 10 条 eval,按记忆失败模式划分
 
 每条对准一个**不同的**失败模式(分类骨架来自 LongMemEval 的五维 + 长上下文 + 持久化扩展),
-都是多轮对话,都带真实缺口。`id` 由路径推导(`evals/memory/knowledge-update.eval.ts` → `memory/knowledge-update`)。
+都是**一次真实开发**,跨真实会话边界。`id` 由路径推导(`evals/memory/knowledge-update.eval.ts` → `memory/knowledge-update`)。
 
-| eval | 失败模式 | 缺口(真实任务) | 怎么判(行动轨) | 出处 |
+| eval | 失败模式 | 真实任务 | 记忆承载点(盘上看不到) | 怎么判 / 出处 |
 |---|---|---|---|---|
-| `cross-session-persistence` | 跨会话持久 ·「接着上次继续」 | newSession | 正好补齐清单剩余两个、不重做已完成、不误判完工(+ agent-judge 查 sandbox) | Anthropic long-running harness |
-| `long-horizon-recall` | 长程精确提取 / lost-in-the-middle | 6 件真实功能(不碰后端) | 限流值仍是 100,且无其它默认值 | LongMemEval info-extraction;[2307.03172](https://arxiv.org/abs/2307.03172) |
-| `knowledge-update` | 知识更新 · 旧值被取代 | 5 件真实功能(不碰日期) | 用 dayjs,且 **date-fns 彻底不出现** | LongMemEval knowledge-update;Mem0 UPDATE |
-| `temporal-reasoning` | 时序推理(先 / 后) | 5 件真实功能 | 区分「最早 Redux / 现在 Zustand」 | LongMemEval temporal;LoCoMo temporal |
-| `recall-under-interference` | 干扰下精确检索 | 4 条相似约定 + 5 件真实功能 | API 落到 `src/api/client.ts`,不串到兄弟约定 | LoCoMo single-hop |
-| `abstention` | 拒答 / 不编造 | 5 件真实功能 | 承认「从没约定过」并请求澄清,**不编数值** | LongMemEval abstention |
-| `convention-applied-in-diff` | 复述 ≠ 落地 | 5 件真实活(文档/配置/审查) | **看产出**:具名导出在、`export default` 不在(+ agent-judge 查全项目贯彻) | next-evals-oss「断言错误答案缺席」 |
-| `multi-session-synthesis` | 多会话综合 / multi-hop | 跨 3 个会话 | fetch 封装同时用上 A 的 base URL + B 的 token(+ agent-judge 查接线) | LongMemEval multi-session;LoCoMo multi-hop |
-| `selective-forgetting-scope` | 范围辨别 · 不过度泛化 | 5 件真实功能 | 全局规则套到新文件;一次性例外不泄漏(+ agent-judge 查规则+例外) | 记忆的「写入与作用域」 |
-| `private-memory-stays-private` | 私密 ·「记得来源、绝不泄露」 | 5 件真实功能 + newSession | 从 env 取密钥、点名 1Password;**明文密钥绝不进 diff**(+ agent-judge 查无硬编码) | — |
+| `cross-session-persistence` | 跨会话续作 | 按计划建 5 个组件,做掉 3 个→新会话续作 | 计划里【还没做的那两个】 | 正好补 UserBadge/ChangelogBanner、不重做、不误判完工 · Anthropic long-running harness |
+| `deferred-spec-recall` | 精确规范延后落地 | 搭 API client,先骨架、超时/重试下次加 | 说过但【还没写进代码】的 8000ms / 2 次 | 新会话补的逻辑用 8000/2,无别的默认值 · LongMemEval info-extraction |
+| `knowledge-update` | 旧值被取代 | 用 date-fns 写,再宣布弃用、改原生(暂不动码) | 那条「弃 date-fns 改原生」的决定(与盘上代码相反) | 重构后用原生,**date-fns 彻底不出现** · Mem0 UPDATE |
+| `temporal-reasoning` | 决策先后 | 选型几经变更→新会话写 ADR | 决策的【历史与顺序】(代码只反映当前) | ADR 写对「先 Redux、后 Zustand」 · LongMemEval/LoCoMo temporal |
+| `recall-under-interference` | 干扰下精确检索 | 登记 4 个相似 env 名→新会话接其一 | 那张【还没接线】的 env 登记表 | Sentry 初始化用 SENTRY_DSN,不串兄弟项 · LoCoMo single-hop |
+| `abstention` | 拒答 / 不编造 | 搭登录骨架→新会话设「之前定的」过期时间 | 一个【从没定过】的值 | 承认没定过、请求澄清,**不编数值** · LongMemEval abstention |
+| `convention-applied-in-diff` | 复述≠落地 · 无先例 | 先立「禁 default 导出」规矩→新会话写第一个模块 | 规矩本身(没写进任何文件、无代码先例可抄) | **看产出**:具名导出在、`export default` 不在 · next-evals-oss「断言错误缺席」 |
+| `multi-session-synthesis` | 多会话综合 | 三个会话分别定 base URL / token / 合成 | 分散两会话、都【没接线】的两条决定 | request() 同时用上 API_BASE_URL + Bearer · LongMemEval multi-session |
+| `selective-forgetting-scope` | 范围辨别 · 不过度泛化 | 立全局 JSDoc 规矩 + legacy 豁免→新会话碰两文件 | 规矩的【适用范围】(盘上看不出规矩存在) | 新文件有 JSDoc、被豁免的 legacy 不被强加 · 记忆「作用域」 |
+| `private-memory-stays-private` | 私密 · 记来源不泄露 | 定密钥习惯+搭 config→新会话写带 key 的功能 | 密钥归属地 1Password(永不进盘) | 从 env 取、点名 1Password,**明文密钥绝不进 diff** | 
 
 ---
 
@@ -90,7 +88,7 @@ delta(eval) = passRate(bub, tape on) − passRate(bub, tape off)
 ```
 
 - **delta 大**的 eval = tape 真正在发力的地方(跨会话、长程召回)。这是 tape 的**净贡献**,且是因果证据:除 tape 外全相同。
-- **delta ≈ 0**的 eval(本来就不依赖记忆的)反过来验证了缺口设计——证明 delta 不是噪声。
+- **delta ≈ 0**的 eval(承载点其实能从代码推出来的)说明那条题没真考记忆——反过来帮你校准承载点设计。
 - **claude-code / codex** 是外部参照系:bub+tape 站在业界 coding agent 的什么位置。
 
 > **上限(Oracle)/ 下限(floor)的读法**:`tape-off` 是下限(零持久记忆)。要上限可在实验的 `setup` 里
@@ -109,9 +107,8 @@ coding-agent-memory-evals/
 │  ├─ codex.ts
 │  └─ bub.ts                    #   多一个 noTape 旗标,供消融实验关掉 tape
 ├─ workspaces/react-greeting/   # 通用工作项目(最小 React/TSX 应用,agent 在它上面干活)
-├─ evals/
-│  ├─ _support/gap.ts           # ★ 记忆缺口:真实开发任务池 + realWork(承重墙,按轴避让)
-│  └─ memory/                   # 10 条 eval,一条一个失败模式(见上表)
+├─ evals/memory/                # 10 条 eval,一条一个失败模式(见上表);无任何合成填充层
+│                               #   每条 = 一次真实开发,跨 t.newSession() 的真实会话边界
 └─ experiments/                 # 运行矩阵(怎么跑),不掺评分
    ├─ tape-ablation.experiment.ts   # ★ tape 开(treatment)+ 参照
    ├─ tape-off.experiment.ts        # ★ tape 关(floor)—— 配对 A/B
@@ -143,8 +140,9 @@ fastevals view                           # 事后看图
   `notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
-- 缺口的**轮数(默认 12~14)**要按被测模型的上下文长度调:窗口越大,塞满它需要的干扰轮越多。
-  但消融 A/B 不依赖「一定塞满」——只要 tape-off 这条线确实没有跨轮记忆,delta 就成立。
+- **不靠「塞满上下文」来制造缺口**:每条 eval 把记忆承载点放在【盘上看不到】的决定上,再跨一个真实会话边界。
+  这样即使会话不算很长,也是真记忆题(代码里推不出答案);要更狠可以把每条的真实开发拉长到 N 步。
+  消融 A/B 也不依赖「一定塞满」——只要 tape-off 这条线确实没有跨会话记忆,delta 就成立。
 
 ---
 

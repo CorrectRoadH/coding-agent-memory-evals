@@ -1,36 +1,36 @@
 import { defineEval } from "fastevals";
 import { includes } from "fastevals/expect";
-import { realWork } from "../_support/gap.js";
 
-// 失败模式 #3+#4 干扰下的精确检索(LoCoMo single-hop / 长程里的 needle 精度)
-// 一口气立四条【长得很像】的路径约定,隔长程后只触发其中一条。
-// 记忆得检索出【正好那一条】,而不是取到相邻的、似是而非的兄弟约定。
-// 这考的是检索精度:四条都「相关」,差一条就放错文件。
+// 失败模式:干扰下的精确检索(LoCoMo single-hop / needle 精度)
+//
+// 真实任务:先登记项目要用的几个环境变量名,后面再逐个接线。会话 A 一次性记下四个
+// 【长得很像】的 env 名,但此刻都还没在代码里用过;第二天的会话只接其中一个。
+//
+// 记忆承载点 = 那张【环境变量登记表】。四个名字都没进代码,agent 没法从盘上推导,
+// 必须从记忆里检索出【正好那一个】,而不是取到相邻的、似是而非的兄弟项,也不能现编一个。
 export default defineEval({
-  description: "干扰下检索:四条相似路径约定里,API 调用准确落到 src/api/client.ts",
+  description: "干扰下检索:四个相似 env 名里,Sentry 初始化准确用上 SENTRY_DSN",
   async test(t) {
-    // —— Plant:四条容易互相串味的约定 ——
+    // —— 会话 A:登记四个相似的环境变量名(还不接线) ——
     const ack = await t.send(
-      "记一下这个项目的几条目录约定,后面要一直遵守:\n" +
-        "① 测试文件放 __tests__/ 下;\n" +
-        "② 类型定义放 src/types/;\n" +
-        "③ 常量放 src/constants.ts;\n" +
-        "④ 所有后端 API 调用都走 src/api/client.ts 这一个文件,别散落到各处。",
+      "先把这个项目要用的环境变量名记一下,后面逐个接:\n" +
+        "· API_BASE_URL —— 后端基础地址\n" +
+        "· API_TOKEN —— 后端鉴权 token\n" +
+        "· SENTRY_DSN —— 错误上报\n" +
+        "· FLAG_BETA —— 灰度开关\n现在先别写代码,记着就行。",
     );
     ack.expectOk();
-    t.memory.recalled(/api\/client|constants|types|__tests__/i);
+    t.memory.recalled(/SENTRY_DSN|API_BASE_URL|API_TOKEN|FLAG_BETA/);
 
-    // —— Gap:做几件真实的活(都不碰这几条目录约定),让四条约定一起沉到上下文深处 ——
-    await realWork(t, 5, { avoid: ["fs-convention", "api"] });
+    // —— 会话 B(第二天):上下文清零,盘上没有任何 env 用法可参考 ——
+    const b = t.newSession();
+    await b.send("加一个把错误上报到 Sentry 的初始化函数,放 src/sentry.ts。");
 
-    // —— Probe:只触发第④条,不提其它三条、也不提 client.ts ——
-    await t.send("加一个拉取 /users 列表的函数,放到该放的地方。");
-
-    // 落到正确的那一条约定上
-    t.fileChanged("src/api/client.ts");
-    t.check(t.file("src/api/client.ts"), includes(/\/users/));
-    // 没有落到相邻的、似是而非的位置(断言错误位置的缺席:没另起 users 文件、没塞进 constants/types)
-    t.notCalledTool("file_write", { input: { path: /src\/(users|constants)\.|src\/types\// } });
-    t.scriptPassed("build");
+    const file = b.file("src/sentry.ts");
+    b.check(file, includes(/SENTRY_DSN/)); // 检索到正好那一个
+    // 没有串到相邻的兄弟项、也没现编一个别的名字(断言错误答案的缺席)
+    b.notInDiff(/API_BASE_URL|API_TOKEN|FLAG_BETA/);
+    b.judge.agent("通读 src/sentry.ts:Sentry 初始化读取的环境变量是不是恰好是 SENTRY_DSN(而非别的或自创的名字)?").atLeast(0.7);
+    b.scriptPassed("build");
   },
 });
