@@ -41,7 +41,8 @@ export default defineSandboxAgent({
     if (!ctx.session.isNew && ctx.session.id) args.push("--resume", ctx.session.id); // 多轮续接
     args.push(input.text);
 
-    const res = await sb.runCommand("claude", args, { env: auth() }); // 鉴权来自本地 auth()
+    // stream: true → claude 的输出 tee 进容器主日志(`docker logs` 可见 agent 原始输出)。
+    const res = await sb.runCommand("claude", args, { env: auth(), stream: true }); // 鉴权来自本地 auth()
 
     const raw = await shared.captureLatestJsonl(sb, "~/.claude/projects");
     ctx.session.id = shared.sessionIdFromClaudeTranscript(raw) ?? ctx.session.id; // 回传供下一轮 resume

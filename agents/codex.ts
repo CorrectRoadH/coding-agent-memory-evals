@@ -67,7 +67,8 @@ export default defineSandboxAgent({
       ? `codex exec resume ${ctx.session.id} ${flags} '${escaped}'`
       : `codex exec ${flags} '${escaped}'`;
 
-    const res = await sb.runShell(cmd, { env: { CODEX_API_KEY: apiKey() } });
+    // stream: true → codex 的 --json 原始输出 tee 进容器主日志,`docker logs` 能实时看 agent 在干啥。
+    const res = await sb.runShell(cmd, { env: { CODEX_API_KEY: apiKey() }, stream: true });
 
     // stdout 即 JSONL transcript;抠出 → 解析成标准事件流 + 用量。
     const raw = shared.extractJsonlFromStdout(res.stdout);

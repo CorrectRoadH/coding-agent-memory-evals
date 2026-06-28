@@ -79,9 +79,11 @@ export default defineSandboxAgent({
       BUB_HOME,
     };
     const escaped = input.text.replace(/'/g, "'\\''");
+    // stream: true → bub 的 stdout tee 进容器主日志(`docker logs` 可见)。
+    // 注:bub 主要把过程写进 tape(我们另读),stdout 较少;要更全可另 tail tape。
     const res = await sb.runShell(
       `${BUB} --workspace ${SANDBOX_WORKSPACE} run '${escaped}' --session-id ${sessionId}`,
-      { env },
+      { env, stream: true },
     );
 
     // stdout 无 JSON;transcript / 用量在 tape JSONL 里。
