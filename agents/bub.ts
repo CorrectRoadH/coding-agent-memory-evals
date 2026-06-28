@@ -60,9 +60,12 @@ export default defineSandboxAgent({
     await ensureBub(sb);
 
     const model = ctx.model ?? "gpt-5.4"; // 实验给 ctx.model;无则兜底
-    // 会话:同一 eval 的多轮用同一 session-id(tape 持久);t.newSession() 换 id。
-    const sessionId = ctx.session.id ?? `fastevals-${Math.random().toString(36).slice(2, 10)}`;
-    ctx.session.id = sessionId; // 回传供下一轮续接
+    // 关键:bub 的持久记忆 = tape,按 (workspace, session-id) 键(查证 bub 源码:无任何跨 tape 记忆)。
+    // eval 的 t.newSession() 语义是「上下文重置、但持久记忆要还在」——对 bub 就是【整条 eval 共用一个 tape】:
+    // 用沙箱稳定 id(一个 eval = 一个沙箱),让 tape 跨 newSession 持续,session C 才能记起 session A/B 说过的事。
+    // (codex 无此持久存储,它的 newSession = 新 thread、自然遗忘——这正是本套件要对照出的差异。)
+    const sessionId = `fe-${sb.sandboxId}`;
+    ctx.session.id = sessionId;
 
     const env = {
       ...auth(),
