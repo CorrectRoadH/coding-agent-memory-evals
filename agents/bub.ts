@@ -57,10 +57,14 @@ export default defineSandboxAgent({
   // shared.parseBub 目前是通用解析器,未必抠得出 anchor → compactions() 可能返回 0(自动 skip,不误判)。
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
 
+  // ── agent lifecycle:装 uv + bub,每个沙箱一次(不在 send 里)。──
+  async setup(sb) {
+    await ensureBub(sb);
+  },
+
+  // ── send 只剩「跑一轮 + 读 tape 解析」。bub 无 resume 概念,靠同一 session-id 续上 tape。──
   async send(input, ctx) {
     const sb = ctx.sandbox;
-    await ensureBub(sb);
-
     const model = ctx.model ?? "gpt-5.4"; // 实验给 ctx.model;无则兜底
     // 关键:bub 的持久记忆 = tape,按 (workspace, session-id) 键(查证 bub 源码:无任何跨 tape 记忆)。
     // eval 的 t.newSession() 语义是「上下文重置、但持久记忆要还在」——对 bub 就是【整条 eval 共用一个 tape】:

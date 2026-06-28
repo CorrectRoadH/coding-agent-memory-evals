@@ -26,15 +26,15 @@ export default defineSandboxAgent({
   //  t.transcript.compactions() 恒为 0 → 长程压缩类 eval 自动 skip(不误判 agent 挂)。
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
 
-  async send(input, ctx) {
-    const sb = ctx.sandbox;
-    await shared.ensureInstalled(sb, "npm", ["install", "-g", "@openai/codex"]);
+  // ── agent lifecycle:装 CLI + 写 config.toml,每个沙箱一次(不在 send 里)。──
+  // model/effort/base 在一条 eval 内都不变(来自 ctx),所以写一次就够 —— 这也正是为什么
+  // 配置该放 setup:之前每轮 send 重写,是因为没有 agent 自己的 setup 落点。
+  async setup(sb, ctx) {
+    await sb.runCommand("npm", ["install", "-g", "@openai/codex"]);
 
     const model = ctx.model ?? "gpt-5.4"; // 模型来自实验(ctx.model);无则兜底
     const effort = (ctx.flags.effort as string | undefined) ?? "medium"; // 读实验 feature flag
     const base = proxyBase();
-
-    // 写 ~/.codex/config.toml:adapter 每次 send 都重写(代理配置必须在这里,不能放进实验 setup)。
     if (base) {
       // wire_api="responses" → codex 调 {base_url}/responses,匹配代理的 /v1/responses。
       // key 经 env_key(CODEX_API_KEY)注入,因此【不跑 codex login】。
@@ -54,8 +54,12 @@ export default defineSandboxAgent({
       // 无代理:回落到 OpenAI 官方(需要 OPENAI_API_KEY / codex login)。
       await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n`);
     }
+  },
 
-    // 拼调用:resume 是 exec 的子命令,必须紧跟 exec;flag 放其后。
+  // ── send 只剩「第一次 fresh / 后续 resume」+ 跑 + 解析。──
+  async send(input, ctx) {
+    const sb = ctx.sandbox;
+    // resume 是 exec 的子命令,必须紧跟 exec;flag 放其后。key 经 env 注入(env_key 指向它)。
     const flags = "--json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check";
     const escaped = input.text.replace(/'/g, "'\\''");
     const resuming = !ctx.session.isNew && ctx.session.id;

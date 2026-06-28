@@ -27,10 +27,14 @@ export default defineSandboxAgent({
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true },
   // 注意:没有 defaultModel、没有 apiKeyEnvVar —— 模型留空交给实验,鉴权本地自理
 
+  // ── agent lifecycle:装 CLI,每个沙箱一次(不在 send 里)。──
+  async setup(sb) {
+    await sb.runCommand("npm", ["install", "-g", "@anthropic-ai/claude-code"]);
+  },
+
+  // ── send 只剩「第一次 fresh / 后续 --resume」+ 跑 + 解析。──
   async send(input, ctx) {
     const sb = ctx.sandbox; // 同一个 eval 的多轮共享同一个沙箱
-    await shared.ensureInstalled(sb, "npm", ["install", "-g", "@anthropic-ai/claude-code"]);
-
     const args = ["--print", "--dangerously-skip-permissions"];
     if (ctx.model) args.push("--model", ctx.model);                 // 实验给了才传;否则用 CLI 原生默认
     if (ctx.flags.webResearch) args.push("--allowedTools", "WebSearch,WebFetch"); // 读实验 feature flag
