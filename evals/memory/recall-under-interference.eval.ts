@@ -1,6 +1,6 @@
 import { defineEval } from "fastevals";
 import { includes } from "fastevals/expect";
-import { fillContext } from "../_support/gap.js";
+import { realWork } from "../_support/gap.js";
 
 // 失败模式 #3+#4 干扰下的精确检索(LoCoMo single-hop / 长程里的 needle 精度)
 // 一口气立四条【长得很像】的路径约定,隔长程后只触发其中一条。
@@ -20,17 +20,17 @@ export default defineEval({
     ack.expectOk();
     t.memory.recalled(/api\/client|constants|types|__tests__/i);
 
-    // —— Gap:长程 ——
-    await fillContext(t, 12);
+    // —— Gap:做几件真实的活(都不碰这几条目录约定),让四条约定一起沉到上下文深处 ——
+    await realWork(t, 5, { avoid: ["fs-convention", "api"] });
 
     // —— Probe:只触发第④条,不提其它三条、也不提 client.ts ——
     await t.send("加一个拉取 /users 列表的函数,放到该放的地方。");
 
     // 落到正确的那一条约定上
     t.fileChanged("src/api/client.ts");
-    t.check(t.diff.get("src/api/client.ts"), includes(/\/users/));
-    // 没有落到相邻的、似是而非的位置(断言错误位置的缺席)
-    t.notInDiff(/src\/users\.tsx?|src\/constants\.ts|src\/types\//);
+    t.check(t.file("src/api/client.ts"), includes(/\/users/));
+    // 没有落到相邻的、似是而非的位置(断言错误位置的缺席:没另起 users 文件、没塞进 constants/types)
+    t.notCalledTool("file_write", { input: { path: /src\/(users|constants)\.|src\/types\// } });
     t.scriptPassed("build");
   },
 });

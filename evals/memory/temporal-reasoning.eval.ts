@@ -1,6 +1,6 @@
 import { defineEval } from "fastevals";
 import { includes } from "fastevals/expect";
-import { fillContext } from "../_support/gap.js";
+import { realWork } from "../_support/gap.js";
 
 // 失败模式 #2 时序推理(LongMemEval temporal-reasoning;LoCoMo temporal)
 // 跨多轮按顺序立下几个决定,中途改掉其中一个,然后问「最早定的是什么、后来换成了什么」。
@@ -14,8 +14,8 @@ export default defineEval({
     (await t.send("组件库就用 Ant Design。")).expectOk();
     (await t.send("状态管理改一下吧,Redux 太重,换成 Zustand。")).expectOk();
 
-    // —— Gap:长程,逼它从记忆而非上文回答 ——
-    await fillContext(t, 12);
+    // —— Gap:做几件真实的活(不碰状态管理库选型),逼它从记忆而非上文回答 ——
+    await realWork(t, 5, { avoid: ["state-lib"] });
 
     // —— Probe:同时问「最早 / 后来」,逼出顺序 ——
     await t.send("帮我回顾一下:状态管理我们最早定的是哪个、后来换成了哪个?组件库呢?");

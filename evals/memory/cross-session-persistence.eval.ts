@@ -35,6 +35,8 @@ export default defineEval({
     b.notCalledTool("file_write", { input: { path: /Header|Footer|Sidebar/ } });
     // 也没有误判为「已经全做完了」
     t.judge.closedQA("回复是否识别出还剩 UserBadge 和 ChangelogBanner 两个没做,而不是声称已完工", { on: b.reply }).atLeast(0.7);
+    // agent-judge:派独立评判 agent 通读 sandbox,核实最终项目状态正好等于「续作完成」
+    b.judge.agent("看 sandbox 的 src 目录:是否正好新增了 UserBadge 和 ChangelogBanner 两个组件,且 Header/Footer/Sidebar 保持原样、没被重建?").atLeast(0.7);
     b.scriptPassed("build");
   },
 });

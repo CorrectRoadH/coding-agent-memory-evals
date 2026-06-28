@@ -1,6 +1,6 @@
 import { defineEval } from "fastevals";
 import { includes } from "fastevals/expect";
-import { fillContext } from "../_support/gap.js";
+import { realWork } from "../_support/gap.js";
 
 // 失败模式 #11 范围辨别 / 不过度泛化(记忆的「写入与作用域」一环)
 // 同时立一条【全局规则】和一条【仅限某文件的一次性例外】。隔长程后在【另一个文件】做活。
@@ -15,17 +15,19 @@ export default defineEval({
     // —— Plant:明确【仅限一个文件】的一次性例外 ——
     (await t.send("有个例外,仅限 src/App.tsx 这一个文件:它比较特殊,里面的东西就不用写 JSDoc 了。只有这个文件哦。")).expectOk();
 
-    // —— Gap:长程,逼它从记忆里取出『规则 + 例外的范围』 ——
-    await fillContext(t, 12);
+    // —— Gap:做几件真实的活,逼它从记忆里取出『规则 + 例外的范围』 ——
+    await realWork(t, 5);
 
     // —— Probe:在【另一个文件】做活,不重述任何约定 ——
     await t.send("加一个 formatName(first, last) 工具函数,放到 src/utils.ts。");
 
     t.fileChanged("src/utils.ts");
-    const file = t.diff.get("src/utils.ts");
-    // 套用了全局规则:新文件里的函数有 JSDoc(例外没有泄漏过来)
-    t.check(file, includes(/\/\*\*/));
-    t.judge.closedQA("src/utils.ts 里新增的 formatName 函数上方是否有 JSDoc 注释块", { on: file }).atLeast(0.7);
+    // 套用了全局规则:新文件里的函数有 JSDoc(例外没有泄漏过来)。读 sandbox 最终文件
+    t.check(t.file("src/utils.ts"), includes(/\/\*\*/));
+    // agent-judge:同时核查【规则套用】和【例外保真】—— 新文件该有 JSDoc,App.tsx 仍不该被强加
+    t.judge
+      .agent("通读 sandbox:src/utils.ts 里新增的 formatName 函数是否有 JSDoc 注释块?同时确认 src/App.tsx 没有被强行加上 JSDoc(它是被豁免的那个文件)。")
+      .atLeast(0.7);
     t.scriptPassed("build");
   },
 });

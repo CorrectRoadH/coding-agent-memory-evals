@@ -22,7 +22,7 @@ export default defineEval({
     await c.send("写一个 fetch 封装函数 request(path),以后调后端都走它。放到 src/api/client.ts。");
 
     c.fileChanged("src/api/client.ts");
-    const file = c.diff.get("src/api/client.ts");
+    const file = c.file("src/api/client.ts"); // 读 sandbox 最终文件
     // 两条记忆都用上了
     c.check(file, includes(/API_BASE_URL/)); // 来自会话 A
     c.check(file, includes(/API_TOKEN/)); // 来自会话 B
@@ -30,6 +30,8 @@ export default defineEval({
     // 都从 env 读,没有把任意一半写死(断言错误做法的缺席)
     c.check(file, includes(/process\.env/));
     c.notInDiff(/https?:\/\/[^\s'"]+\.(com|io|net)/); // 没硬编码域名
+    // agent-judge:通读封装,确认两条记忆是【正确接线】的,而不只是字符串恰好出现
+    c.judge.agent("通读 src/api/client.ts:这个 fetch 封装是否用 API_BASE_URL 拼出请求地址,并把 API_TOKEN 放进 Authorization: Bearer 头?两者都要真正接上,不是写在注释里。").atLeast(0.7);
     c.scriptPassed("build");
   },
 });
