@@ -137,12 +137,25 @@ fastevals view                           # 事后看图
 
 ## 诚实声明
 
-- **fastevals 本身还没实现**(`../fastevals` 目前是设计文档)。所以这套件是「对着设计中的 DSL 写出来的、可读可评审的真实用例」,
-  目的之一就是用最刁钻的多轮记忆场景去压这套 DSL,看它扛不扛得住(下面的 DX 反馈)。
-- 几个 eval 用到了 DSL 里**尚待实现**的便利层(都列在下面 DX 反馈里,这里是真用上了):
-  `t.transcript.compactions()`(本会话压缩了几次,capability 门控)、读 sandbox 最终文件的 `t.file(path)`、
-  可查询的 `t.diff`、`notCalledTool(name, { input })`、以及能进 sandbox 的 `t.judge.agent(rubric)`。
-  (早期还假设过 `t.memory.recalled(/…/)`,已证明做不到也用不上,**砍掉**——理由见 DX 反馈第 1 条。)
+- **fastevals 已实现并接通**(`../fastevals`,经 `pnpm link`(`link:../fastevals`)连上,以 TS 源码经 `tsx` 运行,无编译步骤)。
+  这套件**现在真的能跑**:`pnpm codex`(= `fastevals --agent codex`)/ `fastevals exp compare/codex-gpt-5.4` 会起 docker 沙箱、
+  装 codex CLI、走 `.env` 里的 s2a 代理(`wire_api=responses`,gpt-5.4)跑多轮 / `codex exec resume` 续接、采 `git diff`、
+  跑 `next build`、用 judge 打分、出判决。下面 DX 反馈里列的便利层(`t.transcript.compactions()` / `t.file` /
+  可查询 `t.diff` / `notCalledTool(opts)` / `t.judge.agent` / 标准会话语义 / 文件夹分组)**都已在 fastevals 实现**。
+- **实测结果(codex · gpt-5.4,`fastevals exp compare/codex-gpt-5.4 --runs 1`)**:
+  - `multi-session-synthesis` → **failed**:codex 无跨会话记忆,正是该题要测的——`'sid'` 这条只在会话 B 的【对话】里、盘上没有,
+    所以会话 C 接不上(`includes(/['"]sid['"]/)` 挂、judge 0 分);而 `await cookies()` 这种盘上能推的它写对了、`next build` 也过。
+  - `knowledge-update` / `retention-through-compaction` → **skipped**:codex 的 `codex exec --json` **stdout 流不暴露压缩事件**
+    (压缩只在 `~/.codex/sessions` 的 rollout 文件里、且 exec 模式覆盖不全),所以 `t.transcript.compactions()` 恒为 0 →
+    守卫触发 `skip`(诚实降级,**不误判 agent 挂**)。这两条仍真跑了 12 / 14 轮 `codex exec resume`(各 ~5M token),只是判为「测试无效」。
+  - 一句话:三条都**正确跑通**并给出有意义的判决(`0 passed / 1 failed / 2 skipped`)。codex 没有持久记忆,本就该这样;
+    bub(tape)的对照见下。
+- **judge 模型改了**:本环境只有 s2a 代理(OpenAI 兼容,**没有 Anthropic key**),所以 judge 用代理上的 `gpt-5.4-mini`
+  (`fastevals.config.ts` 里已从 `anthropic/claude-haiku-4-5` 改过来)。要用 Anthropic 评判,在 `.env` 加 `ANTHROPIC_API_KEY` 并改回。
+- **bub 现实校正**:调研发现 bub **不是** npm `@bub/cli`,而是 PyPI 上的 `bub`(alpha,Python 3.12,hook-first framework,
+  github.com/bubbuild/bub;tape = republic 的审计轨)。`agents/bub.ts` 已按**真实形状**重写(uv 免 root 装、`bub run "<prompt>" --session-id`、
+  model 走 `BUB_MODEL=openai:<m>` + `BUB_API_BASE/KEY`、tape 落 `~/.bub/tapes/<md5(ws)__md5(sess)>.jsonl`),
+  但它需要在 node 沙箱里现装 Python(uv),仍是**实验性**;`BUB_TAPE_DISABLED` 这个旗标在真实 bub 里不存在(tape 总是开)。
 - `agents/*.ts` 的 CLI 名 / 参数 / 记忆路径是**按文档猜的形状**,真接各 agent 时按其 CLI 校正;
   bub 的 `BUB_TAPE_DISABLED` 同理——它把「关掉 tape」具体化成一个可操作的旗标,真实开关名以 bub 实现为准。
 - **代理与鉴权**:两个 agent 都走一个 OpenAI 兼容代理,凭据放 `.env`(已 gitignore;模板见 `.env.example`)。
@@ -167,6 +180,11 @@ fastevals view                           # 事后看图
 6. **「文件夹 = 可对比组」很顺手。** experiment 按文件夹分组、一文件一配置(`<agent>-<model>-<feature>`),「哪些该并排比」直接由目录结构表达,比「一个文件塞数组」更说得清意图;配对 A/B(只差一行 flag)尤其清爽。
 
 ### 试出来的缺口 / 待定 ⚠️(给 fastevals 的需求)
+
+> ✅ **更新**:下面这些当时对着设计 DSL 提的需求,**现在都已在 fastevals 实现**并被本套件真实跑过
+> (`t.transcript.compactions()` 的 capability 门控 + skip 守卫、可查询 `t.diff` + `t.file`、`notCalledTool(opts)`、
+> 能进 sandbox 的 `t.judge.agent`、标准会话语义、文件夹分组实验)。映射见 [`../fastevals/docs/source-map.md`](../fastevals/docs/source-map.md)。
+> 下面保留作为「需求是怎么试出来的」的记录。
 
 1. **别做 `t.memory.recalled`——记忆「检索轨」探不到(已砍)。** 早期假设了一个 agent 无关的 `t.memory.recalled(/.../)`(由各 adapter `readMemory()` 归一化),想直接查「事实进没进持久记忆」。**做不到**:claude/codex 的 `CLAUDE.md`/`AGENTS.md` 是静态预置文件、不写入对话事实,`~/.codex` 是配置;只有 bub 的 tape 是私有持久记忆。grep 这些位置恒返回与「记没记住」无关的结果,而且断言放在「陈述事实之后」恒为真——在三条 eval 里它非承重、还有一条压根没用。**结论:探针和各 adapter 的 `readMemory()` 一起删掉,记忆是否生效只认行动轨**(`t.file`/`notInDiff`/`calledTool`)。fastevals 不必提供 `t.memory`。
 2. **`t.diff` 需要查询助手 + 直接读 sandbox 最终文件。** 用到了 `t.diff.get(path)` / `t.notInDiff(re)`(查改动),以及 `t.file(path)`(读 sandbox 里的最终文件内容)。正向内容断言查最终文件比查 diff 文本更稳(diff 带 +/− 前缀、hunk 头);「错误答案的缺席」才查 diff。建议:`t.diff` 做成可查询对象(`get` / `isEmpty` / `matches` / `notInDiff`),并正式提供 `t.file(path)` 作为 `t.sandbox.readFile` 的高层封装。
