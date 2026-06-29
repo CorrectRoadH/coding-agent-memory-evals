@@ -1,5 +1,8 @@
-import { defineSandboxAgent, requireEnv, shared } from "fasteval";
+import { defineSandboxAgent, requireEnv, shared, createCheckpoint, restoreCheckpoint } from "fasteval";
 import { createHash } from "node:crypto";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join, dirname } from "node:path";
 
 // ───────────────────────────────────────────────────────────────────────────
 // bub 的 agent adapter(沙箱型)—— 实验性。
@@ -21,6 +24,16 @@ import { createHash } from "node:crypto";
 const SANDBOX_WORKSPACE = "/home/sandbox/workspace"; // = docker 沙箱 CWD
 const BUB_HOME = "/home/node/.bub"; // 绝对路径:sb.readFile 走 `cat <arg>`(不过 shell),~ 不会展开
 
+// checkpoint 路径:uv + Python + bub 工具 venv。注意不包含 .bub(tape 是 per-eval 状态)。
+const BUB_CHECKPOINT_PATHS = ["/home/node/.local", "/home/node/.cache/uv"];
+// 宿主磁盘持久化位置:跨 fasteval 进程复用(版本含 otelPlugin 哈希,插件升级自动失效)。
+const DISK_CACHE_PATH = join(homedir(), ".cache", "fasteval", "bub-checkpoint.bin");
+
+// 进程内 in-memory 缓存:同一次 fasteval 运行里多个 bub eval 共享,第 2 条起直接 restore。
+let memCheckpoint: Buffer | undefined;
+// mutex:保证同一时刻只有一个 cold install 在跑,其余等它完成后走 restore。
+let installInProgress: Promise<void> | undefined;
+
 // 本地配:走同一个 OpenAI 兼容代理(.env 的 BUB_API_BASE / BUB_API_KEY)。
 const auth = () => ({
   BUB_API_KEY: requireEnv("BUB_API_KEY"),
@@ -30,29 +43,81 @@ const auth = () => ({
 const UV = "$HOME/.local/bin/uv";
 const BUB = "$HOME/.local/bin/bub";
 
-// 首轮装 uv + bub(免 root,uv 自带下载 python 3.12)。幂等:已装则跳过。
+// --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
+// 用 PR #49 的分支:bub 在 04960b1 用自家 bub.tape 替掉了 republic,旧版插件仍
+// `from republic import TapeEntry`,运行时 bub.tape.TapeEntry 过不了 isinstance/pydantic
+// 校验 → 每条 append 抛错、导出 0 span(见 bub-contrib#47)。该分支把插件迁到 bub.tape,
+// 兼容 bub HEAD,无需钉版本。等 PR 合并进 main 可改回 bubbuild/bub-contrib 主仓。
+const OTEL_PLUGIN =
+  "git+https://github.com/CorrectRoadH/bub-contrib.git@fix/tapestore-otel-tape-entry-validation" +
+  "#subdirectory=packages/bub-tapestore-otel";
+
+// 首轮装 uv + bub(免 root,uv 自带下载 python 3.12)。
+// 三层策略:
+//   1. 进程内 in-memory 缓存(同一次 fasteval 运行内第 2 条 bub eval 直接命中)
+//   2. 磁盘持久化缓存(跨进程/跨次运行)
+//   3. Cold install + 打快照 → 写盘(mutex 保证只做一次,其余等完再 restore)
 async function ensureBub(sb: import("fasteval").Sandbox): Promise<void> {
-  const has = await sb.runShell(`test -x $HOME/.local/bin/bub && echo yes || true`);
-  if (has.stdout.includes("yes")) return;
-  // --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
-  // 用 PR #49 的分支:bub 在 04960b1 用自家 bub.tape 替掉了 republic,旧版插件仍
-  // `from republic import TapeEntry`,运行时 bub.tape.TapeEntry 过不了 isinstance/pydantic
-  // 校验 → 每条 append 抛错、导出 0 span(见 bub-contrib#47)。该分支把插件迁到 bub.tape,
-  // 兼容 bub HEAD,无需钉版本。等 PR 合并进 main 可改回 bubbuild/bub-contrib 主仓。
-  const otelPlugin =
-    "git+https://github.com/CorrectRoadH/bub-contrib.git@fix/tapestore-otel-tape-entry-validation" +
-    "#subdirectory=packages/bub-tapestore-otel";
-  await sb.runShell(`test -x ${UV} || (curl -LsSf https://astral.sh/uv/install.sh | sh)`);
-  // tool install 重试几次:bub + 插件 + 传递依赖都从 github clone,容器里 github 偶发抽风。
-  let last = { stdout: "", stderr: "" };
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    const install = await sb.runShell(
-      `${UV} tool install --reinstall --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${otelPlugin}'`,
-    );
-    if (install.exitCode === 0) return;
-    last = install;
+  // ── 1. in-memory 缓存 ──────────────────────────────────────────────────
+  if (memCheckpoint) {
+    await restoreCheckpoint(sb, memCheckpoint);
+    return;
   }
-  throw new Error(`bub 安装失败(重试 3 次):\n${(last.stdout + last.stderr).split("\n").slice(-15).join("\n")}`);
+
+  // ── 2. 磁盘缓存 ───────────────────────────────────────────────────────
+  const disk = await readFile(DISK_CACHE_PATH).catch(() => undefined);
+  if (disk) {
+    try {
+      await restoreCheckpoint(sb, disk);
+      memCheckpoint = disk;
+      return;
+    } catch {
+      // 磁盘缓存损坏或不兼容 → 回退 cold install
+    }
+  }
+
+  // ── 3. Cold install(mutex 串行化:只有一个真正跑,其余等它完成后 restore)──
+  if (installInProgress) {
+    // 另一个 ensureBub 正在安装,等它完成
+    await installInProgress;
+    // 此时 memCheckpoint 必已就绪
+    if (memCheckpoint) {
+      await restoreCheckpoint(sb, memCheckpoint);
+      return;
+    }
+    // 万一还是没有(install 失败了),直接 cold install(不再 mutex,避免死锁)
+  }
+
+  // 我是第一个,设 mutex
+  let resolveInstall!: () => void;
+  let rejectInstall!: (e: unknown) => void;
+  installInProgress = new Promise<void>((res, rej) => { resolveInstall = res; rejectInstall = rej; });
+
+  try {
+    await sb.runShell(`test -x ${UV} || (curl -LsSf https://astral.sh/uv/install.sh | sh)`);
+    let last = { stdout: "", stderr: "" };
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const install = await sb.runShell(
+        `${UV} tool install --reinstall --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${OTEL_PLUGIN}'`,
+      );
+      if (install.exitCode === 0) break;
+      last = install;
+      if (attempt === 3) {
+        throw new Error(`bub 安装失败(重试 3 次):\n${(last.stdout + last.stderr).split("\n").slice(-15).join("\n")}`);
+      }
+    }
+
+    // 打快照,供后续 eval / 下次运行复用
+    memCheckpoint = await createCheckpoint(sb, BUB_CHECKPOINT_PATHS);
+    await mkdir(dirname(DISK_CACHE_PATH), { recursive: true }).catch(() => {});
+    await writeFile(DISK_CACHE_PATH, memCheckpoint).catch(() => {});
+
+    resolveInstall();
+  } catch (e) {
+    rejectInstall(e);
+    installInProgress = undefined;
+    throw e;
+  }
 }
 
 // tape 文件名:md5(resolve(workspace))[:16] + "__" + md5(session_id)[:16](见 bub src/bub/builtin/tape.py)。

@@ -32,4 +32,7 @@ export default defineConfig({
   // memory 测试天然慢(多轮 + 真实安装/构建),给宽一点。
   timeoutMs: 600_000,
   maxConcurrency: 3,
+  // Docker 容器初始化(apt-get install)串行竞争网络/IO;3 个同时起会让第 3 个 apt-get
+  // 在 600s 内跑不完 → 限制同时创建沙箱数为 2,错开初始化压力。
+  sandboxConcurrency: 2,
 });

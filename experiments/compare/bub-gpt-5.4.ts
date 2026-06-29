@@ -10,7 +10,7 @@ export default defineExperiment({
   sandbox: "docker", // 本地 docker 沙箱,零云依赖
   // 注:workspace(starter repo)+ 它的 setup 不在这儿 —— 那属于「eval 在什么上面干活」,
   // 不同 eval 可能不同,所以写在各 eval 的 defineEval({ workspace, setup }) 里。experiment 只管怎么跑。
-  runs: 5,
+  runs: 1,
   earlyExit: false, // 要完整通过率分布,以便报 pass^k
   budget: 15,
 });
