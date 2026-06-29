@@ -48,6 +48,17 @@
 > **没有任何现有 benchmark 测「agent 自己的非可推导工程决定、跨真正的会话边界召回」。** 那正是本套件占的位。
 > README 可引这两篇定位。其它纯记忆 benchmark(对话域,非代码):LongMemEval / LoCoMo / MemoryAgentBench。
 
+## 本轮先落的两个真实样例
+
+这次不自己编开发环境、任务和 verifier。优先从已经公开的 benchmark 仓库里拿任务底座:
+
+| 记忆类型 | 真实任务 | 来源 | 为什么适合 | 验证方式 | 落地说明 |
+|---|---|---|---|---|---|
+| 会话内长程记忆 | `swe-bench-astropy-1` | Terminal-Bench `original-tasks/swe-bench-astropy-1`，来自真实 SWE-bench Astropy issue | 调试点在 `separability_matrix` 对嵌套 `CompoundModels` 的矩阵组合语义。agent 需要先理解 nested compound model 的语义，再改实现和测试；长上下文里很容易忘掉早期定位出的“右侧子矩阵必须保留结构”这个约束。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`；测试脚本给 Astropy 的 separability 测试加 case，然后跑 pytest。 | 直接作为第一条 type-1 eval。评分沿用原 verifier，再加源码断言:修复应保留 right-hand separability matrix，而不是用全 1 填充。 |
+| 跨会话持久记忆 | `custom-memory-heap-crash` | Terminal-Bench `original-tasks/custom-memory-heap-crash` | RELEASE-only crash 的根因是 release libstdc++ locale facet 的 lazy allocation 与 custom heap 生命周期顺序。这个结论不容易从最后代码直接看出，适合放进会话 A 的“排障记忆”，会话 B 清空上下文后继续修。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`、pytest verifier；要求只改 `/app/user.cpp`，debug/release 都能编译运行，且 Valgrind 无 definite leak。 | 不改造环境和 verifier，只在 eval driver 层切成两段:会话 A 让 agent 排障并产出 root-cause note；会话 B 从干净上下文继续实现。通过条件是最终跑原 verifier，且会话 B 没重复走会话 A 的失败路径。 |
+
+类型二这里要说实话:公开 GitHub 里我还没找到“真实跨会话历史 + 真实开发任务 + 可执行 verifier”三者同时齐全的样例。ToM-SWE 有 memory/user-modeling 和一个 OpenHands 会话样例，但 GitHub repo 里的样例不是一条可直接评分的开发任务；SWE-chat GitHub 当前只有 README，数据和代码还没放进仓库；Orchard GitHub 目前发布的是环境层，SWE 轨迹在 Hugging Face 数据集里。所以上面的 type-2 做法是**真实任务和真实 verifier 来自 Terminal-Bench，跨会话边界由我们的 eval driver 切分**，不是自造环境或测试。
+
 ---
 
 ## 候选 eval 目录
@@ -105,13 +116,13 @@
 
 ## 落地说明:工作区与成本
 
-- **现有 Next.js 工作区**够 A1 / B1 / B3 用(🟢)。
+- **现有 Next.js 工作区**够 A1 / B1 / B3 用(🟢),但这些更像轻量自造任务,不是本轮优先级。
+- **本轮优先级**是上面两个 Terminal-Bench 真实任务:`swe-bench-astropy-1` 先测会话内长程保持,`custom-memory-heap-crash` 再测跨会话续作召回。
 - **想要更真的真实大 repo**:**SWE-Gym** 或 **SWE-bench Verified** 的预构建 Docker 镜像是成本最低的真实 Python repo 底座
   ——它们已装好依赖、测试能跑,避开「装依赖 / 构建 flaky」这个最大的坑。`hints_text` 是现成的「代码里推不出的约定」来源。
 - **成本排序**:镜像体积/拉取(SWE-bench/Live 大,GitBug-Java ~240GB,MLE-bench 数据 ~3.3TB 慎入)>
   构建/测试 flaky(SWE-Gym 预构建最稳)> 离线运行(SWE-bench / Konwinski / SWE-Lancer 默认断网,需预装依赖)。
-- **优先级建议**:先落 🟢 的 **B1(被否决方案理由)** 和 **A1(架构决定不漂移)**——新失败模式、且现有工作区就能做;
-  💰 的 A2/A3/B2/B4 等真要上真实大 repo 再说。
+- **后续扩展**:A1/B1/B3 适合快速补轻量覆盖;A2/A3/B2/B4 等真要上真实大 repo 再说。
 
 ## 参考(URL)
 
