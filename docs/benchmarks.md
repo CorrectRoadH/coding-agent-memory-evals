@@ -55,9 +55,9 @@
 | 记忆类型 | 真实任务 | 来源 | 为什么适合 | 验证方式 | 落地说明 |
 |---|---|---|---|---|---|
 | 会话内长程记忆 | `swe-bench-astropy-1` | Terminal-Bench `original-tasks/swe-bench-astropy-1`，来自真实 SWE-bench Astropy issue | 调试点在 `separability_matrix` 对嵌套 `CompoundModels` 的矩阵组合语义。agent 需要先理解 nested compound model 的语义，再改实现和测试；长上下文里很容易忘掉早期定位出的“右侧子矩阵必须保留结构”这个约束。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`；测试脚本给 Astropy 的 separability 测试加 case，然后跑 pytest。 | 直接作为第一条 type-1 eval。评分沿用原 verifier，再加源码断言:修复应保留 right-hand separability matrix，而不是用全 1 填充。 |
-| 跨会话持久记忆 | `custom-memory-heap-crash` | Terminal-Bench `original-tasks/custom-memory-heap-crash` | RELEASE-only crash 的根因是 release libstdc++ locale facet 的 lazy allocation 与 custom heap 生命周期顺序。这个结论不容易从最后代码直接看出，适合放进会话 A 的“排障记忆”，会话 B 清空上下文后继续修。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`、pytest verifier；要求只改 `/app/user.cpp`，debug/release 都能编译运行，且 Valgrind 无 definite leak。 | 不改造环境和 verifier，只在 eval driver 层切成两段:会话 A 让 agent 排障并产出 root-cause note；会话 B 从干净上下文继续实现。通过条件是最终跑原 verifier，且会话 B 没重复走会话 A 的失败路径。 |
+| 跨会话持久记忆 | `custom-memory-heap-crash` | Terminal-Bench `original-tasks/custom-memory-heap-crash` | RELEASE-only crash 的根因是 release libstdc++ locale facet 的 lazy allocation 与 custom heap 生命周期顺序。这个结论不容易从最后代码直接看出，适合放进会话 A 的“排障记忆”，会话 B 清空上下文后继续修。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`、pytest verifier；要求只改 `/app/user.cpp`，debug/release 都能编译运行，且 Valgrind 无 definite leak。 | 不改造真实开发任务和 verifier，只在 eval driver 层切成两段:会话 A 让 agent 排障并产出 root-cause note；会话 B 从干净上下文继续实现。通过条件是最终跑原 verifier，且会话 B 没重复走会话 A 的失败路径。 |
 
-类型二这里要说实话:公开 GitHub 里我还没找到“真实跨会话历史 + 真实开发任务 + 可执行 verifier”三者同时齐全的样例。ToM-SWE 有 memory/user-modeling 和一个 OpenHands 会话样例，但 GitHub repo 里的样例不是一条可直接评分的开发任务；SWE-chat GitHub 当前只有 README，数据和代码还没放进仓库；Orchard GitHub 目前发布的是环境层，SWE 轨迹在 Hugging Face 数据集里。所以上面的 type-2 做法是**真实任务和真实 verifier 来自 Terminal-Bench，跨会话边界由我们的 eval driver 切分**，不是自造环境或测试。
+这里的筛选标准是**真实开发任务 + 现成 verifier**。跨会话边界是本套件的运行协议:把同一条真实开发任务切成两个 session,检查第二段是否能复用第一段发现的非代码事实。也就是说,我们不需要 benchmark 原生提供跨会话历史;只要任务、代码环境、失败模式和验证脚本是真实的,就可以用它测 memory。
 
 ---
 
