@@ -12,7 +12,7 @@ export default defineEval({
     await sandbox.runCommand("apt-get", ["update"], { root: true });
     await sandbox.runCommand(
       "apt-get",
-      ["install", "-y", "curl", "openjdk-17-jdk", "maven", "python3", "python3-pip"],
+      ["install", "-y", "curl", "openjdk-17-jdk", "maven", "procps", "python3", "python3-pip"],
       { root: true },
     );
     await sandbox.runCommand(
@@ -39,15 +39,21 @@ export default defineEval({
       "tests/run-tests.sh": [
         "#!/usr/bin/env bash",
         "set -euo pipefail",
+        "pkill -f 'java .*target/.*[.]jar' >/dev/null 2>&1 || true",
         "cd dst",
         "mvn clean package -DskipTests",
         "SERVER_PORT=3000 java -jar target/*.jar > ../server.log 2>&1 &",
         "server_pid=$!",
         "trap 'kill $server_pid 2>/dev/null || true' EXIT",
+        "ready=0",
         "for i in $(seq 1 30); do",
-        "  if curl -fsS http://localhost:3000/ >/dev/null 2>&1; then break; fi",
+        "  if curl -fsS http://localhost:3000/ >/dev/null 2>&1; then ready=1; break; fi",
         "  sleep 1",
         "done",
+        "if [ \"$ready\" != 1 ]; then",
+        "  cat ../server.log",
+        "  exit 1",
+        "fi",
         "cd ..",
         "python3 -m pytest tests/test_api.py --api-port=3000 -rA",
       ].join("\n"),
