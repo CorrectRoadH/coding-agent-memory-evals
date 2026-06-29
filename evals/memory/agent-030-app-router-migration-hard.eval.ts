@@ -103,7 +103,8 @@ export default defineEval({
     await t.group("Final source free of legacy Pages APIs and imports", async () => {
       const code = (await t.sandbox.readSourceFiles()).code();
       t.check(code, excludes(/getServerSideProps|getStaticProps|getStaticPaths/));
-      t.check(code, excludes(/next\/head|next\/router/));
+      // Only flag exact legacy Pages Router imports; App Router imports like next/headers are valid.
+      t.check(code, excludes(/\bfrom\s+['"]next\/(?:head|router)['"]|import\s+['"]next\/(?:head|router)['"]/));
     });
 
     t.scriptPassed("build");
