@@ -7,7 +7,7 @@ import { defineExperiment, bubAgent } from "fasteval";
 // (装 uv+bub、运行 Next starter、解析用量)在便宜模型下也跑得通。
 export default defineExperiment({
   description: "bub · gpt-5.4-mini(dev/smoke,便宜快速验证)",
-  agent: bubAgent,
+  agent: bubAgent(),
   model: "gpt-5.4-mini", // → ctx.model → agents/bub.ts 的 BUB_MODEL=openai:gpt-5.4-mini
   sandbox: "docker",
   runs: 1,

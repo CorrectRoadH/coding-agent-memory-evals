@@ -7,7 +7,7 @@ import { defineExperiment, codexAgent } from "fasteval";
 // dev 期先跑较小的 cache eval;正式结果再跑 compare 组的完整三条。
 export default defineExperiment({
   description: "codex · gpt-5.4-mini(dev/smoke,便宜快速验证)",
-  agent: codexAgent,
+  agent: codexAgent(),
   model: "gpt-5.4-mini", // → ctx.model → agents/codex.ts 写进 ~/.codex/config.toml
   sandbox: "docker",
   runs: 1,
