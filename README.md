@@ -27,26 +27,28 @@ memory 分两层，二者都要测：
 
 具体观察指标：
 
-- **长程保持**：早期定下的架构选择、试错结论，会不会在后半段被遗忘
-- **错误方案抑制**：agent 是否会重新采用已明确否决的方案
-- **工程一致性**：最终代码是否贯彻同一套约定
+- **任务完成率**：最终开发任务能不能通过原始 benchmark 的验证
+- **开发效率**：完成同一任务需要多少时间、turn、命令和 token
+- **重复试错**：是否少走已经探索过的失败路径
 - **稳定复现**：pass^k，不奖励多跑几次碰运气
 
-> eval 的答案必须放在"从代码推不出来"的地方。如果无 memory 的 agent 也能读代码重做推理，benchmark 就测不出差异。
+memory 的作用不需要做成额外验收项。真实开发里用户关心的是任务是否完成、完成得多快、花费多少、是否少踩坑；如果无 memory 的 agent 也能重新推理并最终通过,那它也应该算过,只是可能更慢、更贵、更不稳定。
 
 ---
 
 ## 评分方式
 
-硬断言优先，judge 只处理无法可靠 grep 的开放判断：
+主评分只看开发任务本身是否完成。memory 条件的价值通过副指标比较,而不是通过“是否显式记住某条事实”来额外扣分：
 
 | 证据 | 判断什么 |
 |---|---|
-| final source tree | 正确写法是否真的落进代码 |
-| diff | 错误方案、旧依赖、无关重写是否出现 |
-| build / tests | patch 是否能跑 |
-| tool calls / commands | 是否重复踩已知坑 |
-| judge | 是否召回了"为什么"，例如被否方案的理由 |
+| build / tests / upstream verifier | 开发任务是否完成 |
+| final source tree / diff | 最终产物是否满足任务要求、有无无关破坏 |
+| duration / token / cost | memory 是否降低完成成本 |
+| tool calls / commands | 是否减少重复探索和失败命令 |
+| pass^k | 同一条件下是否稳定复现 |
+
+judge 只用于无法规则化的任务完成判断,不作为独立的 memory 召回考试。
 
 ---
 
@@ -63,18 +65,20 @@ memory 分两层，二者都要测：
 
 ## 当前状态
 
-已有 3 条从 `next-evals-oss` 迁来的 Next.js coding tasks，用于验证 TypeScript DSL 和评分面：
+已有 5 条 coding tasks：
 
 | eval | 测什么 |
 |---|---|
 | `memory/agent-029-use-cache-directive` | Server Action、cache tag 断言 |
 | `memory/agent-030-app-router-migration-hard` | 大迁移、文件删除、legacy API 缺席 |
 | `memory/agent-037-updatetag-cache` | read-your-own-writes 场景下的正确 cache invalidation |
+| `memory/terminal-cancel-async-tasks` | Terminal-Bench async cancellation task，跑原 pytest 语义 |
+| `memory/repomod-hello-world-api` | RepoMod-Bench Flask → Java/Spring API 迁移，跑 hidden pytest HTTP 测试 |
 
-下一步新增两个真实 memory tasks：
+后续真实开发任务候选：
 
-- **会话内**：`swe-bench-astropy-1`（长 bug fix，测 agent 能否保留早期诊断出的矩阵组合语义）
-- **跨会话**：`swe-bench-astropy-2`（QDP parser bug，切成两段 session，测第一段的约束能否带入第二段）
+- **会话内**：`swe-bench-astropy-1`（长 bug fix，跑原任务 verifier）
+- **跨会话**：`swe-bench-astropy-2`（QDP parser bug，切成两段 session，最终仍只看原任务 verifier）
 
 候选列表见 [docs/benchmarks.md](docs/benchmarks.md)。
 

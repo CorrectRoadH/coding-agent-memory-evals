@@ -1,0 +1,26 @@
+id: "001"
+name: hello-world-api
+type: server
+source_language: python
+target_language: java
+description: A simple REST API that returns personalized Hello messages
+
+complexity:
+  loc: 14
+  loc_note: "All code files, excludes build artifacts (node_modules, target, etc.)"
+  test_count: 6
+
+architecture:
+  frameworks:
+    source: ["Flask"]
+    target: ["Spring Boot"]
+  has_database: false
+  has_authentication: false
+
+provenance:
+  source_repo: https://github.com/xli-modelcode/hello-world-api
+  source_version: null
+  source_commit: c2edd3f24bb9dae6725dcfcdc908b75948ef5c5b
+  license: MIT
+
+notes: Simple starter benchmark for basic REST API translation. Source repo contains multiple language implementations; we use only the Python Flask version.

@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "python3 -m pytest tests/test_outputs.py -rA"
+  }
+}

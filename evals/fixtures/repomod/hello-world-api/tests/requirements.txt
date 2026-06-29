@@ -1,0 +1,4 @@
+# Test dependencies for hello-world-api testing
+pytest>=7.0.0
+pytest-timeout>=2.0.0
+requests>=2.31.0
