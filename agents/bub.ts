@@ -26,8 +26,7 @@ const BUB_HOME = "/home/node/.bub"; // 绝对路径:sb.readFile 走 `cat <arg>`(
 
 // checkpoint 路径:uv + Python + bub 工具 venv。注意不包含 .bub(tape 是 per-eval 状态)。
 const BUB_CHECKPOINT_PATHS = ["/home/node/.local", "/home/node/.cache/uv"];
-// 宿主磁盘持久化位置:跨 fasteval 进程复用(版本含 otelPlugin 哈希,插件升级自动失效)。
-const DISK_CACHE_PATH = join(homedir(), ".cache", "fasteval", "bub-checkpoint.bin");
+// 宿主磁盘持久化位置在下方定义 —— 文件名按完整安装 spec 哈希,改 bub / 插件装源即自动失效。
 
 // 进程内 in-memory 缓存:同一次 fasteval 运行里多个 bub eval 共享,第 2 条起直接 restore。
 let memCheckpoint: Buffer | undefined;
@@ -43,6 +42,17 @@ const auth = () => ({
 const UV = "$HOME/.local/bin/uv";
 const BUB = "$HOME/.local/bin/bub";
 
+// bub 主包:临时用 fork 分支,带「流式补 stream_options.include_usage」修复 —— 上游流式 completion
+// 不带该字段时 OpenAI 兼容 provider 不返回 usage,导致 tape 的 run.usage 恒空、token/cost 恒 0。
+// 见 bubbuild/bub#248。
+//
+// ⚠️ 不能把 fork 当顶层 URL 依赖装(`uv tool install 'git+...bub...'`):otel 插件也依赖 bub,
+//    uv 会判 "conflicting URLs for package bub"(即便两个 URL 完全相同)。改用 uv override —— bub
+//    顶层用名字、override 把【所有】bub 来源(含插件的依赖)统一强制到 fork,单一来源、无冲突,
+//    且 bub-contrib 一行都不用动。等 #248 发版后:删掉 override,顶层改回 'bub>=0.3.0a1'。
+const BUB_OVERRIDE = "bub @ git+https://github.com/CorrectRoadH/bub.git@fix/streaming-usage-include-usage";
+const BUB_OVERRIDE_FILE = "/tmp/bub-override.txt";
+
 // --with <otel 插件>:把 OTel 插件装进 bub 这个 tool 环境(同环境插件才会被 bub 加载)。
 // 用 PR #49 的分支:bub 在 04960b1 用自家 bub.tape 替掉了 republic,旧版插件仍
 // `from republic import TapeEntry`,运行时 bub.tape.TapeEntry 过不了 isinstance/pydantic
@@ -51,6 +61,16 @@ const BUB = "$HOME/.local/bin/bub";
 const OTEL_PLUGIN =
   "git+https://github.com/CorrectRoadH/bub-contrib.git@fix/tapestore-otel-tape-entry-validation" +
   "#subdirectory=packages/bub-tapestore-otel";
+
+// 完整安装 spec(bub 主包 + 插件)。磁盘缓存文件名按它哈希:任一装源变了 → 新文件名 →
+// 旧 checkpoint 被忽略 → cold install 重装,无需手动删缓存。
+const INSTALL_SPEC = `bub --override(${BUB_OVERRIDE}) --with ${OTEL_PLUGIN}`;
+const DISK_CACHE_PATH = join(
+  homedir(),
+  ".cache",
+  "fasteval",
+  `bub-checkpoint-${createHash("md5").update(INSTALL_SPEC).digest("hex").slice(0, 12)}.bin`,
+);
 
 // 首轮装 uv + bub(免 root,uv 自带下载 python 3.12)。
 // 三层策略:
@@ -95,10 +115,12 @@ async function ensureBub(sb: import("fasteval").Sandbox): Promise<void> {
 
   try {
     await sb.runShell(`test -x ${UV} || (curl -LsSf https://astral.sh/uv/install.sh | sh)`);
+    // override 文件:把 bub 统一强制到 fork 分支(见 BUB_OVERRIDE 注释)。
+    await sb.runShell(`printf '%s\\n' '${BUB_OVERRIDE}' > ${BUB_OVERRIDE_FILE}`);
     let last = { stdout: "", stderr: "" };
     for (let attempt = 1; attempt <= 3; attempt++) {
       const install = await sb.runShell(
-        `${UV} tool install --reinstall --python 3.12 --prerelease allow 'bub>=0.3.0a1' --with '${OTEL_PLUGIN}'`,
+        `${UV} tool install --reinstall --python 3.12 --prerelease allow 'bub' --overrides ${BUB_OVERRIDE_FILE} --with '${OTEL_PLUGIN}'`,
       );
       if (install.exitCode === 0) break;
       last = install;
@@ -174,11 +196,12 @@ export default defineSandboxAgent({
       { env, stream: true },
     );
 
-    // stdout 无 JSON;transcript / 用量在 tape JSONL 里。
-    // 注:bub 当前 tape 的 run 事件只记 {status, model},不含 usage —— 故 token 恒为 0
-    //(已对 ~100KB tape 校验:无 prompt/completion_tokens;官方 otel 插件读的也是这条空路径)。
-    // 这是 bub 上游不落用量的限制,非解析问题;parseBub 已对「任意事件挂 usage」做兜底,
-    // 等 bub 哪天补上用量即可自动生效。
+    // stdout 无 JSON;transcript / 用量都在 tape JSONL 里。
+    // 用量:tape 的 run 事件(kind=event,name=run)的 data.usage 带 {prompt_tokens,
+    // completion_tokens, prompt_tokens_details.cached_tokens},parseBub 直接抠出。
+    // 前提:bub 流式调用要带 stream_options.include_usage —— 否则 OpenAI 兼容 provider 不返回
+    // usage、run.usage 恒空(老问题的真因)。已由 BUB_OVERRIDE 的 fork(bubbuild/bub#248)修复。
+    // cost:s2a 流式 usage 不带 cost 字段 → 由 fasteval 定价表按 token 估算(estimateCost)。
     const raw = await sb.readFile(tapePath(SANDBOX_WORKSPACE, sessionId)).catch(() => undefined);
     const parsed = shared.parseBub(raw);
     return {
