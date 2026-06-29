@@ -10,7 +10,8 @@
     "dev": "fasteval exp dev",
     "compare": "fasteval exp compare",
     "codex": "fasteval --agent codex",
-    "view": "fasteval view"
+    "view": "fasteval view",
+    "report": "fasteval view --out site/index.html"
   },
   "devDependencies": {
     "fasteval": "link:../fastevals"
