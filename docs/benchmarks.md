@@ -55,7 +55,7 @@
 | 记忆类型 | 真实任务 | 来源 | 为什么适合 | 验证方式 | 落地说明 |
 |---|---|---|---|---|---|
 | 会话内长程记忆 | `swe-bench-astropy-1` | Terminal-Bench `original-tasks/swe-bench-astropy-1`，来自真实 SWE-bench Astropy issue | 调试点在 `separability_matrix` 对嵌套 `CompoundModels` 的矩阵组合语义。agent 需要先理解 nested compound model 的语义，再改实现和测试；长上下文里很容易忘掉早期定位出的“右侧子矩阵必须保留结构”这个约束。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`；测试脚本给 Astropy 的 separability 测试加 case，然后跑 pytest。 | 直接作为第一条 type-1 eval。评分沿用原 verifier，再加源码断言:修复应保留 right-hand separability matrix，而不是用全 1 填充。 |
-| 跨会话持久记忆 | `custom-memory-heap-crash` | Terminal-Bench `original-tasks/custom-memory-heap-crash` | RELEASE-only crash 的根因是 release libstdc++ locale facet 的 lazy allocation 与 custom heap 生命周期顺序。这个结论不容易从最后代码直接看出，适合放进会话 A 的“排障记忆”，会话 B 清空上下文后继续修。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`、pytest verifier；要求只改 `/app/user.cpp`，debug/release 都能编译运行，且 Valgrind 无 definite leak。 | 不改造真实开发任务和 verifier，只在 eval driver 层切成两段:会话 A 让 agent 排障并产出 root-cause note；会话 B 从干净上下文继续实现。通过条件是最终跑原 verifier，且会话 B 没重复走会话 A 的失败路径。 |
+| 跨会话持久记忆 | `swe-bench-astropy-2` | Terminal-Bench `original-tasks/swe-bench-astropy-2`，来自真实 SWE-bench Astropy issue | QDP parser 需要把 commands 当作 case-insensitive；同时 lowercase roundtrip 会把数据 sentinel `NO` 变成 `no`，所以实现不能只修命令 regex。这个“双约束”很适合跨 session:会话 A 先定位两条约束，会话 B 清空上下文后实现，漏掉任意一条都不过。 | 原任务自带 `Dockerfile`、`task.yaml`、`run-tests.sh`；测试脚本给 `astropy/io/ascii/tests/test_qdp.py` 加 lowercase roundtrip case，然后跑 pytest。 | 不改造真实开发任务和 verifier，只在 eval driver 层切成两段。通过条件是最终跑原 verifier，并加源码断言:应使用 case-insensitive command parsing，且数据值判断应对 `NO/no` 统一处理。 |
 
 这里的筛选标准是**真实开发任务 + 现成 verifier**。跨会话边界是本套件的运行协议:把同一条真实开发任务切成两个 session,检查第二段是否能复用第一段发现的非代码事实。也就是说,我们不需要 benchmark 原生提供跨会话历史;只要任务、代码环境、失败模式和验证脚本是真实的,就可以用它测 memory。
 
@@ -117,7 +117,7 @@
 ## 落地说明:工作区与成本
 
 - **现有 Next.js 工作区**够 A1 / B1 / B3 用(🟢),但这些更像轻量自造任务,不是本轮优先级。
-- **本轮优先级**是上面两个 Terminal-Bench 真实任务:`swe-bench-astropy-1` 先测会话内长程保持,`custom-memory-heap-crash` 再测跨会话续作召回。
+- **本轮优先级**是上面两个 Terminal-Bench 真实任务:`swe-bench-astropy-1` 先测会话内长程保持,`swe-bench-astropy-2` 再测跨会话续作召回。
 - **想要更真的真实大 repo**:**SWE-Gym** 或 **SWE-bench Verified** 的预构建 Docker 镜像是成本最低的真实 Python repo 底座
   ——它们已装好依赖、测试能跑,避开「装依赖 / 构建 flaky」这个最大的坑。`hints_text` 是现成的「代码里推不出的约定」来源。
 - **成本排序**:镜像体积/拉取(SWE-bench/Live 大,GitBug-Java ~240GB,MLE-bench 数据 ~3.3TB 慎入)>

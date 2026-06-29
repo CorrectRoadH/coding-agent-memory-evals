@@ -104,7 +104,7 @@
 优先新增的两个真实来源样例：
 
 - **会话内长程记忆**：Terminal-Bench 的 `swe-bench-astropy-1`。这是一个真实 SWE-bench Astropy bug，验证脚本会给 `test_separable.py` 打补丁并跑 pytest。它适合测长 bug fix 中 agent 能不能保留早期诊断出的矩阵组合语义，而不是后半段写出“测试碰巧过但语义漂移”的 patch。
-- **跨会话持久记忆**：Terminal-Bench 的 `custom-memory-heap-crash`。这是一个真实 C++ RELEASE-only crash debugging 任务，验证脚本要求只改 `/app/user.cpp`，debug/release 都能编译运行，并通过 Valgrind。评测层可以把它切成两段：会话 A 定位到 release libstdc++ locale facet 与 custom heap 销毁顺序相关；会话 B 清空上下文后继续修复，只有能召回这个隐性约束的 memory 才能少走重复排障。
+- **跨会话持久记忆**：Terminal-Bench 的 `swe-bench-astropy-2`。这是一个真实 Astropy QDP parser bug，原 issue 来自 macOS / Clang / Python 3.10 复现，验证脚本会给 `test_qdp.py` 加 lowercase roundtrip case 并跑 pytest。评测层可以把它切成两段：会话 A 定位到 QDP commands 应该 case-insensitive，且 `NO` 数据 sentinel 也会被 lowercase 成 `no`；会话 B 清空上下文后继续实现。只记住第一个约束会漏掉第二个，测试仍会失败。
 
 更多候选见 [docs/benchmarks.md](docs/benchmarks.md)。
 
