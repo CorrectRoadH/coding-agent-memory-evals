@@ -155,8 +155,20 @@ export default defineSandboxAgent({
   // compactionObservability:tape 的 "anchor" 条目就是压缩检查点(republic 用它缩短历史)。
   // shared.parseBub 目前是通用解析器,未必抠得出 anchor → compactions() 可能返回 0(自动 skip,不误判)。
   // tracing:bub-tapestore-otel 插件把 tape 装饰成 OpenTelemetry span(invoke_agent / agent.step /
-  //  chat / execute_tool),经标准 OTEL_EXPORTER_OTLP_TRACES_* env 导出 → view 里看瀑布图。
+  //  chat / execute_tool)→ 经 bub mapper 归一到 canonical GenAI semconv → view 里看对齐的瀑布图。
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true, tracing: true },
+
+  // ── OTLP 导出配置(env-based):与 send 分开声明。bub(Python OTel SDK)读标准 OTEL_* env,
+  // HTTP 出口只有 protobuf。运行器把这里的结果算进 ctx.telemetry.env,send 直接 spread。
+  // 端点(ctx.telemetry.endpoint)带 /v1/traces 全路径,宿主接收器同时认 protobuf。
+  tracing: {
+    protocol: "http/protobuf",
+    env: (endpoint) => ({
+      BUB_TAPESTORE_OTEL_ENABLED: "true",
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: endpoint,
+      OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: "http/protobuf",
+    }),
+  },
 
   // ── agent lifecycle:装 uv + bub,写 AGENTS.md,每个沙箱一次。──
   async setup(sb) {
@@ -199,15 +211,9 @@ export default defineSandboxAgent({
       ...auth(),
       BUB_MODEL: `openai:${model}`, // provider:model_id;openai 前缀走 BUB_API_BASE 代理
       BUB_HOME,
-      // OTLP traces:只在运行器给了端点时开。bub(Python)的 HTTP 出口只有 protobuf,
-      // 走标准 OTEL env;端点要带 /v1/traces 全路径,宿主接收器同时认 protobuf。
-      ...(ctx.telemetry?.endpoint
-        ? {
-            BUB_TAPESTORE_OTEL_ENABLED: "true",
-            OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: ctx.telemetry.endpoint,
-            OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: "http/protobuf",
-          }
-        : {}),
+      // OTLP traces 的 env 由下面的 `tracing.env` 声明、运行器算进 ctx.telemetry.env,这里直接 spread。
+      // 只在运行器给了端点时非空(没开 tracing 时是 undefined,spread 无副作用)。
+      ...ctx.telemetry?.env,
     };
     const escaped = input.text.replace(/'/g, "'\\''");
     // stream: true → bub 的 stdout tee 进容器主日志(`docker logs` 可见)。

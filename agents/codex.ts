@@ -24,8 +24,9 @@ export default defineSandboxAgent({
   // compactionObservability:codex 的 `codex exec --json` stdout 流【不暴露】压缩/摘要事件
   //(压缩只在 ~/.codex/sessions 的 rollout 文件里、且 exec 模式覆盖不全)。所以解析 stdout 时
   //  t.transcript.compactions() 恒为 0 → 长程压缩类 eval 自动 skip(不误判 agent 挂)。
-  // tracing:codex 经 OpenTelemetry 导出 OTLP traces(config.toml 的 [otel.trace_exporter]),
-  //  运行器起本机接收器、把端点经 ctx.telemetry.endpoint 给到 setup → 跑完 view 里看瀑布图。
+  // tracing:codex 经 OpenTelemetry 导出 OTLP traces。运行器起本机接收器,把端点经 ctx.telemetry
+  //  交给下面的 `tracing.configure`(它把 [otel.trace_exporter] 块追加进 config.toml)→ 跑完
+  //  span 经 codex mapper 归一到 canonical GenAI semconv,view 里看对齐的瀑布图。
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true, tracing: true },
 
   // ── agent lifecycle:装 CLI + 写 config.toml,每个沙箱一次(不在 send 里)。──
@@ -38,19 +39,8 @@ export default defineSandboxAgent({
     const effort = (ctx.flags.effort as string | undefined) ?? "medium"; // 读实验 feature flag
     const base = proxyBase();
 
-    // OTLP traces:只在运行器给了端点时开。protocol="json" → 宿主接收器免 protobuf 解析;
-    // 只导出 traces(logs/metrics 关掉,且 codex exec 本就不发 metrics)。端点要带 /v1/traces 全路径。
-    // 注:[otel.trace_exporter.otlp-http] 是子表,必须放在所有上层表之后,所以拼在末尾。
-    const otel = ctx.telemetry?.endpoint
-      ? `\n[otel]\n` +
-        `environment = "fasteval"\n` +
-        `exporter = "none"\n` +
-        `metrics_exporter = "none"\n\n` +
-        `[otel.trace_exporter.otlp-http]\n` +
-        `endpoint = "${ctx.telemetry.endpoint}"\n` +
-        `protocol = "json"\n`
-      : "";
-
+    // 只写主配置(model / provider / 鉴权)。otel 导出配置已拆到下面的 `tracing.configure`,
+    // 由运行器在本 setup 之后追加 —— 正好满足「[otel.trace_exporter.otlp-http] 子表在所有上层表之后」。
     if (base) {
       // wire_api="responses" → codex 调 {base_url}/responses,匹配代理的 /v1/responses。
       // key 经 env_key(CODEX_API_KEY)注入,因此【不跑 codex login】。
@@ -64,13 +54,33 @@ export default defineSandboxAgent({
           `name = "s2a"\n` +
           `base_url = "${base}"\n` +
           `env_key = "CODEX_API_KEY"\n` +
-          `wire_api = "responses"\n` +
-          otel,
+          `wire_api = "responses"\n`,
       );
     } else {
       // 无代理:回落到 OpenAI 官方(需要 OPENAI_API_KEY / codex login)。
-      await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n${otel}`);
+      await shared.writeFile(sb, "~/.codex/config.toml", `model = "${model}"\nmodel_reasoning_effort = "${effort}"\n`);
     }
+  },
+
+  // ── OTLP 导出配置(file-based):与 setup 分开,运行器在 setup 之后、首次 send 之前调一次。──
+  // codex(Rust)不读标准 OTEL_* env,只认自己的 config.toml [otel] 块,所以走 configure 追加到
+  // 主配置末尾(子表天然落在所有上层表之后)。protocol="json" → 宿主接收器免 protobuf 解析。
+  tracing: {
+    protocol: "http/json",
+    async configure(sb, ctx) {
+      const endpoint = ctx.telemetry!.endpoint; // configure 仅在有 endpoint 时被调
+      // 只导出 traces(logs/metrics 关掉,且 codex exec 本就不发 metrics)。端点要带 /v1/traces 全路径。
+      const otel =
+        `\n[otel]\n` +
+        `environment = "fasteval"\n` +
+        `exporter = "none"\n` +
+        `metrics_exporter = "none"\n\n` +
+        `[otel.trace_exporter.otlp-http]\n` +
+        `endpoint = "${endpoint}"\n` +
+        `protocol = "json"\n`;
+      // 追加到主配置末尾(runShell 走 bash,~ 会展开)。'EOF' 引号 → heredoc 内不做变量展开。
+      await sb.runShell(`cat >> ~/.codex/config.toml <<'EOF'\n${otel}EOF\n`);
+    },
   },
 
   // ── send 只剩「第一次 fresh / 后续 resume」+ 跑 + 解析。──
