@@ -231,10 +231,49 @@ export default defineSandboxAgent({
     // cost:s2a 流式 usage 不带 cost 字段 → 由 fasteval 定价表按 token 估算(estimateCost)。
     const raw = await sb.readFile(tapePath(SANDBOX_WORKSPACE, sessionId)).catch(() => undefined);
     const parsed = shared.parseBub(raw);
+
+    // bub run 非 0 退出:不要只甩一个 status:"failed" —— 那样上层 expectOk() 只能抛出泛泛的
+    // 「本轮 send 返回 failed」,看不出到底是 provider 超时、stream 断、还是 build 挂。把退出码 +
+    // stdout/stderr 末尾 + tape 状态 + 最后一条 error/assistant 事件摘成诊断,塞进 error 事件,
+    // 让它进 transcript / o11y.errors,并被 expectOk() 带进 EvalResult.error。
+    const events = [...parsed.events];
+    if (res.exitCode !== 0) {
+      events.push({ type: "error", message: diagnose(res, parsed.events, raw) });
+    }
     return {
-      events: parsed.events,
+      events,
       usage: parsed.usage,
       status: res.exitCode === 0 ? "completed" : "failed",
     };
   },
 });
+
+/** bub run 失败时,从退出码 / 输出 / tape / 事件流里抠出一句能定位的诊断。 */
+function diagnose(
+  res: { exitCode: number; stdout: string; stderr: string },
+  events: import("fasteval").StreamEvent[],
+  rawTape: string | undefined,
+): string {
+  const parts: string[] = [`bub run 退出码 ${res.exitCode}`];
+
+  // 进程没产出任何可解析的一轮(tape 缺失或空 + 0 事件)→ agent 压根没跑起来,而非断言失败。
+  if (rawTape === undefined) parts.push("tape 未生成(agent 未产出可解析的一轮)");
+  else if (events.length === 0) parts.push("tape 存在但 0 事件(解析不出回合)");
+
+  // 事件流里最后一条 error(provider/stream/工具错误,如 Request timed out / incomplete chunked read)。
+  const lastError = [...events].reverse().find((e) => e.type === "error") as
+    | { type: "error"; message: string }
+    | undefined;
+  if (lastError) parts.push(`最后错误:${lastError.message}`);
+
+  // stderr / stdout 末尾(真正的 traceback / provider 报错常只在这里)。
+  const errTail = tail(res.stderr) || tail(res.stdout);
+  if (errTail) parts.push(`输出末尾:${errTail}`);
+
+  return parts.join(" · ");
+}
+
+function tail(s: string, n = 6): string {
+  const lines = s.trim().split("\n").filter(Boolean);
+  return lines.slice(-n).join(" ⏎ ").slice(0, 600);
+}
