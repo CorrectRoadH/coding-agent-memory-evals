@@ -158,9 +158,30 @@ export default defineSandboxAgent({
   //  chat / execute_tool),经标准 OTEL_EXPORTER_OTLP_TRACES_* env 导出 → view 里看瀑布图。
   capabilities: { conversation: true, toolObservability: true, workspace: true, compactionObservability: true, tracing: true },
 
-  // ── agent lifecycle:装 uv + bub,每个沙箱一次(不在 send 里)。──
+  // ── agent lifecycle:装 uv + bub,写 AGENTS.md,每个沙箱一次。──
   async setup(sb) {
     await ensureBub(sb);
+
+    // bub 在 system_prompt 钩子里读 workspace/AGENTS.md 并追加到 DEFAULT_SYSTEM_PROMPT。
+    // (源码:builtin/hook_impl.py BuiltinImpl._read_agents_file)
+    // 仅在 eval workspace 自己没有 AGENTS.md 时注入,避免覆盖 eval 级别的定制。
+    if (!(await sb.fileExists(`${SANDBOX_WORKSPACE}/AGENTS.md`))) {
+      await shared.writeFile(
+        sb,
+        `${SANDBOX_WORKSPACE}/AGENTS.md`,
+        [
+          `You are a coding agent working in a Next.js project at ${SANDBOX_WORKSPACE}.`,
+          ``,
+          `Implement the requested feature by writing files directly to disk with the available tools:`,
+          `- fs_write(path, content): create or overwrite a file`,
+          `- fs_edit(path, old, new): edit an existing file`,
+          `- bash(cmd): run shell commands`,
+          ``,
+          `Do NOT respond with only a text explanation — write the actual code files.`,
+          `After writing, verify with bash("cd ${SANDBOX_WORKSPACE} && npm run build").`,
+        ].join("\n"),
+      );
+    }
   },
 
   // ── send 只剩「跑一轮 + 读 tape 解析」。bub 无 resume 概念,靠同一 session-id 续上 tape。──
