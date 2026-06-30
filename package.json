@@ -11,7 +11,8 @@
     "compare": "fasteval exp compare",
     "codex": "fasteval --agent codex",
     "view": "fasteval view",
-    "report": "fasteval view --out site/index.html"
+    "snapshot": "node scripts/snapshot-results.mjs",
+    "report": "node scripts/build-site.mjs"
   },
   "devDependencies": {
     "fasteval": "link:../fastevals"
