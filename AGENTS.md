@@ -29,6 +29,33 @@ Use the original benchmark's pass condition wherever possible:
 
 Additional source assertions are fine when they are part of the task's functional requirement. Avoid assertions whose only purpose is proving that an agent remembered a fact.
 
+## Sandbox Know-How
+
+### Never hardcode sandbox user paths
+
+Agent adapters must treat the sandbox as an opaque Linux environment. The Linux user (and thus `$HOME`) differs by backend:
+
+| Backend | `$HOME` |
+|---------|---------|
+| Docker  | `/home/node` |
+| Vercel  | `/home/vercel-sandbox` |
+| e2b / Modal | varies |
+
+**Bug pattern**: hardcoding `/home/node/.local/bin/bub` or `/home/node/.bub` breaks on any non-Docker backend.
+
+**Fix pattern**: In `setup()`, detect home once with `printf '%s' $HOME`, store it in a `Map<sandboxId, home>` closure variable, and use it everywhere — checkpoint paths, `BUB_HOME` env var, tape path resolution. Never branch on backend type; detect dynamically.
+
+Checkpoint archives (tar) also embed absolute paths, so a checkpoint built from Docker and restored to Vercel puts files at `/home/node/...` but `$HOME` resolves to `/home/vercel-sandbox/...`. Key disk/memory checkpoint caches by the sandbox `$HOME` so backends don't share a cache.
+
+### Vercel free-plan session lifetime (~360-390s)
+
+Vercel free plan caps sessions at ~360-390s. `extendTimeout` → HTTP 400, `snapshot()` → HTTP 402.
+
+Two fixes required to keep all evals under the cap:
+
+1. **`maxConcurrency: 1`** in the experiment — runs evals sequentially so agent API calls don't compete, keeping each agent to 50-200s instead of 280-400s. Note: this field must be set on the experiment config (`ExperimentDef.maxConcurrency`) not on the global config.
+2. **2-phase `readSourceFiles`** — `find`-only shell (~1s) + parallel `readFileToBuffer` HTTP GETs (~2s). Avoids a 30s NDJSON stream that can die if the session is near its cap.
+
 ## Reporting
 
 When summarizing results, report both:
