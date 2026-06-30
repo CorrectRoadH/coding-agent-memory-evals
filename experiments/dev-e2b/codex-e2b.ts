@@ -13,8 +13,6 @@ export default defineExperiment({
   runs: 1,
   earlyExit: true,
   budget: 2,
-  // 串行跑:避免多个并发 e2b session 互相竞争。
-  maxConcurrency: 1,
   // repomod 的 build + terminal 的 pytest 合计可能超 10 分钟;给 20 分钟宽裕。
   timeoutMs: 1200000,
 });

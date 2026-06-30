@@ -11,6 +11,5 @@ export default defineExperiment({
   runs: 1,
   earlyExit: true,
   budget: 2,
-  maxConcurrency: 1,
   timeoutMs: 1200000,
 });
