@@ -29,32 +29,29 @@ Use the original benchmark's pass condition wherever possible:
 
 Additional source assertions are fine when they are part of the task's functional requirement. Avoid assertions whose only purpose is proving that an agent remembered a fact.
 
-## Sandbox Know-How
+## 记录问题与 Know-How 的规范
 
-### Never hardcode sandbox user paths
+调试基础设施问题（sandbox 报错、agent 安装失败、eval 超时等）时，发现的具体问题和修法**记入 memory**，不写进本文件。
 
-Agent adapters must treat the sandbox as an opaque Linux environment. The Linux user (and thus `$HOME`) differs by backend:
+### 记什么
 
-| Backend | `$HOME` |
-|---------|---------|
-| Docker  | `/home/node` |
-| Vercel  | `/home/vercel-sandbox` |
-| e2b / Modal | varies |
+一条有效的 memory 条目包含三个部分：
 
-**Bug pattern**: hardcoding `/home/node/.local/bin/bub` or `/home/node/.bub` breaks on any non-Docker backend.
+1. **现象**：出现什么错误、在哪个 eval / sandbox / agent 上复现
+2. **根因**：为什么会这样（代码假设、API 限制、路径 hardcode 等）
+3. **修法与适用范围**：怎么改、以后遇到类似情况如何判断是否适用
 
-**Fix pattern**: In `setup()`, detect home once with `printf '%s' $HOME`, store it in a `Map<sandboxId, home>` closure variable, and use it everywhere — checkpoint paths, `BUB_HOME` env var, tape path resolution. Never branch on backend type; detect dynamically.
+### 记在哪里
 
-Checkpoint archives (tar) also embed absolute paths, so a checkpoint built from Docker and restored to Vercel puts files at `/home/node/...` but `$HOME` resolves to `/home/vercel-sandbox/...`. Key disk/memory checkpoint caches by the sandbox `$HOME` so backends don't share a cache.
+- `~/.claude/projects/.../memory/` 目录下，每个问题一个 `.md` 文件
+- 类型用 `feedback`（行为规范）或 `project`（具体项目状态）
+- 更新 `MEMORY.md` 索引，保证下次对话能被加载
 
-### Vercel free-plan session lifetime (~360-390s)
+### 什么时候记
 
-Vercel free plan caps sessions at ~360-390s. `extendTimeout` → HTTP 400, `snapshot()` → HTTP 402.
-
-Two fixes required to keep all evals under the cap:
-
-1. **`maxConcurrency: 1`** in the experiment — runs evals sequentially so agent API calls don't compete, keeping each agent to 50-200s instead of 280-400s. Note: this field must be set on the experiment config (`ExperimentDef.maxConcurrency`) not on the global config.
-2. **2-phase `readSourceFiles`** — `find`-only shell (~1s) + parallel `readFileToBuffer` HTTP GETs (~2s). Avoids a 30s NDJSON stream that can die if the session is near its cap.
+- 踩坑并修复之后立刻记，趁上下文还在
+- 发现某个假设在换了 sandbox backend / model / 实验配置后不成立时
+- 修法有反直觉之处（比如"调大 timeout 反而让 session 更短"）时
 
 ## Reporting
 
