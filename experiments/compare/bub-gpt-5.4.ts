@@ -8,8 +8,10 @@ export default defineExperiment({
   agent: bubAgent(),
   model: "gpt-5.4", // 两边钉同一个模型,差异才归因到 agent / 记忆机制
   sandbox: "docker", // 本地 docker 沙箱,零云依赖
-  // 注:workspace(starter repo)+ 它的 setup 不在这儿 —— 那属于「eval 在什么上面干活」,
-  // 不同 eval 可能不同,所以写在各 eval 的 defineEval({ workspace, setup }) 里。experiment 只管怎么跑。
+  // 注:workspace(starter repo)上传 + 装依赖不在这儿 —— 那属于「eval 在什么上面干活」,
+  // 写在各 eval 的 test(t) 里(t.sandbox.uploadDirectory + runCommand)。experiment 只管怎么跑。
+  // workspaceDir 告诉 eval 往 docker 沙箱的默认工作目录传 starter 文件(e2b/vercel 各自的目录不同)。
+  flags: { workspaceDir: "/home/sandbox/workspace" },
   runs: 1,
   earlyExit: false, // 要完整通过率分布,以便报 pass^k
   budget: 15,

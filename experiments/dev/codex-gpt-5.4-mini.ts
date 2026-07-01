@@ -10,6 +10,8 @@ export default defineExperiment({
   agent: codexAgent(),
   model: "gpt-5.4-mini", // → ctx.model → agents/codex.ts 写进 ~/.codex/config.toml
   sandbox: "docker",
+  // workspaceDir 告诉 eval 往 docker 沙箱的默认工作目录传 starter 文件(e2b/vercel 各自的目录不同)。
+  flags: { workspaceDir: "/home/sandbox/workspace" },
   runs: 1,
   earlyExit: true,
   budget: 2, // 估算成本上限 $2,超了停止派发(避免烧爆)

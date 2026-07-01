@@ -8,6 +8,8 @@ export default defineExperiment({
   agent: bubAgent(),
   model: "gpt-5.4-mini",
   sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  // workspaceDir 告诉 eval 往 e2b 沙箱的默认工作目录传 starter 文件(docker/vercel 各自的目录不同)。
+  flags: { workspaceDir: "/home/user/workspace" },
   runs: 1,
   earlyExit: true,
   budget: 2,

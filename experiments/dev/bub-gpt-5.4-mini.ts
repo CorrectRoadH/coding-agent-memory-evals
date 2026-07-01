@@ -10,6 +10,8 @@ export default defineExperiment({
   agent: bubAgent(),
   model: "gpt-5.4-mini", // → ctx.model → agents/bub.ts 的 BUB_MODEL=openai:gpt-5.4-mini
   sandbox: "docker",
+  // workspaceDir 告诉 eval 往 docker 沙箱的默认工作目录传 starter 文件(e2b/vercel 各自的目录不同)。
+  flags: { workspaceDir: "/home/sandbox/workspace" },
   runs: 1,
   earlyExit: true,
   budget: 2,

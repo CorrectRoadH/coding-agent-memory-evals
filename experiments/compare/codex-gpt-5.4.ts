@@ -8,6 +8,8 @@ export default defineExperiment({
   model: "gpt-5.4", // → ctx.model → agents/codex.ts 写进 config.toml 的 model 行
   sandbox: "docker", // 本地 docker 沙箱
   // 代理(base_url + key)走 .env,由 agents/codex.ts 配成自定义 model_provider(wire_api=responses)
+  // workspaceDir 告诉 eval 往 docker 沙箱的默认工作目录传 starter 文件(e2b/vercel 各自的目录不同)。
+  flags: { workspaceDir: "/home/sandbox/workspace" },
   runs: 1,
   earlyExit: false,
   budget: 15,

@@ -8,6 +8,8 @@ export default defineExperiment({
   agent: codexAgent(),
   model: "gpt-5.4-mini",
   sandbox: "vercel",
+  // workspaceDir 告诉 eval 往 vercel 沙箱的默认工作目录传 starter 文件(docker/e2b 各自的目录不同)。
+  flags: { workspaceDir: "/vercel/sandbox" },
   runs: 1,
   earlyExit: true,
   budget: 2,
