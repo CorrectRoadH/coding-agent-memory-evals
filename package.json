@@ -5,6 +5,7 @@
   "type": "module",
   "description": "用 fasteval 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "list": "fasteval list",
     "smoke": "fasteval exp dev memory/agent-029-use-cache-directive",
     "dev": "fasteval exp dev",
@@ -15,6 +16,8 @@
     "report": "node scripts/build-site.mjs"
   },
   "devDependencies": {
-    "fasteval": "link:../fastevals"
+    "@types/node": "^26.0.1",
+    "fasteval": "link:../fastevals",
+    "typescript": "^6.0.3"
   }
 }

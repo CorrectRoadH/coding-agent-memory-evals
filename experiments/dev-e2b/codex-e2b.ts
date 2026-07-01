@@ -1,4 +1,6 @@
-import { defineExperiment, codexAgent, e2bSandbox } from "fasteval";
+import { defineExperiment } from "fasteval";
+import { codexAgent } from "fasteval/adapter";
+import { e2bSandbox } from "fasteval/sandbox";
 
 // dev/e2b 组:用 E2B 微 VM 作为沙箱后端(对照 docker / vercel)。
 // 用预制模板 fasteval-agents:4096MB 内存(base 只有 ~481MB,npm install Next.js 依赖会 OOM)

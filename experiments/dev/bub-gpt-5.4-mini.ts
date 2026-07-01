@@ -1,4 +1,5 @@
-import { defineExperiment, bubAgent } from "fasteval";
+import { defineExperiment } from "fasteval";
+import { bubAgent } from "fasteval/adapter";
 
 // dev/smoke 组的另一半:bub · gpt-5.4-mini。与 codex-gpt-5.4-mini 同模型,
 // 快速验证 bub 这条管线(装 uv+bub、tape 跨会话、解析用量)在便宜模型下也跑得通。

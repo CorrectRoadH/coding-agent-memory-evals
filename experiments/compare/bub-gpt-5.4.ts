@@ -1,4 +1,5 @@
-import { defineExperiment, bubAgent } from "fasteval";
+import { defineExperiment } from "fasteval";
+import { bubAgent } from "fasteval/adapter";
 
 // 文件夹 compare = 唯一一组【可对比】的实验:同一批记忆 eval、同一个模型(gpt-5.4),
 // 比 bub(带 tape 记忆)和 codex(无对应持久记忆机制)。`fasteval exp compare` 跑整组。

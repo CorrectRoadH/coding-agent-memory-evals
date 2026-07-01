@@ -1,4 +1,5 @@
-import { defineExperiment, codexAgent } from "fasteval";
+import { defineExperiment } from "fasteval";
+import { codexAgent } from "fasteval/adapter";
 
 // dev/smoke 组:用代理上最便宜的文本模型(gpt-5.4-mini)快速跑通验证。
 // 开发期先用它确认「整条管线真的能跑」—— 便宜、快;要正式结果再上 compare/(gpt-5.4)。

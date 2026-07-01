@@ -1,4 +1,6 @@
-import { defineExperiment, bubAgent, e2bSandbox } from "fasteval";
+import { defineExperiment } from "fasteval";
+import { bubAgent } from "fasteval/adapter";
+import { e2bSandbox } from "fasteval/sandbox";
 
 // dev/e2b 组:bub(tape 记忆)跑在 E2B 微 VM 上。
 // 用预制模板 fasteval-agents:4096MB + 烘焙好 bub(uv 装到 /usr/local/bin),setup 跳过安装。
