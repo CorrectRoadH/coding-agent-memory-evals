@@ -1,4 +1,5 @@
 import { defineExperiment } from "niceeval";
+import { dockerSandbox } from "niceeval/sandbox";
 import { codexAgent } from "niceeval/adapter";
 
 // dev/smoke 组:用代理上最便宜的文本模型(gpt-5.4-mini)快速跑通验证。
@@ -10,7 +11,7 @@ export default defineExperiment({
   description: "codex · gpt-5.4-mini(dev/smoke,便宜快速验证)",
   agent: codexAgent(),
   model: "gpt-5.4-mini", // → ctx.model → agents/codex.ts 写进 ~/.codex/config.toml
-  sandbox: "docker",
+  sandbox: dockerSandbox(),
   runs: 1,
   earlyExit: true,
   budget: 2, // 估算成本上限 $2,超了停止派发(避免烧爆)

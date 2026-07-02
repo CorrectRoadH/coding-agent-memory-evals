@@ -1,4 +1,5 @@
 import { defineExperiment } from "niceeval";
+import { vercelSandbox } from "niceeval/sandbox";
 import { bubAgent } from "niceeval/adapter";
 
 // dev/vercel 组:用 Vercel Sandbox microVM 替换 Docker 作为沙箱后端。
@@ -8,7 +9,7 @@ export default defineExperiment({
   description: "",
   agent: bubAgent(),
   model: "gpt-5.4-mini",
-  sandbox: "vercel",
+  sandbox: vercelSandbox(),
   runs: 1,
   earlyExit: true,
   budget: 2,
