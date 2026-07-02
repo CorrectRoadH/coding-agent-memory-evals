@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  niceeval: link:../fastevals
+
 importers:
 
   .:
@@ -11,7 +14,7 @@ importers:
       '@types/node':
         specifier: ^26.0.1
         version: 26.0.1
-      fasteval:
+      niceeval:
         specifier: link:../fastevals
         version: link:../fastevals
       typescript:

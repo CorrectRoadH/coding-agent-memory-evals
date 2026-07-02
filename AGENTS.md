@@ -11,12 +11,12 @@ This repo is a benchmark suite for coding-agent memory conditions. The core rule
 
 ## Repo Layout
 
-- `evals/memory/`: fasteval task definitions.
+- `evals/memory/`: niceeval task definitions.
 - `workspaces/`: per-eval starter repositories copied into sandboxes.
 - `experiments/`: comparable run matrices for agents and models.
 - `agents/`: agent adapters.
 - `docs/benchmarks.md`: benchmark survey and candidate task notes.
-- `fasteval.config.ts`: global agent, sandbox, judge, and concurrency defaults.
+- `niceeval.config.ts`: global agent, sandbox, judge, and concurrency defaults.
 
 ## Adding Evals
 

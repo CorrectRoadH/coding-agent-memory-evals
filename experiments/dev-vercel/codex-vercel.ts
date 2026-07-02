@@ -1,5 +1,5 @@
-import { defineExperiment } from "fasteval";
-import { codexAgent } from "fasteval/adapter";
+import { defineExperiment } from "niceeval";
+import { codexAgent } from "niceeval/adapter";
 
 // dev/vercel 组:用 Vercel Sandbox microVM 替换 Docker 作为沙箱后端。
 // 动机:Docker 沙箱下 codex 在 repomod / terminal 类 eval 的首次 send 直接返回 failed
@@ -9,8 +9,6 @@ export default defineExperiment({
   agent: codexAgent(),
   model: "gpt-5.4-mini",
   sandbox: "vercel",
-  // workspaceDir 告诉 eval 往 vercel 沙箱的默认工作目录传 starter 文件(docker/e2b 各自的目录不同)。
-  flags: { workspaceDir: "/vercel/sandbox" },
   runs: 1,
   earlyExit: true,
   budget: 2,

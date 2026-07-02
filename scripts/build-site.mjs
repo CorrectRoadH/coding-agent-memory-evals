@@ -1,14 +1,14 @@
 // 把一份结果快照(site/data/summary.json)构建成可直接静态托管的 site/index.html。
 //
-// 为什么不直接 `fasteval view --out`:
-//   1. fasteval 会给每条 result 注入 artifactAbsBase —— 构建机的绝对路径(/Users/...),
+// 为什么不直接 `niceeval view --out`:
+//   1. niceeval 会给每条 result 注入 artifactAbsBase —— 构建机的绝对路径(/Users/...),
 //      直接进了公开 HTML,既泄漏本地路径又毫无用处。
 //   2. transcript / timing-trace 展开块靠 `/artifact?p=` 这个 dev server 端点取数据;
 //      Vercel 纯静态托管没有这个端点,展开只会 404。
 //   这里在生成后把这些「仅 server 端有意义」的字段剥掉:报告自包含、无泄漏、无死链。
 //
-// 数据来源刻意用提交进仓库的 site/data/summary.json,而不是 .gitignore 掉的 .fasteval/。
-// 否则换台机器 / CI 上 .fasteval 不存在,会悄悄生成「空报告」覆盖掉线上数据 —— 这正是本次的 bug。
+// 数据来源刻意用提交进仓库的 site/data/summary.json,而不是 .gitignore 掉的 .niceeval/。
+// 否则换台机器 / CI 上 .niceeval 不存在,会悄悄生成「空报告」覆盖掉线上数据 —— 这正是本次的 bug。
 
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
@@ -19,15 +19,15 @@ import { fileURLToPath } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const snapshot = resolve(repoRoot, process.argv[2] ?? "site/data/summary.json");
 const out = resolve(repoRoot, process.argv[3] ?? "site/index.html");
-const fastevalBin = resolve(repoRoot, "../fastevals/bin/fasteval.js");
+const niceevalBin = resolve(repoRoot, "../fastevals/bin/niceeval.js");
 
-const tmp = join(mkdtempSync(join(tmpdir(), "fasteval-site-")), "report.html");
-execFileSync("node", [fastevalBin, "view", "--out", tmp, snapshot], { stdio: "inherit" });
+const tmp = join(mkdtempSync(join(tmpdir(), "niceeval-site-")), "report.html");
+execFileSync("node", [niceevalBin, "view", "--out", tmp, snapshot], { stdio: "inherit" });
 
 const html = readFileSync(tmp, "utf-8");
-const marker = "window.__FASTEVAL_VIEW_DATA__ = ";
+const marker = "window.__NICEEVAL_VIEW_DATA__ = ";
 const dataStart = html.indexOf(marker);
-if (dataStart === -1) throw new Error("找不到 __FASTEVAL_VIEW_DATA__ 标记,fasteval 模板可能变了");
+if (dataStart === -1) throw new Error("找不到 __NICEEVAL_VIEW_DATA__ 标记,niceeval 模板可能变了");
 const jsonStart = dataStart + marker.length;
 const jsonEnd = html.indexOf(";</script>", jsonStart);
 if (jsonEnd === -1) throw new Error("找不到内嵌数据的结束符");

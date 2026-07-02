@@ -13,6 +13,6 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["evals", "experiments", "agents", "fasteval.config.ts"],
+  "include": ["evals", "experiments", "agents", "niceeval.config.ts"],
   "exclude": ["node_modules", "workspaces"]
 }

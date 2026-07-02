@@ -94,9 +94,9 @@ pnpm run view
 ```
 
 ```sh
-fasteval exp compare
-fasteval --agent codex memory/agent-037-updatetag-cache
-fasteval view
+niceeval exp compare
+niceeval --agent codex memory/agent-037-updatetag-cache
+niceeval view
 ```
 
 ### 发布线上报告(coding-agent-memory-evals.vercel.app)
@@ -104,12 +104,12 @@ fasteval view
 线上站点 Vercel 直接静态托管 `site/`,没有构建步骤 —— `site/index.html` 是本地生成后**提交进仓库**的快照,数据内嵌在 HTML 里。跑完新一轮 eval 后刷新线上:
 
 ```sh
-pnpm run snapshot   # 把最近一次 .fasteval/ 运行快照进 site/data/summary.json(提交进仓库)
+pnpm run snapshot   # 把最近一次 .niceeval/ 运行快照进 site/data/summary.json(提交进仓库)
 pnpm run report     # 由该快照生成 site/index.html(剥掉绝对路径与 /artifact 死链)
 git commit -am "chore: refresh site" && git push   # push 到 main 触发 Vercel 部署
 ```
 
-数据**不能**直接从 `.fasteval/` 生成:那目录被 `.gitignore` 且每轮换时间戳,在别的机器 / CI 上不存在,会悄悄生成空报告覆盖线上。`scripts/check-site.mjs`(CI `.github/workflows/site.yml`)会拦截空报告。
+数据**不能**直接从 `.niceeval/` 生成:那目录被 `.gitignore` 且每轮换时间戳,在别的机器 / CI 上不存在,会悄悄生成空报告覆盖线上。`scripts/check-site.mjs`(CI `.github/workflows/site.yml`)会拦截空报告。
 
 ---
 
@@ -128,5 +128,5 @@ coding-agent-memory-evals/
 │     └─ codex-gpt-5.4.ts
 ├─ workspaces/             # per-eval starter repos
 ├─ docs/benchmarks.md      # SWE benchmark survey and candidate evals
-└─ fasteval.config.ts      # agents, judge, sandbox defaults
+└─ niceeval.config.ts      # agents, judge, sandbox defaults
 ```

@@ -3,21 +3,21 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "用 fasteval 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
+  "description": "用 niceeval 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "list": "fasteval list",
-    "smoke": "fasteval exp dev memory/agent-029-use-cache-directive",
-    "dev": "fasteval exp dev",
-    "compare": "fasteval exp compare",
-    "codex": "fasteval --agent codex",
-    "view": "fasteval view",
+    "list": "niceeval list",
+    "smoke": "niceeval exp dev memory/agent-029-use-cache-directive",
+    "dev": "niceeval exp dev",
+    "compare": "niceeval exp compare",
+    "codex": "niceeval --agent codex",
+    "view": "niceeval view",
     "snapshot": "node scripts/snapshot-results.mjs",
     "report": "node scripts/build-site.mjs"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
-    "fasteval": "link:../fastevals",
+    "niceeval": "link:../fastevals",
     "typescript": "^6.0.3"
   }
 }

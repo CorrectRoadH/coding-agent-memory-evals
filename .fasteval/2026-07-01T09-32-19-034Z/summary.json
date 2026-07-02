@@ -1,0 +1,354 @@
+{
+  "agent": "bub",
+  "startedAt": "2026-07-01T09:32:17.687Z",
+  "completedAt": "2026-07-01T09:36:45.424Z",
+  "passed": 0,
+  "failed": 2,
+  "skipped": 0,
+  "errored": 0,
+  "durationMs": 267737,
+  "usage": {
+    "inputTokens": 468296,
+    "outputTokens": 12788
+  },
+  "estimatedCostUSD": 0.43579199999999996,
+  "results": [
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {
+          "workspaceDir": "/home/user/workspace"
+        },
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "747b18c6666dccfbcd2128a6b9287ce8497e60ef310c64bb3fa1784a40919fd8",
+      "attempt": 0,
+      "startedAt": "2026-07-01T09:32:19.038Z",
+      "durationMs": 175975,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 37,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 41,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 42,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 57,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 59,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 60,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 61,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 64,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 93659,
+        "outputTokens": 1965,
+        "cacheReadTokens": 31232,
+        "requests": 21,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.08142914999999999,
+      "artifactsDir": "memory/agent-029-use-cache-directive/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {
+          "workspaceDir": "/home/user/workspace"
+        },
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "2de4dd5dd26129fc412ef3cb1fc8e51b33f2f606aaff739a9adff472010b4bfe",
+      "attempt": 0,
+      "startedAt": "2026-07-01T09:32:19.039Z",
+      "durationMs": 262922,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 37,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 41,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 42,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 57,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 59,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 60,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 61,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 64,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 374637,
+        "outputTokens": 10823,
+        "cacheReadTokens": 329088,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.35436284999999995,
+      "artifactsDir": "memory/agent-029-use-cache-directive/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    }
+  ],
+  "outputDir": ".fasteval/2026-07-01T09-32-19-034Z"
+}

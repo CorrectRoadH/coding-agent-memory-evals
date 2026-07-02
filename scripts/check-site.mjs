@@ -18,9 +18,9 @@ if (html.includes("/Users/") || html.includes("/home/runner/")) {
   fail("site/index.html 内嵌了构建机的绝对路径(本地路径泄漏)");
 }
 
-const marker = "window.__FASTEVAL_VIEW_DATA__ = ";
+const marker = "window.__NICEEVAL_VIEW_DATA__ = ";
 const start = html.indexOf(marker);
-if (start === -1) fail("找不到 __FASTEVAL_VIEW_DATA__,site/index.html 不是 fasteval 生成的报告");
+if (start === -1) fail("找不到 __NICEEVAL_VIEW_DATA__,site/index.html 不是 niceeval 生成的报告");
 const jsonStart = start + marker.length;
 const jsonEnd = html.indexOf(";</script>", jsonStart);
 if (jsonEnd === -1) fail("内嵌数据没有结束符,site/index.html 可能损坏");
