@@ -1,2 +1,7 @@
-overrides:
-  niceeval: link:../fastevals
+allowBuilds:
+  cpu-features: false
+  esbuild: false
+  protobufjs: false
+  ssh2: false
+minimumReleaseAgeExclude:
+  - niceeval@0.1.2 || 0.2.0 || 0.2.1
