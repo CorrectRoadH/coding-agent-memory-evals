@@ -12,8 +12,8 @@ importers:
         specifier: ^26.0.1
         version: 26.0.1
       niceeval:
-        specifier: ^0.2.1
-        version: 0.2.1(@vercel/sandbox@2.4.0)(dockerode@4.0.12)(e2b@2.31.0)
+        specifier: ^0.3.0
+        version: 0.3.0(@vercel/sandbox@2.4.0)(dockerode@4.0.12)(e2b@2.31.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -581,8 +581,8 @@ packages:
   nan@2.28.0:
     resolution: {integrity: sha512-fTsDz99OTq2sVePhGdp4qQhggZFtKr64ZNVyVajRKtMOkJxYekplBh577PiJB12v/D3s2E5cGtOI45LWp6rnLQ==}
 
-  niceeval@0.2.1:
-    resolution: {integrity: sha512-VV1pH4twTOyXqcMlyEBTxRnImlI98ZJOiHXVfYtusoMRv+zHk7aZfcIKJzzZYirCn6czxeXMu8OTSppNA3ihmg==}
+  niceeval@0.3.0:
+    resolution: {integrity: sha512-IKHenDRUzhN9n+qKd2b/gnoYXAtCEDSzqK+rlWUNkE52NNM4uJ16aJEmFYKcev82JglY7paTeyJp6aHYdtJ2PQ==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -1434,7 +1434,7 @@ snapshots:
   nan@2.28.0:
     optional: true
 
-  niceeval@0.2.1(@vercel/sandbox@2.4.0)(dockerode@4.0.12)(e2b@2.31.0):
+  niceeval@0.3.0(@vercel/sandbox@2.4.0)(dockerode@4.0.12)(e2b@2.31.0):
     dependencies:
       autoevals: 0.0.132
       effect: 3.21.4
