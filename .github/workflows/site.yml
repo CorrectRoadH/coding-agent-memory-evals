@@ -4,7 +4,7 @@
 # `npm run report` 生成后提交进仓库的快照。历史上出过一次:数据在 .gitignore 的 .niceeval/ 里,
 # 生成时数据不在,于是提交了一份「No summary.json / Pass Rate 0%」的空报告,线上看不到数据。
 #
-# CI 跑不了 eval 本身(niceeval 是 link:../fastevals 的本地包,且跑一轮要付费 sandbox + 密钥),
+# CI 跑不了 eval 本身(跑一轮要付费 sandbox + 密钥),
 # 所以这里只做静态校验:提交进仓库的 site/index.html 必须内嵌非空数据。生成靠本地 `npm run report`。
 
 name: site

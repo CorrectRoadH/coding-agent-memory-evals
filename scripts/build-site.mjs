@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const snapshot = resolve(repoRoot, process.argv[2] ?? "site/data/summary.json");
 const out = resolve(repoRoot, process.argv[3] ?? "site/index.html");
-const niceevalBin = resolve(repoRoot, "../fastevals/bin/niceeval.js");
+const niceevalBin = resolve(repoRoot, "node_modules/niceeval/bin/niceeval.js");
 
 const tmp = join(mkdtempSync(join(tmpdir(), "niceeval-site-")), "report.html");
 execFileSync("node", [niceevalBin, "view", "--out", tmp, snapshot], { stdio: "inherit" });
@@ -46,8 +46,12 @@ if (!Array.isArray(data.rows) || data.rows.length === 0) {
   throw new Error(`快照 ${snapshot} 聚合出 0 行,拒绝生成空报告`);
 }
 
+// error / assertions[].detail 里可能带 evaluation 失败时的 stack trace,其中的绝对路径
+// 也是构建机本地路径泄漏(和 artifactAbsBase 同类问题),裁掉 repoRoot 前缀但保留栈信息本身。
+const repoRootPattern = new RegExp(repoRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "/?", "g");
+
 // 模板用 JSON.stringify(data).replace(/</g, "\\u003c") 内嵌,这里复刻同样的转义。
-const sanitized = JSON.stringify(data).replace(/</g, "\\u003c");
+const sanitized = JSON.stringify(data).replace(repoRootPattern, "").replace(/</g, "\\u003c");
 writeFileSync(out, html.slice(0, jsonStart) + sanitized + html.slice(jsonEnd), "utf-8");
 
 const kb = (readFileSync(out).length / 1024).toFixed(0);
