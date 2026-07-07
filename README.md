@@ -96,15 +96,13 @@ pnpm exec niceeval view                # 本地查看结果
 
 ### 发布线上报告(coding-agent-memory-evals.vercel.app)
 
-线上站点 Vercel 直接静态托管 `site/`,没有构建步骤 —— `site/index.html` 是本地生成后**提交进仓库**的快照,数据内嵌在 HTML 里。跑完新一轮 eval 后刷新线上:
+结果数据 `.niceeval/` 直接提交进仓库(`.gitignore` 只排除单轮可达上百 MB、查看器也不读的 `diff.json`)。Vercel 在部署时用 `scripts/build-site.mjs` 从这份数据现场构建整站(`npx niceeval view --out site`),`site/` 是构建产物,不进仓库。跑完新一轮 eval 后:
 
 ```sh
-pnpm run snapshot   # 把最近一次 .niceeval/ 运行快照进 site/data/summary.json(提交进仓库)
-pnpm run report     # 由该快照生成 site/index.html(剥掉绝对路径与 /artifact 死链)
-git commit -am "chore: refresh site" && git push   # push 到 main 触发 Vercel 部署
+git add -A && git commit -m "eval: <跑了什么>" && git push   # push 即发布,没有本地构建步骤
 ```
 
-数据**不能**直接从 `.niceeval/` 生成:那目录被 `.gitignore` 且每轮换时间戳,在别的机器 / CI 上不存在,会悄悄生成空报告覆盖线上。`scripts/check-site.mjs`(CI `.github/workflows/site.yml`)会拦截空报告。
+空报告防线在构建侧:`.niceeval/` 里没有任何非空 summary 时 `build-site.mjs` 直接失败,Vercel 保留上一次部署。本地想预览线上会长什么样:`node scripts/build-site.mjs <输出目录>`,或直接 `pnpm exec niceeval view`。
 
 ---
 

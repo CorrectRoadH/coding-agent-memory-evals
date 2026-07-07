@@ -1,0 +1,3003 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.2.1"
+  },
+  "agent": "bub",
+  "startedAt": "2026-07-05T05:15:47.047Z",
+  "completedAt": "2026-07-05T05:26:23.151Z",
+  "passed": 13,
+  "failed": 4,
+  "skipped": 0,
+  "errored": 1,
+  "durationMs": 636104,
+  "usage": {
+    "inputTokens": 3232838,
+    "outputTokens": 327176
+  },
+  "estimatedCostUSD": 2.5057885656000005,
+  "results": [
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "4fba255eb93f8f1fd93df6d5c321a32d11d6550823a2bd4162c30d3915316921",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:15:49.090Z",
+      "durationMs": 121585,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Product Catalog Admin',\n  description: 'Admin product catalog with background refresh support'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/page.tsx\nimport { revalidateTag, unstable_cache } from 'next/cache';\nimport { getAllProducts } from '../lib/db';\n\nconst getCachedProducts = unstable_cache(\n  async () => {\n    return getAllProducts();\n  },\n  ['products'],\n  {\n    tags: ['products']\n  }\n);\n\nasync function syncLatestCatalog() {\n  'use server';\n\n  revalidateTag('products', 'max');\n}\n\nexport default async function Page() {\n  const products = await getCachedProducts();\n\n  return (\n    <main style={{ fontFamily: 'Arial, sans-serif', padding: '2rem', maxWidth: 960, margin: '0 auto' }}>\n      <h1 style={{ marginBottom: '0.5rem' }}>Product Catalog</h1>\n      <p style={{ color: '#555', marginTop: 0, marginBottom: '1.5rem' }}>\n        Browse catalog data quickly with background refreshes when the upstream ERP/PIM changes.\n      </p>\n\n      <form action={syncLatestCatalog} style={{ marginBottom: '1.5rem' }}>\n        <button\n          type=\"submit\"\n          style={{\n            background: '#111827',\n            color: 'white',\n            border: 0,\n            borderRadius: 8,\n            padding: '0.75rem 1rem',\n            fontSize: '0.95rem',\n            cursor: 'pointer'\n          }}\n        >\n          Sync latest catalog\n        </button>\n      </form>\n\n      <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>\n        <table style={{ width: '100%', borderCollapse: 'collapse' }}>\n          <thead style={{ background: '#f9fafb' }}>\n            <tr>\n              <th style={thStyle}>SKU</th>\n              <th style={thStyle}>Product</th>\n              <th style={thStyle}>Price</th>\n            </tr>\n          </thead>\n          <tbody>\n            {products.map((product) => (\n              <tr key={product.id} style={{ borderTop: '1px solid #e5e7eb' }}>\n                <td style={tdStyle}>{product.id}</td>\n                <td style={tdStyle}>{product.name}</td>\n                <td style={tdStyle}>${product.price.toFixed(2)}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </div>\n    </main>\n  );\n}\n\nconst thStyle: React.CSSProperties = {\n  textAlign: 'left',\n  padding: '0.875rem 1rem',\n  fontSize: '0.85rem',\n  color: '#374151',\n  letterSpacing: '0.02em'\n};\n\nconst tdStyle: React.CSSProperties = {\n  padding: '0.875rem 1rem',\n  fontSize: '0.95rem',\n  color: '#111827'\n};\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n",
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Product Catalog Admin',\n  description: 'Admin product catalog with background refresh support'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/page.tsx\nimport { revalidateTag, unstable_cache } from 'next/cache';\nimport { getAllProducts } from '../lib/db';\n\nconst getCachedProducts = unstable_cache(\n  async () => {\n    return getAllProducts();\n  },\n  ['products'],\n  {\n    tags: ['products']\n  }\n);\n\nasync function syncLatestCatalog() {\n  'use server';\n\n  revalidateTag('products', 'max');\n}\n\nexport default async function Page() {\n  const products = await getCachedProducts();\n\n  return (\n    <main style={{ fontFamily: 'Arial, sans-serif', padding: '2rem', maxWidth: 960, margin: '0 auto' }}>\n      <h1 style={{ marginBottom: '0.5rem' }}>Product Catalog</h1>\n      <p style={{ color: '#555', marginTop: 0, marginBottom: '1.5rem' }}>\n        Browse catalog data quickly with background refreshes when the upstream ERP/PIM changes.\n      </p>\n\n      <form action={syncLatestCatalog} style={{ marginBottom: '1.5rem' }}>\n        <button\n          type=\"submit\"\n          style={{\n            background: '#111827',\n            color: 'white',\n            border: 0,\n            borderRadius: 8,\n            padding: '0.75rem 1rem',\n            fontSize: '0.95rem',\n            cursor: 'pointer'\n          }}\n        >\n          Sync latest catalog\n        </button>\n      </form>\n\n      <div style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>\n        <table style={{ width: '100%', borderCollapse: 'collapse' }}>\n          <thead style={{ background: '#f9fafb' }}>\n            <tr>\n              <th style={thStyle}>SKU</th>\n              <th style={thStyle}>Product</th>\n              <th style={thStyle}>Price</th>\n            </tr>\n          </thead>\n          <tbody>\n            {products.map((product) => (\n              <tr key={product.id} style={{ borderTop: '1px solid #e5e7eb' }}>\n                <td style={tdStyle}>{product.id}</td>\n                <td style={tdStyle}>{product.name}</td>\n                <td style={tdStyle}>${product.price.toFixed(2)}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </div>\n    </main>\n  );\n}\n\nconst thStyle: React.CSSProperties = {\n  textAlign: 'left',\n  padding: '0.875rem 1rem',\n  fontSize: '0.85rem',\n  color: '#374151',\n  letterSpacing: '0.02em'\n};\n\nconst tdStyle: React.CSSProperties = {\n  padding: '0.875rem 1rem',\n  fontSize: '0.95rem',\n  color: '#111827'\n};\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n",
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 51,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 55,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 53229,
+        "outputTokens": 2251,
+        "cacheReadTokens": 17408,
+        "requests": 9,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.051356849999999996,
+      "artifactsDir": "memory/agent-029-use-cache-directive/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "failed",
+      "fingerprint": "9f602b84109a2b5c638e342483e8d6729e78ae2d4f80479f088658e0ea4249e8",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:15:49.090Z",
+      "durationMs": 279473,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999, sku: 'LAP-001', inventory: 45, status: 'In Stock', lastUpdated: '2026-07-04T10:00:00Z' },\n    { id: 2, name: 'Wireless Phone', price: 699, sku: 'PHN-002', inventory: 120, status: 'In Stock', lastUpdated: '2026-07-04T10:00:00Z' },\n    { id: 3, name: 'Tablet', price: 499, sku: 'TAB-003', inventory: 8, status: 'Low Stock', lastUpdated: '2026-07-03T14:30:00Z' },\n    { id: 4, name: 'Headphones', price: 199, sku: 'HPH-004', inventory: 0, status: 'Out of Stock', lastUpdated: '2026-06-28T09:15:00Z' },\n    { id: 5, name: 'Smart Watch', price: 299, sku: 'WCH-005', inventory: 67, status: 'In Stock', lastUpdated: '2026-07-05T08:00:00Z' },\n  ];\n}\n\n\n// app/admin/products/page.tsx\nimport { unstable_cache } from 'next/cache';\nimport { revalidateTag } from 'next/cache';\nimport { redirect } from 'next/navigation';\nimport { getAllProducts } from '@/lib/db';\nimport styles from './page.module.css';\n\n// ---------- Cached catalog data ----------\n// Tagged with \"products\" so it can be invalidated from anywhere\n// that uses the same tag.  Fallback TTL of 5 min means the\n// catalog also refreshes periodically on its own.\n\nconst getCachedProducts = unstable_cache(\n  async () => {\n    const products = await getAllProducts();\n    return products;\n  },\n  ['admin-products-list'],\n  { tags: ['products'], revalidate: 300 },\n);\n\n// The page is dynamic so every request re-renders, but the\n// PRODUCT DATA comes from the cache above — no repeated queries.\nexport const dynamic = 'force-dynamic';\n\n// ---------- Page ----------\n\nexport default async function AdminProductsPage(props: {\n  searchParams: Promise<{ synced?: string }>;\n}) {\n  const searchParams = await props.searchParams;\n  const products = await getCachedProducts();\n\n  // ---- Inline Server Action ----\n  // A regular HTML form posts to this action.  It invalidates the\n  // \"products\" cache tag and redirects back so the page re-renders\n  // with fresh data.  The action returns immediately — the\n  // revalidation is async from the caller's perspective.\n\n  async function syncCatalog() {\n    'use server';\n    // Second argument controls the stale window during background\n    // revalidation — serve briefly stale data for up to 60 s\n    // while the new catalog is computed, then expire.\n    revalidateTag('products', { expire: 60 });\n\n    // Redirect back with a query param so the page can show a\n    // confirmation banner.  The redirect causes a full re-render,\n    // at which point the cache tag has already been invalidated\n    // and getCachedProducts will fetch fresh data.\n    redirect('/admin/products?synced=1');\n  }\n\n  const justSynced = searchParams.synced === '1';\n\n  // ---- Render ----\n\n  return (\n    <div className={styles.container}>\n      <div className={styles.header}>\n        <div>\n          <h1 className={styles.title}>Product Catalog</h1>\n          <p className={styles.subtitle}>\n            Browse and sync product data from your ERP/PIM system.\n          </p>\n        </div>\n\n        {/* Regular HTML form — no client JS needed to submit. */}\n        <form action={syncCatalog} className={styles.syncForm}>\n          <button type=\"submit\" className={styles.syncButton}>\n            &#x21bb;&nbsp; Sync Latest Catalog\n          </button>\n        </form>\n      </div>\n\n      {justSynced && (\n        <div className={`${styles.alert} ${styles.alertSuccess}`}>\n          <strong>Sync triggered.</strong> Catalog data is being refreshed\n          in the background. Changes may take a moment to appear across\n          all views.\n        </div>\n      )}\n\n      {products.length === 0 ? (\n        <div className={styles.empty}>\n          <p>No products found.</p>\n        </div>\n      ) : (\n        <div className={styles.tableContainer}>\n          <table className={styles.table}>\n            <thead>\n              <tr>\n    …",
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999, sku: 'LAP-001', inventory: 45, status: 'In Stock', lastUpdated: '2026-07-04T10:00:00Z' },\n    { id: 2, name: 'Wireless Phone', price: 699, sku: 'PHN-002', inventory: 120, status: 'In Stock', lastUpdated: '2026-07-04T10:00:00Z' },\n    { id: 3, name: 'Tablet', price: 499, sku: 'TAB-003', inventory: 8, status: 'Low Stock', lastUpdated: '2026-07-03T14:30:00Z' },\n    { id: 4, name: 'Headphones', price: 199, sku: 'HPH-004', inventory: 0, status: 'Out of Stock', lastUpdated: '2026-06-28T09:15:00Z' },\n    { id: 5, name: 'Smart Watch', price: 299, sku: 'WCH-005', inventory: 67, status: 'In Stock', lastUpdated: '2026-07-05T08:00:00Z' },\n  ];\n}\n\n\n// app/admin/products/page.tsx\nimport { unstable_cache } from 'next/cache';\nimport { revalidateTag } from 'next/cache';\nimport { redirect } from 'next/navigation';\nimport { getAllProducts } from '@/lib/db';\nimport styles from './page.module.css';\n\n// ---------- Cached catalog data ----------\n// Tagged with \"products\" so it can be invalidated from anywhere\n// that uses the same tag.  Fallback TTL of 5 min means the\n// catalog also refreshes periodically on its own.\n\nconst getCachedProducts = unstable_cache(\n  async () => {\n    const products = await getAllProducts();\n    return products;\n  },\n  ['admin-products-list'],\n  { tags: ['products'], revalidate: 300 },\n);\n\n// The page is dynamic so every request re-renders, but the\n// PRODUCT DATA comes from the cache above — no repeated queries.\nexport const dynamic = 'force-dynamic';\n\n// ---------- Page ----------\n\nexport default async function AdminProductsPage(props: {\n  searchParams: Promise<{ synced?: string }>;\n}) {\n  const searchParams = await props.searchParams;\n  const products = await getCachedProducts();\n\n  // ---- Inline Server Action ----\n  // A regular HTML form posts to this action.  It invalidates the\n  // \"products\" cache tag and redirects back so the page re-renders\n  // with fresh data.  The action returns immediately — the\n  // revalidation is async from the caller's perspective.\n\n  async function syncCatalog() {\n    'use server';\n    // Second argument controls the stale window during background\n    // revalidation — serve briefly stale data for up to 60 s\n    // while the new catalog is computed, then expire.\n    revalidateTag('products', { expire: 60 });\n\n    // Redirect back with a query param so the page can show a\n    // confirmation banner.  The redirect causes a full re-render,\n    // at which point the cache tag has already been invalidated\n    // and getCachedProducts will fetch fresh data.\n    redirect('/admin/products?synced=1');\n  }\n\n  const justSynced = searchParams.synced === '1';\n\n  // ---- Render ----\n\n  return (\n    <div className={styles.container}>\n      <div className={styles.header}>\n        <div>\n          <h1 className={styles.title}>Product Catalog</h1>\n          <p className={styles.subtitle}>\n            Browse and sync product data from your ERP/PIM system.\n          </p>\n        </div>\n\n        {/* Regular HTML form — no client JS needed to submit. */}\n        <form action={syncCatalog} className={styles.syncForm}>\n          <button type=\"submit\" className={styles.syncButton}>\n            &#x21bb;&nbsp; Sync Latest Catalog\n          </button>\n        </form>\n      </div>\n\n      {justSynced && (\n        <div className={`${styles.alert} ${styles.alertSuccess}`}>\n          <strong>Sync triggered.</strong> Catalog data is being refreshed\n          in the background. Changes may take a moment to appear across\n          all views.\n        </div>\n      )}\n\n      {products.length === 0 ? (\n        <div className={styles.empty}>\n          <p>No products found.</p>\n        </div>\n      ) : (\n        <div className={styles.tableContainer}>\n          <table className={styles.table}>\n            <thead>\n              <tr>\n    …",
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 51,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 55,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 69810,
+        "outputTokens": 75493,
+        "cacheReadTokens": 1268992,
+        "requests": 35,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.034464617600000004,
+      "artifactsDir": "memory/agent-029-use-cache-directive/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "906293cb69f7fa432ebf75f6cf7bab2a4fee1c2e329e76eb93e90535e8444cc9",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:15:49.090Z",
+      "durationMs": 185030,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 51,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 55,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 162755,
+        "outputTokens": 4677,
+        "cacheReadTokens": 125056,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.15249195000000001,
+      "artifactsDir": "memory/agent-029-use-cache-directive/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-030-app-router-migration-hard",
+      "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "8595fe7cd894af1437b6c7cfe5231177a0ea17b6c7d5d85a4555e22fe5449949",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:17:51.329Z",
+      "durationMs": 298458,
+      "assertions": [
+        {
+          "name": "isTrue(app/layout.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<html.*lang/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 28,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<body/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 29,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/metadata|Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/children.*ReactNode/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function.*Page/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 37,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+fetch|fetch\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 38,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 39,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/blog/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 43,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 44,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidate.*\\d+|next.*revalidate|export.*const.*revalidate.*=.*\\d+/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 45,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic blog route exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 50,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*generateStaticParams|generateStaticParams.*export/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticPaths|getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 58,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*POST/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 60,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/Request|Response|NextRequest|NextResponse/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 61,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 63,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*PUT|export.*DELETE/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 65,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 69,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 70,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 71,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 72,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/error.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 76,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 78,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/error.*Error|Error.*error/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 79,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/not-found.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 80,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_app.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 95,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_document.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 96,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_error.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 97,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/404.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 98,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 99,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 100,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 101,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 102,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 103,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps|getStaticProps|getStaticPaths/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 108,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bfrom\\s+['\"]next\\/(?:head|router)['\"]|import\\s+['\"]next\\/(?:head|router)['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 110,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 113,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 396916,
+        "outputTokens": 7292,
+        "cacheReadTokens": 188416,
+        "requests": 28,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.3446322,
+      "artifactsDir": "memory/agent-030-app-router-migration-hard/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-030-app-router-migration-hard",
+      "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "passed",
+      "fingerprint": "0173c0f0976325370a99f1dc4d56ac08e9960664f9da249f4a80e329bc3ed299",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:20:29.030Z",
+      "durationMs": 209270,
+      "assertions": [
+        {
+          "name": "isTrue(app/layout.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<html.*lang/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 28,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<body/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 29,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/metadata|Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/children.*ReactNode/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function.*Page/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 37,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+fetch|fetch\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 38,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 39,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/blog/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 43,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 44,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidate.*\\d+|next.*revalidate|export.*const.*revalidate.*=.*\\d+/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 45,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic blog route exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 50,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*generateStaticParams|generateStaticParams.*export/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticPaths|getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 58,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*POST/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 60,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/Request|Response|NextRequest|NextResponse/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 61,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 63,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*PUT|export.*DELETE/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 65,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 69,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 70,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 71,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 72,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/error.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 76,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 78,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/error.*Error|Error.*error/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 79,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/not-found.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 80,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_app.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 95,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_document.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 96,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_error.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 97,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/404.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 98,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 99,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 100,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 101,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 102,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 103,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps|getStaticProps|getStaticPaths/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 108,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bfrom\\s+['\"]next\\/(?:head|router)['\"]|import\\s+['\"]next\\/(?:head|router)['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 110,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 113,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 141775,
+        "outputTokens": 66282,
+        "cacheReadTokens": 2389888,
+        "requests": 74,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.045099146400000005,
+      "artifactsDir": "memory/agent-030-app-router-migration-hard/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-030-app-router-migration-hard",
+      "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "1396cb0c16971e2c07abee347ef55035bf80088557df77ed55d0ce280edfdca5",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:18:54.723Z",
+      "durationMs": 288997,
+      "assertions": [
+        {
+          "name": "isTrue(app/layout.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<html.*lang/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 28,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/<body/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 29,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/metadata|Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/children.*ReactNode/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Root layout exists and replaces _app/_document",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function.*Page/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 37,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+fetch|fetch\\(/)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "import { headers } from 'next/headers';\nimport Link from 'next/link';\nimport type { Metadata } from 'next';\nimport type { UserAgentPageProps } from '@/lib/blog-types';\nimport { getRecentPosts } from '@/lib/blog-data';\n\nexport const metadata: Metadata = {\n  title: 'Home',\n  description: 'Welcome to my blog homepage',\n  openGraph: {\n    title: 'Home - My Blog',\n  },\n};\n\nexport const dynamic = 'force-dynamic';\n\nexport default async function HomePage() {\n  const requestHeaders = await headers();\n  const userAgent = requestHeaders.get('user-agent') ?? '';\n  const posts = await getRecentPosts(5);\n  const props: UserAgentPageProps = {\n    timestamp: new Date().toISOString(),\n    userAgent,\n    posts,\n  };\n\n  return (\n    <div>\n      <h1>Welcome to My Blog</h1>\n      <p>Server-side rendered at: {props.timestamp}</p>\n      <p>Your user agent: {props.userAgent}</p>\n\n      <h2>Recent Posts</h2>\n      <ul>\n        {props.posts.map((post) => (\n          <li key={post.id}>\n            <Link href={`/blog/${post.id}`}>{post.title}</Link>\n          </li>\n        ))}\n      </ul>\n\n      <Link href=\"/blog\" className=\"button-link\">\n        View All Posts\n      </Link>\n    </div>\n  );\n}\n",
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 38,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Home page migrated to Server Component with async data fetching",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 39,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/blog/page.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 43,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 44,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidate.*\\d+|next.*revalidate|export.*const.*revalidate.*=.*\\d+/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 45,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Blog index migrated with ISR equivalent",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic blog route exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 50,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*generateStaticParams|generateStaticParams.*export/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getStaticPaths|getStaticProps/, stripComments)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Dynamic blog route migrated to generateStaticParams",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 58,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*POST/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 60,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/Request|Response|NextRequest|NextResponse/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 61,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(dynamic posts route handler exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 63,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*GET|export.*PUT|export.*DELETE/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "API routes migrated to Route Handlers",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 65,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 69,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 70,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/export.*metadata|metadata.*Metadata/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 71,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Metadata API replaces next/head",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 72,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/error.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 76,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use client['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 78,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/error.*Error|Error.*error/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 79,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(app/not-found.tsx exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Error handling migrated to error.js and not-found.js",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 80,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_app.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 95,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_document.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 96,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/_error.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 97,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/404.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 98,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 99,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 100,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/blog/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 101,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/index.js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 102,
+            "column": 9
+          }
+        },
+        {
+          "name": "fileDeleted(pages/api/posts/[id].js)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Pages Router directory removed",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 103,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/getServerSideProps|getStaticProps|getStaticPaths/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 108,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bfrom\\s+['\"]next\\/(?:head|router)['\"]|import\\s+['\"]next\\/(?:head|router)['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Final source free of legacy Pages APIs and imports",
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 110,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+            "line": 113,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 363600,
+        "outputTokens": 10954,
+        "cacheReadTokens": 340352,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.34751940000000003,
+      "artifactsDir": "memory/agent-030-app-router-migration-hard/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-037-updatetag-cache",
+      "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "c08df374abed8d1996f59c587ef4659ee9298df6200a93130a5843f3391b6f14",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:17:51.331Z",
+      "durationMs": 191913,
+      "assertions": [
+        {
+          "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action imports updateTag from next/cache",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use server['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action uses 'use server' directive",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a Server Action calls updateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action calls updateTag() for cache invalidation",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(a Server Action invalidates via updateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 48,
+            "column": 9
+          }
+        },
+        {
+          "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 49,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(Server Action has post creation logic)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action has post creation logic",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 60,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 765605,
+        "outputTokens": 3242,
+        "cacheReadTokens": 388096,
+        "requests": 21,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.61789995,
+      "artifactsDir": "memory/agent-037-updatetag-cache/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-037-updatetag-cache",
+      "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "passed",
+      "fingerprint": "da0b0991326adee0caaf5dc23d203663ba9ba46016add7605b1f8491ac08170f",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:20:29.032Z",
+      "durationMs": 191759,
+      "assertions": [
+        {
+          "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action imports updateTag from next/cache",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use server['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action uses 'use server' directive",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a Server Action calls updateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action calls updateTag() for cache invalidation",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(a Server Action invalidates via updateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 48,
+            "column": 9
+          }
+        },
+        {
+          "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 49,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(Server Action has post creation logic)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action has post creation logic",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 60,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 90438,
+        "outputTokens": 36389,
+        "cacheReadTokens": 1343872,
+        "requests": 46,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.0266130816,
+      "artifactsDir": "memory/agent-037-updatetag-cache/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-037-updatetag-cache",
+      "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "fa2933f0b6f201ffb870727adaa05d01fba73b142901bf7f5a47109613a3aef2",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:18:54.724Z",
+      "durationMs": 164644,
+      "assertions": [
+        {
+          "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action imports updateTag from next/cache",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 26,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/['\"]use server['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action uses 'use server' directive",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a Server Action calls updateTag)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "detail": "evaluation error: TypeError: Cannot read properties of undefined (reading 'length')\n    at brief (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/util.ts:48:9)\n    at previewCheckedValue (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/context/context.ts:117:12)\n    at Object.evaluate (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/context/context.ts:297:37)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async AssertionCollector.finalize (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/scoring/collector.ts:81:21)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:334:42)",
+          "group": "Server Action calls updateTag() for cache invalidation",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "isTrue(a Server Action invalidates via updateTag)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "false",
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 48,
+            "column": 9
+          }
+        },
+        {
+          "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 49,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(Server Action has post creation logic)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action has post creation logic",
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+            "line": 60,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 131120,
+        "outputTokens": 5352,
+        "cacheReadTokens": 105728,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.13035360000000001,
+      "artifactsDir": "memory/agent-037-updatetag-cache/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/repomod-hello-world-api",
+      "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "1dc6f73f6c69c8c313e8304406b488d2ee4eb4864331daefc165951b4ae06c4e",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:17:51.332Z",
+      "durationMs": 126408,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/repomod-hello-world-api.eval.ts",
+            "line": 67,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 250394,
+        "outputTokens": 1082,
+        "cacheReadTokens": 7168,
+        "requests": 5,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.19320210000000002,
+      "artifactsDir": "memory/repomod-hello-world-api/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/repomod-hello-world-api",
+      "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "passed",
+      "fingerprint": "95754e4d727502b85afc4409204c2b284ec9b26bf6cfd824e26f6dc187d9d853",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:20:29.033Z",
+      "durationMs": 165241,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/repomod-hello-world-api.eval.ts",
+            "line": 67,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 104335,
+        "outputTokens": 9665,
+        "cacheReadTokens": 1357440,
+        "requests": 51,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.021113932000000002,
+      "artifactsDir": "memory/repomod-hello-world-api/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/repomod-hello-world-api",
+      "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "a623de902d776c2a81e0578156daa0189f0accf9737f3feec853e53ff9d0800f",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:18:54.724Z",
+      "durationMs": 160622,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/repomod-hello-world-api.eval.ts",
+            "line": 67,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 378273,
+        "outputTokens": 3093,
+        "cacheReadTokens": 318464,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.32150805,
+      "artifactsDir": "memory/repomod-hello-world-api/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "errored",
+      "fingerprint": "8a095690e3c1d3ac1e7da7361668efce340722929f71763dde6af5704bbea574",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:17:51.333Z",
+      "durationMs": 42,
+      "assertions": [],
+      "error": "TypeError: fetch failed\n    at Object.processResponse (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:237:16)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:1081:19\n    at node:internal/process/task_queues:151:7\n    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n    at AsyncResource.runMicrotask (node:internal/process/task_queues:148:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Function.createSandbox (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1179:17)\n    at async Function.create (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:52:9)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.2.1_@vercel+sandbox@2.4.0_dockerode@4.0.12_e2b@2.31.0/node_modules/niceeval/src/sandbox/resolve.ts:73:40)",
+      "artifactsDir": "memory/terminal-cancel-async-tasks/bub/gpt-5.4-mini/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "passed",
+      "fingerprint": "92e926d5024d6471fddd60ae781d363116c80bec0b657aac88d1e7236ac1b3c4",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:20:29.033Z",
+      "durationMs": 353842,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+            "line": 45,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 119973,
+        "outputTokens": 91463,
+        "cacheReadTokens": 820480,
+        "requests": 26,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.044703203999999996,
+      "artifactsDir": "memory/terminal-cancel-async-tasks/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "e75f3c16219560509b027b60a55bbcbfd97e0b77a080a75e3958ab774643a805",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:18:54.725Z",
+      "durationMs": 214691,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+            "line": 45,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 118983,
+        "outputTokens": 8040,
+        "cacheReadTokens": 110720,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.13372125,
+      "artifactsDir": "memory/terminal-cancel-async-tasks/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "dev-e2b/bub-e2b",
+      "experiment": {
+        "id": "dev-e2b/bub-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "bub",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "04db588fea38524e3153f26b5f3e73d63b42a705ff9838696efb4bcd8ba61e68",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:17:51.333Z",
+      "durationMs": 38545,
+      "assertions": [
+        {
+          "name": "calledTool(shell)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "evidence": "bash [completed]\n  input: {\"background\":false,\"cmd\":\"printf 'niceeval-tool-call-ok\\n' > TOOL_CALL_SMOKE.txt\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":30}\n  output: \"(no output)\"\nbash [completed]\n  input: {\"background\":false,\"cmd\":\"cd /home/user/workspace && npm run build\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":120}\n  output: {\"kind\":\"tool\",\"message\":\"Tool 'bash' execution failed.\",\"details\":{\"error\":\"RuntimeError('command exited with code 1\\\\noutput:\\\\nnpm error Missing script: \\\"build\\\"\\\\nnpm error\\\\nnpm error To see a list of scripts, run:\\\\nnpm error   npm run\\\\nnpm error A complete log of this run can be found in: /home/user/.npm/_logs/2026-07-05T05_18_08_607Z-debug-0.log')\"}}\nbash [completed]\n  input: {\"background\":false,\"cmd\":\"cat package.json\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":30}\n  output: \"{\\n  \\\"private\\\": true\\n}\"\nbash [completed]\n  input: {\"background\":false,\"cmd\":\"python - <<'PY'\\nfrom pathlib import Path\\np = Path('/home/user/workspace/package.json')\\np.write_text('''{\\n  \\\"private\\\": true,\\n  \\\"scripts\\\": {\\n    \\\"build\\\": \\\"node -e \\\\\\\"require('fs').writeFileSync('BUILD_OK.txt','build-ok\\\\\\\\n')\\\\\\\"\\\"\\n  }\\n}\\n''')\\nPY\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":30}\n  output: {\"kind\":\"tool\",\"message\":\"Tool 'bash' execution failed.\",\"details\":{\"error\":\"RuntimeError('command exited with code 127\\\\noutput:\\\\n/usr/bin/bash: line 1: python: command not found')\"}}\nbash [completed]\n  input: {\"background\":false,\"cmd\":\"node -e \\\"const fs=require('fs'); fs.writeFileSync('/home/user/workspace/package.json', JSON.stringify({private:true,scripts:{build:'node -e \\\\\\\\\\\\\\\"require(\\\\\\\\\\\\'fs\\\\\\\\\\\\').writeFileSync(\\\\\\\\\\\\'BUILD_OK.txt\\\\\\\\\\\\',\\\\\\\\\\\\'build-ok\\\\\\\\\\\\\\\\n\\\\\\\\\\\\')\\\\\\\\\\\\\\\"'}}, null, 2)+'\\\\n')\\\"\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":30}\n  output: {\"kind\":\"tool\",\"message\":\"Tool 'bash' execution failed.\",\"details\":{\"error\":\"RuntimeError('command exited with code 1\\\\noutput:\\\\n[eval]:1\\\\nconst fs=require(\\\\'fs\\\\'); fs.writeFileSync(\\\\'/home/user/workspace/package.json\\\\', JSON.stringify({private:true,scripts:{build:\\\\'node -e \\\\\\\\\\\"require(\\\\\\\\\\\\\\\\\\\\'fs\\\\\\\\\\\\\\\\\\\\').writeFileSync(\\\\\\\\\\\\\\\\\\\\'BUILD_OK.txt\\\\\\\\\\\\\\\\\\\\',\\\\\\\\\\\\\\\\\\\\'build-ok\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\\\\\')\\\\\\\\\\\"\\\\'}}, null, 2)+\\\\'\\\\\\\\n\\\\')\\\\n                                                                                                                                                ^^^\\\\nExpected \\\\',\\\\', got \\\\'<lexing error>\\\\'\\\\n\\\\nSyntaxError: Invalid or unexpected token\\\\n    at makeContextifyScript (node:internal/vm:194:14)\\\\n    at compileScript (node:internal/process/execution:3…\nbash [completed]\n  input: {\"background\":false,\"cmd\":\"npm run build\",\"cwd\":\"/home/user/workspace\",\"timeout_seconds\":120}\n  output: \"> build\\n> node -e \\\"require('fs').writeFileSync('BUILD_OK.txt','build-ok\\\\n')\\\"\"",
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 18,
+            "column": 9
+          }
+        },
+        {
+          "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 19,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 26,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 20610,
+        "outputTokens": 487,
+        "cacheReadTokens": 6656,
+        "requests": 8,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.0181482,
+      "artifactsDir": "memory/tool-call-observability/bub/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "dev-e2b/claude-e2b",
+      "experiment": {
+        "id": "dev-e2b/claude-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "claude-code",
+      "model": "deepseek-v4-flash",
+      "outcome": "passed",
+      "fingerprint": "7555e20973a53013d8360d487817ca10825c0a6e3a99b530b1ef216aff992352",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:20:29.033Z",
+      "durationMs": 19043,
+      "assertions": [
+        {
+          "name": "calledTool(shell)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "evidence": "Bash [completed]\n  input: {\"command\":\"echo \\\"niceeval-tool-call-ok\\\" > /home/user/workspace/TOOL_CALL_SMOKE.txt\",\"description\":\"Create TOOL_CALL_SMOKE.txt with content\"}\n  output: \"(Bash completed with no output)\"\nBash [completed]\n  input: {\"command\":\"printf \\\"niceeval-tool-call-ok\\\" > /home/user/workspace/TOOL_CALL_SMOKE.txt\",\"description\":\"Rewrite file without trailing newline\"}\n  output: \"(Bash completed with no output)\"",
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 18,
+            "column": 9
+          }
+        },
+        {
+          "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 19,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 26,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 46823,
+        "outputTokens": 1271,
+        "cacheReadTokens": 209280,
+        "requests": 11,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.007497084000000001,
+      "artifactsDir": "memory/tool-call-observability/claude-code/deepseek-v4-flash/a0",
+      "hasTrace": false,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "dev-e2b/codex-e2b",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "28b3cb9dc792d8baa1386939941b205469376b037fa6a0cf15e1d37dfa4c4e6c",
+      "attempt": 0,
+      "startedAt": "2026-07-05T05:18:54.725Z",
+      "durationMs": 16614,
+      "assertions": [
+        {
+          "name": "calledTool(shell)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "evidence": "command_execution [completed]\n  input: {\"command\":\"/bin/bash -lc \\\"printf 'niceeval-tool-call-ok\\n' > TOOL_CALL_SMOKE.txt && sed -n '1p' TOOL_CALL_SMOKE.txt\\\"\"}\n  output: {\"output\":\"niceeval-tool-call-ok\\n\",\"exit_code\":0}",
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 18,
+            "column": 9
+          }
+        },
+        {
+          "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 19,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 26,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 18199,
+        "outputTokens": 143,
+        "cacheReadTokens": 15616,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.01546395,
+      "artifactsDir": "memory/tool-call-observability/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-05T05-15-49-078Z"
+}

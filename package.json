@@ -6,9 +6,7 @@
   "description": "用 niceeval 写的「coding agent 记忆能力」评测套件,跨 claude-code / codex / bub",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "smoke": "niceeval exp dev memory/agent-029-use-cache-directive",
-    "snapshot": "node scripts/snapshot-results.mjs",
-    "report": "node scripts/build-site.mjs"
+    "smoke": "niceeval exp dev memory/agent-029-use-cache-directive"
   },
   "devDependencies": {
     "@types/node": "^26.0.1",

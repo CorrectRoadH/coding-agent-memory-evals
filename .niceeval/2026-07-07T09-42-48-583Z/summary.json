@@ -1,0 +1,407 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.3.0"
+  },
+  "agent": "bub",
+  "startedAt": "2026-07-07T09:42:36.379Z",
+  "completedAt": "2026-07-07T09:48:15.263Z",
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "errored": 2,
+  "durationMs": 338883,
+  "usage": {
+    "inputTokens": 1627391,
+    "outputTokens": 5903
+  },
+  "estimatedCostUSD": 4.4785585,
+  "results": [
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "899e3733f393d0e49e974dd98ebd47b7f6b6eeab1e7afafa8b5e8a6eb0c1ee2e",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:42:48.597Z",
+      "durationMs": 158504,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 51,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 55,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 120289,
+        "outputTokens": 2276,
+        "cacheReadTokens": 95232,
+        "requests": 8,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.3586705,
+      "artifactsDir": "memory/agent-029-use-cache-directive/bub/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-030-app-router-migration-hard",
+      "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "64191332bdade7ca7358c2b54e94cc502ea6de5ef498a2e8369d0637787e8189",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:45:27.581Z",
+      "durationMs": 17,
+      "assertions": [],
+      "error": "TypeError: fetch failed\n    at Object.processResponse (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:237:16)\n    at /Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:1081:19\n    at node:internal/process/task_queues:151:7\n    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n    at AsyncResource.runMicrotask (node:internal/process/task_queues:148:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Function.createSandbox (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1179:17)\n    at async Function.create (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/fastevals/src/sandbox/e2b.ts:52:9)\n    at async <anonymous> (/Users/ctrdh/Code/fastevals/src/sandbox/resolve.ts:73:40)",
+      "artifactsDir": "memory/agent-030-app-router-migration-hard/bub/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/agent-037-updatetag-cache",
+      "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "0c7b8d55324464b8ac28a1d2a8ecc1485eda084a7179a010d5cd44d5d33c7114",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:45:27.581Z",
+      "durationMs": 3332,
+      "assertions": [],
+      "error": "TypeError: fetch failed\n    at Object.processResponse (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:237:16)\n    at /Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:1081:19\n    at node:internal/process/task_queues:151:7\n    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n    at AsyncResource.runMicrotask (node:internal/process/task_queues:148:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/ctrdh/Code/fastevals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Function.createSandbox (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1179:17)\n    at async Function.create (/Users/ctrdh/Code/fastevals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/fastevals/src/sandbox/e2b.ts:52:9)\n    at async <anonymous> (/Users/ctrdh/Code/fastevals/src/sandbox/resolve.ts:73:40)",
+      "artifactsDir": "memory/agent-037-updatetag-cache/bub/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/repomod-hello-world-api",
+      "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "06e1d2b3d81a7e6890fc624dbf14540a8f598ada6cda3a6decc397bdfa2e095a",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:45:27.572Z",
+      "durationMs": 166884,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/repomod-hello-world-api.eval.ts",
+            "line": 67,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 1299311,
+        "outputTokens": 1354,
+        "cacheReadTokens": 1037824,
+        "requests": 9,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 3.5280435,
+      "artifactsDir": "memory/repomod-hello-world-api/bub/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "48582c6ede4861f71e258a2673bb727f1b8c9ad1d12a1c261fbf1947884fb67d",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:45:27.598Z",
+      "durationMs": 130300,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+            "line": 45,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 203786,
+        "outputTokens": 2220,
+        "cacheReadTokens": 151552,
+        "requests": 11,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.580653,
+      "artifactsDir": "memory/terminal-cancel-async-tasks/bub/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "compare/bub-gpt-5.4--agents-md",
+      "experiment": {
+        "id": "compare/bub-gpt-5.4--agents-md",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "bub",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "d3b497ca545c07d282e81b222d2aee149c109d9af9dd715904f7d02fb5a124d3",
+      "attempt": 0,
+      "startedAt": "2026-07-07T09:45:30.915Z",
+      "durationMs": 34616,
+      "assertions": [
+        {
+          "name": "calledTool(shell)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "evidence": "bash [completed]\n  input: {\"background\":false,\"cmd\":\"printf '%s' 'niceeval-tool-call-ok' > TOOL_CALL_SMOKE.txt\",\"cwd\":null,\"timeout_seconds\":10}\n  output: \"(no output)\"",
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 18,
+            "column": 9
+          }
+        },
+        {
+          "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 19,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 26,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 4005,
+        "outputTokens": 53,
+        "cacheReadTokens": 1536,
+        "requests": 2,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.0111915,
+      "artifactsDir": "memory/tool-call-observability/bub/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-07T09-42-48-583Z"
+}

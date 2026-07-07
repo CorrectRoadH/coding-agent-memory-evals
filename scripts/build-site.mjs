@@ -1,45 +1,46 @@
-// 把结果快照(site/data/run/)构建成可静态托管的站点:site/index.html + site/artifact/。
+// Vercel buildCommand:从提交进仓库的 .niceeval/ 现场构建静态站(site/)。
 //
-// niceeval 0.3.0 起 `view --out <目录>` 是目录式静态导出:index.html 加上查看器要 fetch 的
-// 工件(sources/events/trace),线上和本地 `niceeval view` 是同一套体验(代码视图、transcript、
-// trace 瀑布)。0.2.x 时代「剥掉 artifactBase 防 404」的 hack 不再需要。
+// 数据源就是 .niceeval/ 本身(.gitignore 只排除上百 MB 的 diff.json),所以跑完 eval
+// 之后 push 即发布,本地不需要任何构建/快照命令。
 //
-// 数据来源刻意用提交进仓库的 site/data/run/,而不是 .gitignore 掉的 .niceeval/。
-// 否则换台机器 / CI 上 .niceeval 不存在,会悄悄生成「空报告」覆盖掉线上数据。
+// 用 npx 拉已发布的 niceeval 而不是本仓库依赖:pnpm-workspace.yaml 把 niceeval
+// override 成 link:../fastevals 供本地跟 HEAD 开发,CI 上那个目录不存在,pnpm install
+// 装不出来。升级发布版时只改下面的 NICEEVAL 一处。
+//
+// TODO(升级到含 niceeval/results 的发布版后):改用 openResults + latestPerExperiment
+// + copyRun 先裁出「每个实验最新一份」再导出;现在的口径是全部历史 run 一起进站,
+// 与本地 `niceeval view` 一致。
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+const NICEEVAL = "niceeval@0.3.0";
+
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const snapshot = resolve(repoRoot, process.argv[2] ?? "site/data/run");
-const siteDir = resolve(repoRoot, process.argv[3] ?? "site");
-const niceevalBin = resolve(repoRoot, "node_modules/niceeval/bin/niceeval.js");
+const dataDir = join(repoRoot, ".niceeval");
+const outDir = resolve(repoRoot, process.argv[2] ?? "site");
 
-execFileSync("node", [niceevalBin, "view", "--out", siteDir, snapshot], { stdio: "inherit" });
-
-const indexPath = join(siteDir, "index.html");
-const html = readFileSync(indexPath, "utf-8");
-const marker = "window.__NICEEVAL_VIEW_DATA__ = ";
-const dataStart = html.indexOf(marker);
-if (dataStart === -1) throw new Error("找不到 __NICEEVAL_VIEW_DATA__ 标记,niceeval 模板可能变了");
-const jsonStart = dataStart + marker.length;
-const jsonEnd = html.indexOf(";</script>", jsonStart);
-if (jsonEnd === -1) throw new Error("找不到内嵌数据的结束符");
-
-const data = JSON.parse(html.slice(jsonStart, jsonEnd));
-if (!Array.isArray(data.rows) || data.rows.length === 0) {
-  throw new Error(`快照 ${snapshot} 聚合出 0 行,拒绝生成空报告`);
+// 空数据保险:.niceeval 缺失或没有任何非空 summary 时让构建失败,
+// 而不是把空报告部署上线(Vercel 构建失败会保留上一次部署)。
+if (!existsSync(dataDir)) {
+  throw new Error(`${dataDir} not found. The .niceeval/ data is committed to the repo; a missing directory means .gitignore or the checkout is broken.`);
+}
+const runsWithResults = readdirSync(dataDir, { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => join(dataDir, e.name, "summary.json"))
+  .filter((p) => {
+    try {
+      return (JSON.parse(readFileSync(p, "utf-8")).results ?? []).length > 0;
+    } catch {
+      return false;
+    }
+  });
+if (runsWithResults.length === 0) {
+  throw new Error(`${dataDir} has no run with non-empty results. Refusing to build an empty report.`);
 }
 
-// error / assertions[].detail 里可能带 evaluation 失败时的 stack trace,其中的绝对路径
-// 是构建机本地路径泄漏,裁掉 repoRoot 前缀但保留栈信息本身。
-const repoRootPattern = new RegExp(repoRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "/?", "g");
-
-// 模板用 JSON.stringify(data).replace(/</g, "\\u003c") 内嵌,这里复刻同样的转义。
-const sanitized = JSON.stringify(data).replace(repoRootPattern, "").replace(/</g, "\\u003c");
-writeFileSync(indexPath, html.slice(0, jsonStart) + sanitized + html.slice(jsonEnd), "utf-8");
-
-const kb = (readFileSync(indexPath).length / 1024).toFixed(0);
-console.log(`已写出 ${indexPath}(${kb} KB, ${data.rows.length} 行, ${data.resultCount} eval)+ ${siteDir}/artifact/`);
+rmSync(outDir, { recursive: true, force: true });
+execFileSync("npx", ["-y", NICEEVAL, "view", "--out", outDir], { cwd: repoRoot, stdio: "inherit" });
+console.log(`site built from ${runsWithResults.length} runs -> ${outDir}`);

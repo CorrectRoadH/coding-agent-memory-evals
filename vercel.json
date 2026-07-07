@@ -1,4 +1,5 @@
 {
-  "outputDirectory": "site",
-  "installCommand": "echo skip"
+  "installCommand": "echo skip",
+  "buildCommand": "node scripts/build-site.mjs",
+  "outputDirectory": "site"
 }
