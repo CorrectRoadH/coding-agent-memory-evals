@@ -19,12 +19,12 @@ export default defineEval({
       )
       .then((turn) => turn.expectOk());
 
-    const homePage = t.file("app/page.tsx");
-    const blogPage = t.file("app/blog/page.tsx");
+    const homePage = t.sandbox.file("app/page.tsx");
+    const blogPage = t.sandbox.file("app/blog/page.tsx");
 
     await t.group("Root layout exists and replaces _app/_document", async () => {
       t.check(await t.sandbox.fileExists("app/layout.tsx"), isTrue("app/layout.tsx exists"));
-      const layout = t.file("app/layout.tsx");
+      const layout = t.sandbox.file("app/layout.tsx");
       t.check(layout, includes(/<html.*lang/));
       t.check(layout, includes(/<body/));
       t.check(layout, includes(/metadata|Metadata/));
@@ -48,7 +48,7 @@ export default defineEval({
 
     await t.group("Dynamic blog route migrated to generateStaticParams", async () => {
       t.check(await t.sandbox.fileExists("app/blog/[id]/page.tsx"), isTrue("dynamic blog route exists"));
-      const dynamicBlogPage = t.file("app/blog/[id]/page.tsx");
+      const dynamicBlogPage = t.sandbox.file("app/blog/[id]/page.tsx");
       t.check(dynamicBlogPage, includes(/export.*generateStaticParams|generateStaticParams.*export/));
       t.check(dynamicBlogPage, includes(/export\s+default\s+async\s+function|async\s+function/));
       t.check(dynamicBlogPage, excludes(/getStaticPaths|getStaticProps/, { stripComments: true }));
@@ -56,12 +56,12 @@ export default defineEval({
 
     await t.group("API routes migrated to Route Handlers", async () => {
       t.check(await t.sandbox.fileExists("app/api/posts/route.ts"), isTrue("posts route handler exists"));
-      const postsRoute = t.file("app/api/posts/route.ts");
+      const postsRoute = t.sandbox.file("app/api/posts/route.ts");
       t.check(postsRoute, includes(/export.*GET|export.*POST/));
       t.check(postsRoute, includes(/Request|Response|NextRequest|NextResponse/));
 
       t.check(await t.sandbox.fileExists("app/api/posts/[id]/route.ts"), isTrue("dynamic posts route handler exists"));
-      const dynamicPostsRoute = t.file("app/api/posts/[id]/route.ts");
+      const dynamicPostsRoute = t.sandbox.file("app/api/posts/[id]/route.ts");
       t.check(dynamicPostsRoute, includes(/export.*GET|export.*PUT|export.*DELETE/));
     });
 
@@ -74,7 +74,7 @@ export default defineEval({
 
     await t.group("Error handling migrated to error.js and not-found.js", async () => {
       t.check(await t.sandbox.fileExists("app/error.tsx"), isTrue("app/error.tsx exists"));
-      const errorPage = t.file("app/error.tsx");
+      const errorPage = t.sandbox.file("app/error.tsx");
       t.check(errorPage, includes(/['"]use client['"];?/));
       t.check(errorPage, includes(/error.*Error|Error.*error/));
       t.check(await t.sandbox.fileExists("app/not-found.tsx"), isTrue("app/not-found.tsx exists"));
@@ -92,15 +92,15 @@ export default defineEval({
     });
 
     await t.group("Pages Router directory removed", () => {
-      t.fileDeleted("pages/_app.js");
-      t.fileDeleted("pages/_document.js");
-      t.fileDeleted("pages/_error.js");
-      t.fileDeleted("pages/404.js");
-      t.fileDeleted("pages/index.js");
-      t.fileDeleted("pages/blog/index.js");
-      t.fileDeleted("pages/blog/[id].js");
-      t.fileDeleted("pages/api/posts/index.js");
-      t.fileDeleted("pages/api/posts/[id].js");
+      t.sandbox.fileDeleted("pages/_app.js");
+      t.sandbox.fileDeleted("pages/_document.js");
+      t.sandbox.fileDeleted("pages/_error.js");
+      t.sandbox.fileDeleted("pages/404.js");
+      t.sandbox.fileDeleted("pages/index.js");
+      t.sandbox.fileDeleted("pages/blog/index.js");
+      t.sandbox.fileDeleted("pages/blog/[id].js");
+      t.sandbox.fileDeleted("pages/api/posts/index.js");
+      t.sandbox.fileDeleted("pages/api/posts/[id].js");
     });
 
     await t.group("Final source free of legacy Pages APIs and imports", async () => {
