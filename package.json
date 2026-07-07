@@ -10,7 +10,9 @@
   },
   "devDependencies": {
     "@types/node": "^26.0.1",
-    "niceeval": "^0.3.0",
+    "niceeval": "^0.4.0",
+    "tsx": "^4.20.0",
     "typescript": "^6.0.3"
-  }
+  },
+  "packageManager": "pnpm@11.10.0"
 }

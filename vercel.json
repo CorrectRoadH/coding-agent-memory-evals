@@ -1,5 +1,5 @@
 {
-  "installCommand": "echo skip",
-  "buildCommand": "node scripts/build-site.mjs",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm exec tsx scripts/build-site.ts",
   "outputDirectory": "site"
 }
