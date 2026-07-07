@@ -9,9 +9,11 @@
     "smoke": "niceeval exp dev memory/agent-029-use-cache-directive"
   },
   "devDependencies": {
+    "@types/dockerode": "^4.0.1",
     "@types/node": "^26.0.1",
+    "dockerode": "^5.0.1",
     "e2b": "^2.31.0",
-    "niceeval": "^0.4.2",
+    "niceeval": "^0.4.4",
     "tsx": "^4.20.0",
     "typescript": "^6.0.3"
   },

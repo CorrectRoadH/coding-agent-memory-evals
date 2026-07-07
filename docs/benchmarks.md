@@ -79,14 +79,14 @@
 - **验收**:沿用原 pytest。memory 收益看是否更快、更少失败命令、更低 token/cost。
 - **成本**:低。纯 Python,没有大 repo、浏览器或外部网络。
 
-**P0.2 — `SWE-Lancer` manager task 的本地轻量版**
+**P0.2 — `SWE-Lancer` manager task 的本地轻量版** ✅ 已落地:`evals/memory/swelancer-manager-proposals.eval.ts`(3 个真实 Expensify manager 任务:15193/14268/25901,label 存 `evals/fixtures/swelancer/manager-proposals/expected.json`)
 - **类型**:跨会话持久记忆;被否方案理由召回。
 - **为什么有意思**:`all_swelancer_tasks.csv` 里 manager 任务天然有 issue、多个 proposal、正确 proposal 和解释。它正好测“代码里推不出的评审决定”,比普通 bugfix 更贴本仓库 niche。
 - **建议改造成 eval**:先不跑 Expensify monolith。把一个 manager task 抽成本地 fixture,让 agent 选择最佳 proposal 并写出规定输出。
 - **验收**:选择是否匹配原 manager label。memory 收益看多 session 条件下是否更快、更稳,不额外考复述理由。
 - **成本**:低到中。轻量版只需要 fixture;真实 SWE-Lancer harness 以后再接,因为 manager 原版需要 monolith image。
 
-**P0.3 — `Commit0` 小库架构保持任务**
+**P0.3 — `Commit0` 小库架构保持任务** ✅ 已落地:`evals/memory/commit0-cachetools.eval.ts`(cachetools 6.1.0,stub 签名+docstring 保留、函数体全部 `NotImplementedError`,上游 213 个测试原样保留;原实现已本地验证全过)
 - **类型**:会话内长程保持。
 - **为什么有意思**:从零实现库最容易出现“前半段定了抽象,后半段为了过测试退回硬编码”的漂移。比 SWE-bench issue 更适合控制 memory trap。
 - **优先库**:`cachetools`、`tinydb`、`pyjwt`、`click`。它们测试数适中,领域明确,能做 registry/policy/serializer 等架构约束。
@@ -96,7 +96,7 @@
 
 ### P1 · 第二批加
 
-**P1.1 — `terminal-bench/original-tasks/pypi-server`**
+**P1.1 — `terminal-bench/original-tasks/pypi-server`** ✅ 已落地:`evals/memory/terminal-pypi-server.eval.ts`(沿用上游 `test_outputs.py`;run-tests 从 uv venv 改成 stdlib venv 适配非 root sandbox;要求 agent 留一个持久后台 server 进程供测试阶段检查)
 - **类型**:跨 session 工具链经验复用。
 - **记忆考点**:本地 PyPI simple index、包名/version/root `__init__.py` 导出、8080 server 生命周期。会话 A 调通 build/server/install 路径,会话 B 做小版本或 API 续作时应直接复用打包/发布方式。
 - **验收**:沿用原任务测试,能从本地 index 安装并调用包即可。

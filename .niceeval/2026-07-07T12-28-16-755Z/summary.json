@@ -1,0 +1,107 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.3"
+  },
+  "agent": "codex",
+  "startedAt": "2026-07-07T12:28:15.317Z",
+  "completedAt": "2026-07-07T12:29:37.550Z",
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "errored": 0,
+  "durationMs": 82232,
+  "usage": {
+    "inputTokens": 76225,
+    "outputTokens": 2594
+  },
+  "estimatedCostUSD": 0.07355535,
+  "results": [
+    {
+      "id": "memory/swelancer-manager-proposals",
+      "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+      "experimentId": "dev/codex-gpt-5.4-mini",
+      "experiment": {
+        "id": "dev/codex-gpt-5.4-mini",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "docker",
+        "timeoutMs": 600000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "failed",
+      "fingerprint": "8026d08ff82044c817f25426d2ce22872e7a5253a980cffb5b6ff881b9b767de",
+      "attempt": 0,
+      "startedAt": "2026-07-07T12:28:16.760Z",
+      "durationMs": 80581,
+      "assertions": [
+        {
+          "name": "isTrue(manager_decisions.json exists)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+            "line": 28,
+            "column": 7
+          }
+        },
+        {
+          "name": "equals(1)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Issue 14268: selected proposal matches the one maintainers accepted",
+          "loc": {
+            "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+            "line": 40,
+            "column": 11
+          }
+        },
+        {
+          "name": "equals(4)",
+          "severity": "gate",
+          "score": 0,
+          "passed": false,
+          "evidence": "3",
+          "group": "Issue 15193: selected proposal matches the one maintainers accepted",
+          "loc": {
+            "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+            "line": 40,
+            "column": 11
+          }
+        },
+        {
+          "name": "equals(3)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Issue 25901: selected proposal matches the one maintainers accepted",
+          "loc": {
+            "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+            "line": 40,
+            "column": 11
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 76225,
+        "outputTokens": 2594,
+        "cacheReadTokens": 62848,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.07355535,
+      "artifactsDir": "memory/swelancer-manager-proposals/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-07T12-28-16-755Z"
+}

@@ -1,0 +1,50 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.3"
+  },
+  "agent": "codex",
+  "startedAt": "2026-07-07T12:26:32.202Z",
+  "completedAt": "2026-07-07T12:26:33.995Z",
+  "passed": 0,
+  "failed": 0,
+  "skipped": 0,
+  "errored": 1,
+  "durationMs": 1792,
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0
+  },
+  "results": [
+    {
+      "id": "memory/swelancer-manager-proposals",
+      "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+      "experimentId": "dev/codex-gpt-5.4-mini",
+      "experiment": {
+        "id": "dev/codex-gpt-5.4-mini",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "docker",
+        "timeoutMs": 600000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "errored",
+      "fingerprint": "8026d08ff82044c817f25426d2ce22872e7a5253a980cffb5b6ff881b9b767de",
+      "attempt": 0,
+      "startedAt": "2026-07-07T12:26:33.949Z",
+      "durationMs": 42,
+      "assertions": [],
+      "error": "Error: Docker sandbox requires 'dockerode'. Install it with: pnpm add dockerode @types/dockerode\n    at <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.3_e2b@2.31.0/node_modules/niceeval/src/sandbox/resolve.ts:88:15)\n    at async createBackend (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.3_e2b@2.31.0/node_modules/niceeval/src/sandbox/resolve.ts:87:33)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.3_e2b@2.31.0/node_modules/niceeval/src/sandbox/resolve.ts:73:40)",
+      "artifactsDir": "memory/swelancer-manager-proposals/codex/gpt-5.4-mini/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-07T12-26-33-943Z"
+}

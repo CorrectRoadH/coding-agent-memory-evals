@@ -1,0 +1,5 @@
+# agent 跑测试的缓存/字节码不进 diff 捕获
+__pycache__/
+.pytest_cache/
+*venv*/
+.venv/

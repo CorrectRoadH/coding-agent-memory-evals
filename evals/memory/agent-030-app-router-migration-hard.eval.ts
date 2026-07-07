@@ -1,5 +1,31 @@
+import { posix } from "node:path";
 import { defineEval } from "niceeval";
 import { commandSucceeded, excludes, includes, isTrue } from "niceeval/expect";
+
+type SandboxFiles = { readFile(path: string): Promise<string>; fileExists(path: string): Promise<boolean> };
+
+// 数据取数/ISR 的 gate 断言的是「页面的数据链路」,不是实现位置:agent 把 fetch 和
+// revalidate 规范地抽进 lib 模块(2026-07-07 bub/codex 都这么写)不该挂。把页面源码
+// 和它 import 的一层本地模块(./ ../ 相对路径,@/ 按 tsconfig 映射到仓库根)拼在一起
+// 供 includes 断言;解析不到的 import 静默跳过。
+async function pageWithLocalModules(sandbox: SandboxFiles, pagePath: string): Promise<string> {
+  const src = await sandbox.readFile(pagePath);
+  const dir = posix.dirname(pagePath);
+  const parts = [src];
+  for (const [, spec] of src.matchAll(/from\s+['"]([^'"]+)['"]/g)) {
+    let base: string;
+    if (spec!.startsWith("@/")) base = spec!.slice(2);
+    else if (spec!.startsWith("./") || spec!.startsWith("../")) base = posix.normalize(posix.join(dir, spec!));
+    else continue;
+    for (const candidate of [`${base}.ts`, `${base}.tsx`, `${base}/index.ts`, `src/${base}.ts`, `src/${base}.tsx`]) {
+      if (await sandbox.fileExists(candidate)) {
+        parts.push(await sandbox.readFile(candidate));
+        break;
+      }
+    }
+  }
+  return parts.join("\n");
+}
 
 export default defineEval({
   description: "next-evals agent-030: migrate a complex Pages Router app to App Router",
@@ -35,14 +61,14 @@ export default defineEval({
       t.check(await t.sandbox.fileExists("app/page.tsx"), isTrue("app/page.tsx exists"));
       t.check(homePage, includes(/export\s+default\s+async\s+function|async\s+function.*Page/));
       t.check(homePage, excludes(/['"]use client['"];?/));
-      t.check(homePage, includes(/await\s+fetch|fetch\(/));
+      t.check(await pageWithLocalModules(t.sandbox, "app/page.tsx"), includes(/await\s+fetch|fetch\(/));
       t.check(homePage, excludes(/getServerSideProps/, { stripComments: true }));
     });
 
     await t.group("Blog index migrated with ISR equivalent", async () => {
       t.check(await t.sandbox.fileExists("app/blog/page.tsx"), isTrue("app/blog/page.tsx exists"));
       t.check(blogPage, includes(/export\s+default\s+async\s+function|async\s+function/));
-      t.check(blogPage, includes(/revalidate.*\d+|next.*revalidate|export.*const.*revalidate.*=.*\d+/));
+      t.check(await pageWithLocalModules(t.sandbox, "app/blog/page.tsx"), includes(/revalidate.*\d+|next.*revalidate|export.*const.*revalidate.*=.*\d+/));
       t.check(blogPage, excludes(/getStaticProps/, { stripComments: true }));
     });
 
