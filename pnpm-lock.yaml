@@ -12,8 +12,8 @@ importers:
         specifier: ^26.0.1
         version: 26.0.1
       niceeval:
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.4.1
+        version: 0.4.1
       tsx:
         specifier: ^4.20.0
         version: 4.23.0
@@ -329,8 +329,8 @@ packages:
     resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
     hasBin: true
 
-  niceeval@0.4.0:
-    resolution: {integrity: sha512-QHXkxaDkp31lnkJXiaskG3sA/6g89fXGglt0LuU7+hvtOb5CW5MAV9N66kw7OLfyTW70SC2d3PmZbp/uAHH9mg==}
+  niceeval@0.4.1:
+    resolution: {integrity: sha512-mXi5IPKHKS9TeyQxtI6Q7LT9HXzOqsGSYEOEBCWmaATqshcqwJG3nxWhyc5EcsD1cMNL2+eNy/To+BiMXlYzpg==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -703,7 +703,7 @@ snapshots:
 
   mustache@4.2.0: {}
 
-  niceeval@0.4.0:
+  niceeval@0.4.1:
     dependencies:
       autoevals: 0.0.132
       effect: 3.21.4

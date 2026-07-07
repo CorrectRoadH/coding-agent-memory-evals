@@ -4,7 +4,7 @@ allowBuilds:
   protobufjs: false
   ssh2: false
 minimumReleaseAgeExclude:
-  - niceeval@0.1.2 || 0.2.0 || 0.2.1 || 0.3.0 || 0.4.0
+  - niceeval@0.1.2 || 0.2.0 || 0.2.1 || 0.3.0 || 0.4.0 || 0.4.1
 # 本地要跟 fastevals HEAD 开发时,临时加回:
 # overrides:
 #   niceeval: link:../fastevals
