@@ -1,0 +1,25 @@
+import { defineExperiment } from "niceeval";
+import { claudeCodeAgent } from "niceeval/adapter";
+import { e2bSandbox } from "niceeval/sandbox";
+import { withMempal } from "../shared/mempal.ts";
+
+// dev/e2b 组的 mempal 变体:验证 claude-code 侧全链路(MCP + Stop hook +
+// 记忆态跨 eval 累积)用的便宜配置,正式对比走 compare/ 组。
+// 记忆按 stateKey 跨 eval / 跨 run 累积;干净验证前 rm -rf .cache/mempal/state/。
+export default defineExperiment({
+  description: "claude-code · deepseek-v4-flash · E2B · mempal",
+  agent: withMempal(
+    claudeCodeAgent({
+      apiKey: process.env.DEEPSEEK_API_KEY,
+      baseUrl: process.env.DEEPSEEK_BASE_URL,
+    }),
+    "claude",
+    { stateKey: "claude-e2b--mempal" },
+  ),
+  model: "deepseek-v4-flash",
+  sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  runs: 1,
+  earlyExit: true,
+  budget: 2,
+  timeoutMs: 1200000,
+});

@@ -10,3 +10,5 @@ site/
 .env.*
 !.env.example
 dist/
+# mempal 二进制缓存,由 scripts/build-mempal-linux.sh 生成(host 一次性构建,勿提交)。
+.cache/
