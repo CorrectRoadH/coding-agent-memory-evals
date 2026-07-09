@@ -1,0 +1,122 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.4"
+  },
+  "agent": "codex",
+  "startedAt": "2026-07-08T02:21:31.860Z",
+  "completedAt": "2026-07-08T02:22:14.389Z",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "errored": 1,
+  "durationMs": 42528,
+  "usage": {
+    "inputTokens": 28197,
+    "outputTokens": 149
+  },
+  "estimatedCostUSD": 0.02318145,
+  "results": [
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "dev-e2b/codex-e2b--mempal",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "errored",
+      "fingerprint": "440636ebcead7102d9a150be76d32b2dd5d19cb7a578bc8450d9a1e28dc3156a",
+      "attempt": 0,
+      "startedAt": "2026-07-08T02:21:31.866Z",
+      "durationMs": 5107,
+      "assertions": [],
+      "error": "SandboxError: 2: [unknown] fetch failed\n    at handleRpcError (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:109:12)\n    at handleRpcErrorWithHealthCheck (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:142:10)\n    at Commands.start (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:485:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Commands.run (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:421:18)\n    at async Function.create (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:55:5)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/resolve.ts:73:40)",
+      "artifactsDir": "memory/terminal-cancel-async-tasks/codex/gpt-5.4-mini/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "dev-e2b/codex-e2b--mempal",
+      "experiment": {
+        "id": "dev-e2b/codex-e2b--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": true,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 1200000,
+        "budget": 2
+      },
+      "agent": "codex",
+      "model": "gpt-5.4-mini",
+      "outcome": "passed",
+      "fingerprint": "bf00292464f204d0f73b336bb64a08db5513b68de7f511823dbd5545a04ca154",
+      "attempt": 0,
+      "startedAt": "2026-07-08T02:21:37.122Z",
+      "durationMs": 35584,
+      "assertions": [
+        {
+          "name": "calledTool(shell)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "evidence": "command_execution [completed]\n  input: {\"command\":\"/bin/bash -lc \\\"printf '%s\\n' 'niceeval-tool-call-ok' > TOOL_CALL_SMOKE.txt\\\"\"}\n  output: {\"output\":\"\",\"exit_code\":0}",
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 18,
+            "column": 9
+          }
+        },
+        {
+          "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Agent shell tool call is observable",
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 19,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/tool-call-observability.eval.ts",
+            "line": 26,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 28197,
+        "outputTokens": 149,
+        "cacheReadTokens": 18176,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.02318145,
+      "artifactsDir": "memory/tool-call-observability/codex/gpt-5.4-mini/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-08T02-21-31-861Z"
+}
