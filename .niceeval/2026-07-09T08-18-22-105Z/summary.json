@@ -1,0 +1,425 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 1,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.4"
+  },
+  "agent": "codex",
+  "startedAt": "2026-07-09T08:18:22.101Z",
+  "completedAt": "2026-07-09T08:24:35.637Z",
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "errored": 7,
+  "durationMs": 373534,
+  "usage": {
+    "inputTokens": 475219,
+    "outputTokens": 5767
+  },
+  "estimatedCostUSD": 1.3670325,
+  "results": [
+    {
+      "id": "memory/agent-029-use-cache-directive",
+      "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "8057bcec362c54441c72c520890d07a168df80b0d795db74ad9c284710155757",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:18:22.111Z",
+      "durationMs": 190026,
+      "assertions": [
+        {
+          "name": "includes(/['\"]use cache['\"];?/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 30,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Catalog reads use use-cache directive and products cache tag",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 31,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 35,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Page fetches products via lib/db",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 36,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(inline form-triggered Server Action exists in one file)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Inline form-triggered Server Action flow exists",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 46,
+            "column": 9
+          }
+        },
+        {
+          "name": "isDefined(a file calls revalidateTag)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 51,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 52,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 53,
+            "column": 9
+          }
+        },
+        {
+          "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 54,
+            "column": 9
+          }
+        },
+        {
+          "name": "excludes(/\\bupdateTag\\s*\\(/)",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "group": "Server Action revalidates products using revalidateTag profile",
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 55,
+            "column": 9
+          }
+        },
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+            "line": 58,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 282242,
+        "outputTokens": 3785,
+        "cacheReadTokens": 224000,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.81838,
+      "artifactsDir": "memory/agent-029-use-cache-directive/codex/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/agent-030-app-router-migration-hard",
+      "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "cff959d5138a1f5d60690c1e21eb3811b2b27d8006d6081748bdbd5c265b58e7",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.145Z",
+      "durationMs": 63978,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/agent-030-app-router-migration-hard/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/agent-037-updatetag-cache",
+      "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "20a38ae11f3d62f9aea6008adb75398b16cf12c3f99be5413ff2def1995edfd1",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.148Z",
+      "durationMs": 64995,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/agent-037-updatetag-cache/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/commit0-cachetools",
+      "description": "Commit0-style cachetools: implement the full library from stub signatures + spec until the upstream test suite passes",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "e4b1c84e9572d0f2ecdbb94e1a2e80f7f219433d46d0da3c67e847cd88ff78f9",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.149Z",
+      "durationMs": 64035,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/commit0-cachetools/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/repomod-hello-world-api",
+      "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "f2da989f7be3d75a8622ca569c57555ca3fa0bc6216edb5aab485a8d2542e98f",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.150Z",
+      "durationMs": 64576,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/repomod-hello-world-api/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/swelancer-manager-proposals",
+      "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "00855fa92a60d02ff873628e87a45eb3142ffe34478ef2f164ccb6f58c45c355",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.152Z",
+      "durationMs": 63355,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/swelancer-manager-proposals/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/terminal-cancel-async-tasks",
+      "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "passed",
+      "fingerprint": "c5a88e9f88506ce3a7217d330a2dc75185eeca2de2cf87171c1f0f8e8323dcaa",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.153Z",
+      "durationMs": 181578,
+      "assertions": [
+        {
+          "name": "commandSucceeded()",
+          "severity": "gate",
+          "score": 1,
+          "passed": true,
+          "loc": {
+            "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+            "line": 45,
+            "column": 7
+          }
+        }
+      ],
+      "usage": {
+        "inputTokens": 192977,
+        "outputTokens": 1982,
+        "cacheReadTokens": 145920,
+        "requests": 1,
+        "cacheWriteTokens": 0
+      },
+      "estimatedCostUSD": 0.5486525,
+      "artifactsDir": "memory/terminal-cancel-async-tasks/codex/gpt-5.4/a0",
+      "hasTrace": true,
+      "hasEvents": true,
+      "hasSources": true
+    },
+    {
+      "id": "memory/terminal-pypi-server",
+      "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "bd44b405ecc36aeaca8eb0a559c678676bd0be092bc1738fd5fc3d008af614a0",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.154Z",
+      "durationMs": 63792,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/terminal-pypi-server/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    },
+    {
+      "id": "memory/tool-call-observability",
+      "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+      "experimentId": "compare/codex-gpt-5.4--mempal",
+      "experiment": {
+        "id": "compare/codex-gpt-5.4--mempal",
+        "flags": {},
+        "runs": 1,
+        "earlyExit": false,
+        "sandbox": "e2b:fasteval-agents",
+        "timeoutMs": 600000,
+        "budget": 15
+      },
+      "agent": "codex",
+      "model": "gpt-5.4",
+      "outcome": "errored",
+      "fingerprint": "0772e31bd1b84d3e5788cc2505ec2c6324a5f7c747a40a227bb1f63e6d541714",
+      "attempt": 0,
+      "startedAt": "2026-07-09T08:21:33.154Z",
+      "durationMs": 63500,
+      "assertions": [],
+      "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/sandbox/e2b.ts:145:5)\n    at async Object.setup (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:155:9)\n    at async runAttemptBody (/Users/ctrdh/Code/coding-agent-memory-evals/node_modules/.pnpm/niceeval@0.4.4_dockerode@5.0.1_e2b@2.31.0/node_modules/niceeval/src/runner/attempt.ts:255:22)",
+      "artifactsDir": "memory/tool-call-observability/codex/gpt-5.4/a0",
+      "hasTrace": false,
+      "hasEvents": false,
+      "hasSources": false
+    }
+  ],
+  "outputDir": ".niceeval/2026-07-09T08-18-22-105Z"
+}
