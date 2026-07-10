@@ -13,7 +13,7 @@
     "@types/node": "^26.0.1",
     "dockerode": "^5.0.1",
     "e2b": "^2.31.0",
-    "niceeval": "^0.4.5",
+    "niceeval": "^0.4.6",
     "tsx": "^4.20.0",
     "typescript": "^6.0.3"
   },

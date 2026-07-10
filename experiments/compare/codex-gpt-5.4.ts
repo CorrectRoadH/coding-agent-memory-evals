@@ -13,4 +13,6 @@ export default defineExperiment({
   runs: 1,
   earlyExit: false,
   budget: 15,
+  // 与 claude 组对齐(重型题 mvn build / pytest 可能超 10 分钟),消除条件间超时偏置。
+  timeoutMs: 1200000,
 });
