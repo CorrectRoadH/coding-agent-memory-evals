@@ -1,5 +1,5 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm exec tsx scripts/build-site.ts",
+  "buildCommand": "pnpm exec niceeval view --out site",
   "outputDirectory": "site"
 }

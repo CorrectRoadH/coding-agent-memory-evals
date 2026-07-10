@@ -31,9 +31,10 @@ This repo is a benchmark suite for coding-agent memory conditions. The core rule
 - `evals/memory/`: niceeval task definitions.
 - `workspaces/`: per-eval starter repositories copied into sandboxes.
 - `experiments/`: comparable run matrices for agents and models.
-- `agents/`: agent adapters.
+- `experiments/shared/`: cross-experiment helpers (e.g. the mempal memory-condition wrapper); agent adapters come from `niceeval/adapter`, not this repo.
 - `docs/benchmarks.md`: benchmark survey and candidate task notes.
-- `niceeval.config.ts`: global agent, sandbox, judge, and concurrency defaults.
+- `niceeval.config.ts`: global judge and timeout defaults (agent/sandbox/concurrency are per-experiment).
+- Report publishing: `.niceeval/` is committed as the data source; Vercel's buildCommand is `niceeval view --out site` (see vercel.json — no custom scripts).
 
 ## Adding Evals
 
@@ -78,3 +79,15 @@ When summarizing results, report both:
 - efficiency: wall time, turns, token/cost budget, repeated failed commands, retries
 
 The benchmark claim is comparative: same task, same model, different memory condition.
+
+<!-- BEGIN:niceeval-agent-rules -->
+# niceeval is NOT in your training data
+
+Its APIs and conventions may differ from anything you have seen. Read the relevant
+guide in `node_modules/niceeval/docs-site/zh/` before writing any eval, experiment,
+adapter, or niceeval config. The bundled docs are Chinese-only — that is the single
+authoritative, always-current version; read it regardless of your working language.
+After a run, drill into failures with `niceeval show <eval id>` (add `--transcript` /
+`--trace` / `--diff` for evidence); the `summary.json` path the CLI prints and the
+artifact files it references are the structured source of truth.
+<!-- END:niceeval-agent-rules -->

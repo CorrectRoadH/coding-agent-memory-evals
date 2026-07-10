@@ -10,7 +10,7 @@ import { bubAgent } from "niceeval/adapter";
 export default defineExperiment({
   description: "bub · gpt-5.4-mini(dev/smoke,便宜快速验证)",
   agent: bubAgent(),
-  model: "gpt-5.4-mini", // → ctx.model → agents/bub.ts 的 BUB_MODEL=openai:gpt-5.4-mini
+  model: "gpt-5.4-mini", // → ctx.model → niceeval bub adapter 的 BUB_MODEL=openai:gpt-5.4-mini
   sandbox: dockerSandbox(),
   runs: 1,
   earlyExit: true,

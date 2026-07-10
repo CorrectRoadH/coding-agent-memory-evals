@@ -6,7 +6,7 @@ import { bubAgent } from "niceeval/adapter";
 // 动机:Docker 沙箱下 codex 在 repomod / terminal 类 eval 的首次 send 直接返回 failed
 // (turn status = failed, 0 tokens),推测是沙箱初始化兼容性问题;Vercel sandbox 作为对照。
 export default defineExperiment({
-  description: "",
+  description: "bub(gpt-5.4-mini)× Vercel Sandbox——dev 冒烟组的 Vercel 后端对照",
   agent: bubAgent(),
   model: "gpt-5.4-mini",
   sandbox: vercelSandbox(),

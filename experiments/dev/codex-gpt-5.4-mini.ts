@@ -10,7 +10,7 @@ import { codexAgent } from "niceeval/adapter";
 export default defineExperiment({
   description: "codex · gpt-5.4-mini(dev/smoke,便宜快速验证)",
   agent: codexAgent(),
-  model: "gpt-5.4-mini", // → ctx.model → agents/codex.ts 写进 ~/.codex/config.toml
+  model: "gpt-5.4-mini", // → ctx.model → niceeval codex adapter 写进 ~/.codex/config.toml
   sandbox: dockerSandbox(),
   runs: 1,
   earlyExit: true,

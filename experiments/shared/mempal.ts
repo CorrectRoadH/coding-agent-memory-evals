@@ -43,11 +43,12 @@ const BIN = fileURLToPath(new URL("../../.cache/mempal/mempal", import.meta.url)
 /** host 上按 stateKey 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
 
-// MCP 注册由本 helper 自己做,不走 adapter 的 mcpServers 参数:niceeval ≤0.4.4 的两个
-// adapter 都写错了位置(codex 写成单数 [mcp_server.x]、claude 写到不存在的
-// ~/.claude/claude.json),MCP 静默挂不上——首轮验证 run 里 codex 全程 0 次 mempal 调用、
-// palace.db 空库就是这么来的。上游已在 ../fastevals 修复(codex.ts/claude-code.ts),
-// 等发版后这里的自注册依然无害(写的是同一份配置)。
+// MCP 注册由本 helper 自己做,不走 adapter 的 mcpServers 参数。历史原因是 ≤0.4.4 的
+// 两个 adapter 都写错位置(MCP 静默挂不上),0.5 已修;现在保留自注册是结构原因:
+// mcpServers 是 adapter 构造器参数,而 withMempal 包装的是已构造的 Agent——改走构造器
+// 会把 mempal 条件拆到实验文件和 wrapper 两处。写的内容与 0.5 adapter 完全一致
+// (claude → ~/.claude.json 顶层 mcpServers;codex → 复数 [mcp_servers.x] 追加)。
+// 候选上游 feature:给已构造 Agent 后置追加 MCP 的原语(如 shared.registerMcp)。
 const MEMPAL_CODEX_MCP_TOML = `
 [mcp_servers.mempal]
 command = "mempal"

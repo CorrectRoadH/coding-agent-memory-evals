@@ -7,9 +7,9 @@ import { codexAgent } from "niceeval/adapter";
 export default defineExperiment({
   description: "codex · gpt-5.4",
   agent: codexAgent(),
-  model: "gpt-5.4", // → ctx.model → agents/codex.ts 写进 config.toml 的 model 行
-  sandbox: e2bSandbox({ template: "fasteval-agents" }), // 本地 docker 沙箱
-  // 代理(base_url + key)走 .env,由 agents/codex.ts 配成自定义 model_provider(wire_api=responses)
+  model: "gpt-5.4", // → ctx.model → niceeval codex adapter 写进 config.toml 的 model 行
+  sandbox: e2bSandbox({ template: "fasteval-agents" }), // e2b 云沙箱(fasteval-agents 模板)
+  // 代理(base_url + key)走 .env,由 niceeval codex adapter 配成自定义 model_provider(wire_api=responses)
   runs: 1,
   earlyExit: false,
   budget: 15,
