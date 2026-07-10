@@ -61,11 +61,14 @@ teardown(回存): tar -C $HOME -czf /tmp/… .mempal → sb.downloadFile
 要点:
 
 1. **互斥**:attempt 的 [载入 … 回存] 是临界区。并发 attempt 交错会丢更新
-   (A 载入 → B 载入旧态 → A 回存 → B 回存覆盖 A)。niceeval 的 maxConcurrency 是
-   CLI 层参数(当前默认 1,但不可依赖),而所有 attempt 跑在同一个 runner 进程里 →
-   helper 内做**模块级 per-stateKey promise 互斥锁**:setup 载入前取锁,teardown 回存后
-   放锁;setup 中途抛错也必须放锁(否则 runner 不调 teardown,锁死后续 attempt)。
-   代价:并发>1 时 mempal 条件的 attempt 会排队(沙箱空转等锁),当前并发=1 无感。
+   (A 载入 → B 载入旧态 → A 回存 → B 回存覆盖 A)。niceeval ≤0.4.4 的实验级
+   maxConcurrency 是全局钳制(取所有选中实验的最小值),设 1 会把整批基线拖成串行,
+   不可用 → helper 内做**模块级 per-stateKey promise 互斥锁**:setup 载入前取锁,
+   teardown 回存后放锁;setup 中途抛错也必须放锁(否则 runner 不调 teardown,锁死
+   后续 attempt)。代价:并发>1 时 mempal 条件的 attempt 会排队(沙箱空转等锁)。
+   **2026-07-10 上游已改**(fastevals main,待发版):`ExperimentDef.maxConcurrency`
+   变为按实验单独限流(runner 两级信号量),同批其它实验不受影响——发版并 bump 后,
+   mempal 实验直接声明 `maxConcurrency: 1`,本 helper 的锁整个退役(见 §遗留)。
 2. **stateKey 按实验隔离**:claude 条件和 codex 条件各自积累,互不泄漏
    (`"claude-dp-v4--mempal"` / `"codex-gpt-5.4--mempal"`),由实验文件显式传入。
 3. **累积语义**:同一次 run 内按 eval 顺序累积(discoverEvals 按文件名排序,
@@ -166,4 +169,14 @@ async teardown(sb, ctx) {
 
 - **双 session eval**:现有 9 题全是单 session,mempal 空库起步预期无增益。价值验证要新题:session 1 探索/踩坑 → `t.newSession()` → session 2 看记忆复用。niceeval 已支持。
 - ~~跨 attempt 记忆延续~~:已并入本设计(§记忆状态共享,per-stateKey 互斥解决顺序问题)。若未来 niceeval 原生支持「实验级持久状态目录」,helper 的 tar 往返可以退役。
+- **锁 → 声明式串行的迁移**(等 niceeval >0.4.4 发版):上游已支持实验级
+  `maxConcurrency` 按实验限流(fastevals `03de80d`)。迁移三步:bump niceeval;
+  两个 mempal 实验文件加 `maxConcurrency: 1`;删 `shared/mempal.ts` 里的
+  acquireStateLock/releaseStateLock 及 setup/teardown 里的取放锁调用(tar 往返保留)。
+  注意 0.4.4 **不要**提前加 `maxConcurrency: 1`——旧语义会把整批 compare 矩阵钳成串行。
+- **0.4.4 快照完整性核查**:0.4.4 带一个 earlyExit 回归(去重键丢了 experimentId,
+  上游 `1fd1c82` 已修):同 agent 同 model 的实验对(compare 组的 baseline /
+  --agents-md / --mempal 三元组正是)整矩阵同跑时,先 pass 的变体会让其它变体的同名
+  eval 被跳过或丢结果、工件互相覆盖。用 0.4.4 跑的全矩阵快照要核对每个实验是否真有
+  全部题目的结果;升级后建议重跑对照。
 - vercel/docker 后端:本设计只对 e2b 验证(compare 组全在 e2b);`install -m755` 的 root 语义三后端一致,理论上通用。

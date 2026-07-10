@@ -26,10 +26,13 @@ import type { Agent } from "niceeval/adapter";
 // 沙箱销毁 —— 不共享的话每题空库起步,agent 存的决策永远没有下一个消费者,记忆条件
 // 形同虚设。所以把 $HOME/.mempal 按 stateKey(实验名)在 host 上持久化:setup 载入
 // 存档(.cache/mempal/state/<stateKey>.tgz),teardown tar 回存。attempt 的
-// [载入 … 回存] 是临界区,用模块级 per-stateKey promise 互斥锁串行化 —— niceeval 的
-// maxConcurrency 是 CLI 层参数(当前默认 1 但不可依赖),所有 attempt 同进程,进程内
-// 锁足够;跨进程并发不防(本 repo 工作流不存在)。做干净对照前 rm -rf
-// .cache/mempal/state/,报告注明状态起点(空库/带积累)。
+// [载入 … 回存] 是临界区,用模块级 per-stateKey promise 互斥锁串行化 —— niceeval
+// ≤0.4.4 的实验级 maxConcurrency 是全局钳制(设 1 会拖慢整批基线),不可用;所有
+// attempt 同进程,进程内锁足够;跨进程并发不防(本 repo 工作流不存在)。
+// 【迁移路径】上游已把 ExperimentDef.maxConcurrency 改为按实验限流(fastevals
+// 03de80d,待发版):bump 之后在 mempal 实验里声明 maxConcurrency: 1,删掉本文件的
+// acquireStateLock/releaseStateLock 与 setup/teardown 的取放锁调用即可(tar 往返保留)。
+// 做干净对照前 rm -rf .cache/mempal/state/,报告注明状态起点(空库/带积累)。
 //
 // 本文件没有 default export,niceeval 的 discoverExperiments 会跳过它。
 // ───────────────────────────────────────────────────────────────────────────
