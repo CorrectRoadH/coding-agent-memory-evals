@@ -25,13 +25,13 @@ import type { Agent } from "niceeval/adapter";
 // 记忆状态共享(跨 eval / 跨 run 累积):沙箱是 per-attempt 一次性的,palace.db 随
 // 沙箱销毁 —— 不共享的话每题空库起步,agent 存的决策永远没有下一个消费者,记忆条件
 // 形同虚设。所以把 $HOME/.mempal 按 stateKey(实验名)在 host 上持久化:setup 载入
-// 存档(.cache/mempal/state/<stateKey>.tgz),teardown tar 回存。attempt 的
-// [载入 … 回存] 是临界区,用模块级 per-stateKey promise 互斥锁串行化 —— niceeval
-// ≤0.4.4 的实验级 maxConcurrency 是全局钳制(设 1 会拖慢整批基线),不可用;所有
-// attempt 同进程,进程内锁足够;跨进程并发不防(本 repo 工作流不存在)。
-// 【迁移路径】上游已把 ExperimentDef.maxConcurrency 改为按实验限流(fastevals
-// 03de80d,待发版):bump 之后在 mempal 实验里声明 maxConcurrency: 1,删掉本文件的
-// acquireStateLock/releaseStateLock 与 setup/teardown 的取放锁调用即可(tar 往返保留)。
+// 存档(.cache/mempal/state/<stateKey>.tgz),teardown tar 回存。
+//
+// 【串行前提】attempt 的 [载入 … 回存] 是临界区,并发交错会丢更新(A 载入 → B 载入
+// 旧态 → A 回存 → B 回存覆盖 A)。用 withMempal 的实验**必须声明 `maxConcurrency: 1`**
+// (niceeval ≥0.4.5 按实验限流,不拖慢同批其它实验)——串行由调度器保证,本文件
+// 不再持锁(≤0.4.4 时代的模块级 per-stateKey promise 锁已随 0.4.5 退役)。
+// 跨进程并发同样不防(两个 niceeval 进程同跑同一实验不是本 repo 的工作流)。
 // 做干净对照前 rm -rf .cache/mempal/state/,报告注明状态起点(空库/带积累)。
 //
 // 本文件没有 default export,niceeval 的 discoverExperiments 会跳过它。
@@ -42,35 +42,6 @@ const BIN = fileURLToPath(new URL("../../.cache/mempal/mempal", import.meta.url)
 
 /** host 上按 stateKey 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
-
-// per-stateKey 互斥锁:tails 是排队链(新 attempt 接到链尾),releases 是当前持有者的
-// 放锁函数 —— 互斥保证同 key 同时只有一个持有者,所以一个槽位就够,不用按 attempt 索引。
-// teardown 只在 setup 成功后由 runner 调(attempt.ts finally 的 agentDidSetup 守卫),
-// 所以 setup 抛错路径必须自己放锁,否则锁死后续 attempt。
-const stateLockTails = new Map<string, Promise<void>>();
-const stateLockReleases = new Map<string, () => void>();
-
-/** 取 stateKey 的锁:排到队尾,前面的 attempt 放锁后 resolve。 */
-async function acquireStateLock(key: string): Promise<void> {
-  const prev = stateLockTails.get(key) ?? Promise.resolve();
-  let release!: () => void;
-  const held = new Promise<void>((resolve) => (release = resolve));
-  stateLockTails.set(
-    key,
-    prev.then(() => held),
-  );
-  await prev;
-  stateLockReleases.set(key, release);
-}
-
-/** 放 stateKey 的锁;幂等(没持有时是 no-op),所以 setup 抛错路径和 teardown 都能安全调。 */
-function releaseStateLock(key: string): void {
-  const release = stateLockReleases.get(key);
-  if (release) {
-    stateLockReleases.delete(key);
-    release();
-  }
-}
 
 // MCP 注册由本 helper 自己做,不走 adapter 的 mcpServers 参数:niceeval ≤0.4.4 的两个
 // adapter 都写错了位置(codex 写成单数 [mcp_server.x]、claude 写到不存在的
@@ -171,81 +142,73 @@ export function withMempal(base: Agent, tool: "claude" | "codex", opts: { stateK
       );
       ctx.log(`[mempal] model warm-up: ${warm.exitCode === 0 ? "ok" : "failed (will retry on first ingest)"}`);
 
-      // 3. 记忆态载入:从这里起进入 [载入 … 回存] 临界区 —— 取 per-stateKey 锁,
-      //    正常路径由 teardown 回存后放锁;本 setup 后续任何一步抛错都要自己放锁
-      //    (runner 只在 setup 成功后才调 teardown,不放会锁死后续 attempt)。
-      await acquireStateLock(stateKey);
+      // 3. 记忆态载入:[载入 … 回存] 临界区的串行由实验声明 maxConcurrency: 1 保证
+      //    (niceeval ≥0.4.5 按实验限流;见文件头注的【串行前提】)。
+      let state: Buffer | undefined;
       try {
-        let state: Buffer | undefined;
-        try {
-          state = readFileSync(statePath);
-        } catch {
-          // 无存档(首次跑 / 刚清过状态)→ 空库起步
-        }
-        if (state) {
-          // 恢复历史积累的 $HOME/.mempal(palace.db + audit.jsonl)—— 记忆条件的
-          // 价值正在于「第二次见到同类问题」,跨 eval / 跨 run 都要延续。
-          await sb.uploadFile("/tmp/mempal-state.tgz", state);
-          await sb.runShell('tar -xzf /tmp/mempal-state.tgz -C "$HOME" && rm -f /tmp/mempal-state.tgz');
-          ctx.log(`[mempal] state restored from ${stateKey}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
-        } else {
-          // 空库初始化:$HOME/.mempal/palace.db。workspace 此时还没上传(eval test()
-          // 里才 uploadDirectory),所以不 init 项目结构、不预 ingest —— 记忆积累
-          // 应该来自 agent 自己 session 内写、后续 eval/run 读。
-          await sb.runShell("mempal init . || true");
-          ctx.log(`[mempal] no saved state for "${stateKey}", starting from empty palace`);
-        }
+        state = readFileSync(statePath);
+      } catch {
+        // 无存档(首次跑 / 刚清过状态)→ 空库起步
+      }
+      if (state) {
+        // 恢复历史积累的 $HOME/.mempal(palace.db + audit.jsonl)—— 记忆条件的
+        // 价值正在于「第二次见到同类问题」,跨 eval / 跨 run 都要延续。
+        await sb.uploadFile("/tmp/mempal-state.tgz", state);
+        await sb.runShell('tar -xzf /tmp/mempal-state.tgz -C "$HOME" && rm -f /tmp/mempal-state.tgz');
+        ctx.log(`[mempal] state restored from ${stateKey}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
+      } else {
+        // 空库初始化:$HOME/.mempal/palace.db。workspace 此时还没上传(eval test()
+        // 里才 uploadDirectory),所以不 init 项目结构、不预 ingest —— 记忆积累
+        // 应该来自 agent 自己 session 内写、后续 eval/run 读。
+        await sb.runShell("mempal init . || true");
+        ctx.log(`[mempal] no saved state for "${stateKey}", starting from empty palace`);
+      }
 
-        // 4. MCP 注册 + 按 tool 装生命周期 hook。注册完用 CLI 自省命令(`… mcp list`)
-        //    确认挂载并记 log —— MCP 配置写错位置是静默失败(adapter 就栽过这跟头,
-        //    见文件头注),必须靠自省输出留证据,不能只看「没报错」。
-        if (tool === "claude") {
-          // 用户级 MCP 在 ~/.claude.json 顶层 mcpServers(沙箱是全新的,直接写不用合并)。
-          await shared.writeFile(sb, "~/.claude.json", MEMPAL_CLAUDE_MCP_JSON);
-          const mcpSt = await sb.runShell("claude mcp list 2>&1 | grep -i mempal || true");
-          ctx.log(`[mempal] claude mcp list: ${mcpSt.stdout.trim() || "(mempal NOT registered!)"}`);
-          // 用户级 settings:不落在 workspace 里,躲开上传覆盖与 diff 捕获。
-          await shared.writeFile(sb, "~/.claude/hooks/mempal-stop.sh", STOP_HOOK);
-          await shared.writeFile(
-            sb,
-            "~/.claude/settings.json",
-            JSON.stringify(
-              {
-                hooks: {
-                  Stop: [{ hooks: [{ type: "command", command: 'bash "$HOME/.claude/hooks/mempal-stop.sh"' }] }],
-                },
+      // 4. MCP 注册 + 按 tool 装生命周期 hook。注册完用 CLI 自省命令(`… mcp list`)
+      //    确认挂载并记 log —— MCP 配置写错位置是静默失败(adapter 就栽过这跟头,
+      //    见文件头注),必须靠自省输出留证据,不能只看「没报错」。
+      if (tool === "claude") {
+        // 用户级 MCP 在 ~/.claude.json 顶层 mcpServers(沙箱是全新的,直接写不用合并)。
+        await shared.writeFile(sb, "~/.claude.json", MEMPAL_CLAUDE_MCP_JSON);
+        const mcpSt = await sb.runShell("claude mcp list 2>&1 | grep -i mempal || true");
+        ctx.log(`[mempal] claude mcp list: ${mcpSt.stdout.trim() || "(mempal NOT registered!)"}`);
+        // 用户级 settings:不落在 workspace 里,躲开上传覆盖与 diff 捕获。
+        await shared.writeFile(sb, "~/.claude/hooks/mempal-stop.sh", STOP_HOOK);
+        await shared.writeFile(
+          sb,
+          "~/.claude/settings.json",
+          JSON.stringify(
+            {
+              hooks: {
+                Stop: [{ hooks: [{ type: "command", command: 'bash "$HOME/.claude/hooks/mempal-stop.sh"' }] }],
               },
-              null,
-              2,
-            ),
-          );
-          await sb.runShell('chmod +x "$HOME/.claude/hooks/mempal-stop.sh"');
-        } else {
-          // MCP:追加到 base setup 写好的 ~/.codex/config.toml 末尾(顶层表顺序无关,
-          // 与 tracing.configure 之后追加的 [otel] 子表也不冲突)。
-          await sb.runShell(`cat >> ~/.codex/config.toml <<'MEMPALEOF'\n${MEMPAL_CODEX_MCP_TOML}\nMEMPALEOF\n`);
-          const mcpSt = await sb.runShell("codex mcp list 2>&1 | grep -i mempal || true");
-          ctx.log(`[mempal] codex mcp list: ${mcpSt.stdout.trim() || "(mempal NOT registered!)"}`);
-          await shared.writeFile(sb, "~/.codex/hooks.json", CODEX_HOOKS_JSON);
-          // hooks 的 feature flag 随 codex 版本变名:0.142.x 里叫 `hooks` 且 stable 默认开
-          // (mempal 文档里的 `codex_hooks` 是旧名)。两个名字都试着 enable,失败不阻塞
-          // (flag 关着时 hooks.json 被静默忽略)—— 把实际状态记进 log 供事后核对。
-          await sb.runShell("codex features enable hooks 2>/dev/null || codex features enable codex_hooks 2>/dev/null || true");
-          const st = await sb.runShell("codex features list 2>/dev/null | grep -i hook || true");
-          ctx.log(`[mempal] codex hooks feature state: ${st.stdout.trim() || "(unknown)"}`);
-        }
-      } catch (e) {
-        releaseStateLock(stateKey);
-        throw e;
+            },
+            null,
+            2,
+          ),
+        );
+        await sb.runShell('chmod +x "$HOME/.claude/hooks/mempal-stop.sh"');
+      } else {
+        // MCP:追加到 base setup 写好的 ~/.codex/config.toml 末尾(顶层表顺序无关,
+        // 与 tracing.configure 之后追加的 [otel] 子表也不冲突)。
+        await sb.runShell(`cat >> ~/.codex/config.toml <<'MEMPALEOF'\n${MEMPAL_CODEX_MCP_TOML}\nMEMPALEOF\n`);
+        const mcpSt = await sb.runShell("codex mcp list 2>&1 | grep -i mempal || true");
+        ctx.log(`[mempal] codex mcp list: ${mcpSt.stdout.trim() || "(mempal NOT registered!)"}`);
+        await shared.writeFile(sb, "~/.codex/hooks.json", CODEX_HOOKS_JSON);
+        // hooks 的 feature flag 随 codex 版本变名:0.142.x 里叫 `hooks` 且 stable 默认开
+        // (mempal 文档里的 `codex_hooks` 是旧名)。两个名字都试着 enable,失败不阻塞
+        // (flag 关着时 hooks.json 被静默忽略)—— 把实际状态记进 log 供事后核对。
+        await sb.runShell("codex features enable hooks 2>/dev/null || codex features enable codex_hooks 2>/dev/null || true");
+        const st = await sb.runShell("codex features list 2>/dev/null | grep -i hook || true");
+        ctx.log(`[mempal] codex hooks feature state: ${st.stdout.trim() || "(unknown)"}`);
       }
 
       return cleanup;
     },
 
     async teardown(sb, ctx) {
-      // 回存记忆态并放锁。回存 best-effort:失败只记 log 不抛(runner 本来也会吞
-      // teardown 的错,但显式 log 才能事后核对);放锁必须在 finally —— 回存失败
-      // 也不能锁死后续 attempt。
+      // 回存记忆态。best-effort:失败只记 log 不抛(runner 本来也会吞 teardown 的错,
+      // 但显式 log 才能事后核对)。
       try {
         const pack = await sb.runShell('tar -C "$HOME" -czf /tmp/mempal-state.tgz .mempal');
         if (pack.exitCode === 0) {
@@ -262,8 +225,6 @@ export function withMempal(base: Agent, tool: "claude" | "codex", opts: { stateK
         }
       } catch (e) {
         ctx.log(`[mempal] state save failed: ${e instanceof Error ? e.message : String(e)}`);
-      } finally {
-        releaseStateLock(stateKey);
       }
       await base.teardown?.(sb, ctx);
     },

@@ -21,5 +21,7 @@ export default defineExperiment({
   runs: 1,
   earlyExit: true,
   budget: 2,
+  // 串行跑(niceeval ≥0.4.5 按实验限流):记忆态载入/回存的临界区靠它,不再用锁。
+  maxConcurrency: 1,
   timeoutMs: 1200000,
 });
