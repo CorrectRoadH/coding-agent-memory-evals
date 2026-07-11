@@ -17,6 +17,9 @@ importers:
       '@types/node':
         specifier: ^26.0.1
         version: 26.0.1
+      '@types/react':
+        specifier: ^19.2.17
+        version: 19.2.17
       dockerode:
         specifier: ^5.0.1
         version: 5.0.1
@@ -26,6 +29,9 @@ importers:
       niceeval:
         specifier: link:../niceeval
         version: link:../niceeval
+      react:
+        specifier: ^19.2.7
+        version: 19.2.7
       tsx:
         specifier: ^4.20.0
         version: 4.23.0
@@ -272,6 +278,9 @@ packages:
   '@types/node@26.0.1':
     resolution: {integrity: sha512-fc3KiUoBt6kie0N9bIW3E47vZsuaMf0PM2AaUpLCLT0s/LvX1nxAim6Fc049cNxODPpGm6qRAuUOB86SkRuPQw==}
 
+  '@types/react@19.2.17':
+    resolution: {integrity: sha512-MXfmqaVPEVgkBT/aY0aGCkRWWtByiYQXo3xdQ8r5RzuFrPiRn8Gar2tQdXSUQ2GKV3bkXckek89V8wQBY2Q/Aw==}
+
   '@types/ssh2@1.15.5':
     resolution: {integrity: sha512-N1ASjp/nXH3ovBHddRJpli4ozpk6UdDYIX4RJWFa9L1YKnzdhTlVmiGHm4DZnj/jLbqZpes4aeR30EFGQtvhQQ==}
 
@@ -342,6 +351,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -481,6 +493,10 @@ packages:
 
   pump@3.0.4:
     resolution: {integrity: sha512-VS7sjc6KR7e1ukRFhQSY5LM2uBWAUPiOPa/A3mkKmiMwSmRFUITt0xuj+/lesgnCv+dPIEYlkzrcyXgquIHMcA==}
+
+  react@19.2.7:
+    resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
+    engines: {node: '>=0.10.0'}
 
   readable-stream@3.6.2:
     resolution: {integrity: sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==}
@@ -756,6 +772,10 @@ snapshots:
     dependencies:
       undici-types: 8.3.0
 
+  '@types/react@19.2.17':
+    dependencies:
+      csstype: 3.2.3
+
   '@types/ssh2@1.15.5':
     dependencies:
       '@types/node': 18.19.130
@@ -827,6 +847,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csstype@3.2.3: {}
 
   debug@4.4.3:
     dependencies:
@@ -1003,6 +1025,8 @@ snapshots:
     dependencies:
       end-of-stream: 1.4.5
       once: 1.4.0
+
+  react@19.2.7: {}
 
   readable-stream@3.6.2:
     dependencies:
