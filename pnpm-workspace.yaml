@@ -5,7 +5,3 @@ allowBuilds:
   ssh2: false
 minimumReleaseAgeExclude:
   - niceeval
-# 本地要跟 fastevals HEAD 开发时,临时加回:
-# overrides:
-#   niceeval: link:../fastevals
-# 但别提交 —— Vercel 上解析不了 link:,CI 构建(pnpm install)会挂。

@@ -21,8 +21,8 @@ importers:
         specifier: ^2.31.0
         version: 2.31.0
       niceeval:
-        specifier: ^0.5.3
-        version: 0.5.3(dockerode@5.0.1)(e2b@2.31.0)
+        specifier: ^0.5.4
+        version: 0.5.4(dockerode@5.0.1)(e2b@2.31.0)
       tsx:
         specifier: ^4.20.0
         version: 4.23.0
@@ -582,8 +582,8 @@ packages:
   nan@2.28.0:
     resolution: {integrity: sha512-fTsDz99OTq2sVePhGdp4qQhggZFtKr64ZNVyVajRKtMOkJxYekplBh577PiJB12v/D3s2E5cGtOI45LWp6rnLQ==}
 
-  niceeval@0.5.3:
-    resolution: {integrity: sha512-PypSkPoo+B1hTujqK7doIPER+f0fNzX+YtVqitmS1VJb2LFbH3/1kJBlNzMg0RrT8QCRhr7twaYkjez7St0r1w==}
+  niceeval@0.5.4:
+    resolution: {integrity: sha512-z3wYdYMm3Epu/qCGzqSR9TZW4Nb0+RKpnf0/q1pozyDAOsAv2K6V8hx76m76GT/RxCP/CWExFBCsUbh8K/gd9A==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -1335,7 +1335,7 @@ snapshots:
   nan@2.28.0:
     optional: true
 
-  niceeval@0.5.3(dockerode@5.0.1)(e2b@2.31.0):
+  niceeval@0.5.4(dockerode@5.0.1)(e2b@2.31.0):
     dependencies:
       autoevals: 0.0.132
       effect: 3.21.4

@@ -1,16 +1,17 @@
 import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
-import { withMempal } from "../shared/mempal.ts";
+import { mempalMcp, mempalSetup, mempalTeardown } from "../shared/mempal.ts";
 
-// dev/e2b 组的 mempal 变体:验证记忆条件全链路(二进制上传、模型预热、记忆态
-// 跨 eval 累积、codex hooks)用的便宜配置,正式对比走 compare/ 组。
-// 记忆按 stateKey 跨 eval / 跨 run 累积;干净验证前 rm -rf .cache/mempal/state/。
+// dev/e2b 组的 mempal 变体:验证记忆条件全链路(构造期 MCP、二进制上传、模型预热、
+// 记忆态跨 eval 累积、codex hooks)用的便宜配置,正式对比走 compare/ 组。
+// 记忆按 ctx.experimentId(即本实验的路径推导 id `dev-e2b/codex-e2b--mempal`)跨 eval /
+// 跨 run 累积;干净验证前 rm -rf .cache/mempal/state/。
 export default defineExperiment({
   description: "codex · gpt-5.4-mini · E2B · mempal",
-  agent: withMempal(codexAgent(), "codex", { stateKey: "codex-e2b--mempal" }),
+  agent: codexAgent({ mcpServers: [mempalMcp] }),
   model: "gpt-5.4-mini",
-  sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  sandbox: e2bSandbox({ template: "fasteval-agents" }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
   runs: 1,
   earlyExit: true,
   budget: 2,

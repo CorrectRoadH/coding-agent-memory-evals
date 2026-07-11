@@ -1,23 +1,25 @@
 import { defineExperiment } from "niceeval";
 import { e2bSandbox } from "niceeval/sandbox";
 import { codexAgent } from "niceeval/adapter";
-import { withMempal } from "../shared/mempal.ts";
+import { mempalMcp, mempalSetup, mempalTeardown } from "../shared/mempal.ts";
 
-// codex-gpt-5.4 的 mempal 变体:MCP server 接入 mempal_search / mempal_ingest,
-// MEMORY_PROTOCOL 随 MCP ServerInfo 下发(存/查行为靠协议约定,不靠 hook)。
-// Codex 原生 hook(~/.codex/hooks.json,cowork drain)受上游 codex_hooks 实验
-// flag 门控 —— setup 里 best-effort enable 并留 log;flag 关着时 hooks.json 被
-// 静默忽略,本条件退化为「纯 MCP 记忆」,对单 agent 记忆题没有实质影响。
+// codex-gpt-5.4 的 mempal 变体:MCP server(mempal_search / mempal_ingest,构造期
+// 接进 codexAgent)接入 mempal,MEMORY_PROTOCOL 随 MCP ServerInfo 下发(存/查行为靠
+// 协议约定,不靠 hook)。Codex 原生 hook(~/.codex/hooks.json,cowork drain,由沙箱
+// setup 钩子装)受上游 codex_hooks 实验 flag 门控 —— setup 里 best-effort enable
+// 并留 log;flag 关着时 hooks.json 被静默忽略,本条件退化为「纯 MCP 记忆」,对单 agent
+// 记忆题没有实质影响。
 //
-// 前提:mempal 二进制由 setup 从 host 缓存上传(先跑一次
+// 前提:mempal 二进制由沙箱 setup 钩子从 host 缓存上传(先跑一次
 // scripts/build-mempal-linux.sh;见 experiments/shared/mempal.ts 头注)。
-// 记忆按 stateKey 跨 eval / 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前
-// 先 `rm -rf .cache/mempal/state/`,并在报告里注明状态起点(空库/带积累)。
+// 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/codex-gpt-5.4--mempal`)跨 eval /
+// 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
+// 并在报告里注明状态起点(空库/带积累)。
 export default defineExperiment({
   description: "codex · gpt-5.4 · mempal",
-  agent: withMempal(codexAgent(), "codex", { stateKey: "codex-gpt-5.4--mempal" }),
+  agent: codexAgent({ mcpServers: [mempalMcp] }),
   model: "gpt-5.4",
-  sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  sandbox: e2bSandbox({ template: "fasteval-agents" }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
   runs: 1,
   earlyExit: false,
   budget: 15,
