@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# 自动把超大产物移出本次提交。
+#
+# 背景:niceeval 原样落盘工具调用的输出。agent 一句 `grep -R ... .` 扫进
+# node_modules,stderr 的 "binary file matches" 洪水绕过 `| head`,单个
+# action.result 就能到 50MB,再被回灌进后续 LLM span 的 input.value,
+# trace.json 直接破 100MB —— 正好撞死 GitHub 的单文件硬上限,push 不上去。
+# 这个模式在 bub 上已经砸了三次。
+#
+# 这里不拦 commit,只是把超限文件从索引里摘掉(文件仍留在磁盘上,本地报告
+# 照常能看),然后让 commit 继续。判决和失败原因本来就在 result.json 里,
+# 丢掉 trace/events 不损失分析价值。
+set -euo pipefail
+
+LIMIT_MB=50  # GitHub: >50MB 警告,>100MB 硬拒
+LIMIT=$((LIMIT_MB * 1024 * 1024))
+
+dropped=()
+while IFS= read -r -d '' path; do
+  # 取暂存区里那个 blob 的真实大小(而不是磁盘上的),这才是要推上去的东西
+  size=$(git cat-file -s ":$path" 2>/dev/null) || continue
+  if [ "$size" -gt "$LIMIT" ]; then
+    git restore --staged -- "$path"
+    dropped+=("$(printf '%6.1f MiB  %s' "$(echo "$size / 1048576" | bc -l)" "$path")")
+  fi
+done < <(git diff --cached --name-only -z --diff-filter=AM)
+
+if [ ${#dropped[@]} -gt 0 ]; then
+  echo "pre-commit: 已把 ${#dropped[@]} 个超过 ${LIMIT_MB}MB 的文件移出本次提交(文件仍在磁盘上):" >&2
+  printf '  %s\n' "${dropped[@]}" >&2
+  echo "  → 它们不会被推送。若确需提交,改用 git-lfs 或先压缩。" >&2
+
+  if git diff --cached --quiet; then
+    echo "pre-commit: 摘掉后本次提交已无内容,中止。" >&2
+    exit 1
+  fi
+fi
+
+exit 0

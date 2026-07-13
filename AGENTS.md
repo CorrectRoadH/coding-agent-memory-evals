@@ -35,6 +35,7 @@ This repo is a benchmark suite for coding-agent memory conditions. The core rule
 - `docs/benchmarks.md`: benchmark survey and candidate task notes.
 - `niceeval.config.ts`: global judge and timeout defaults (agent/sandbox/concurrency are per-experiment).
 - Report publishing: `.niceeval/` is committed as the data source; Vercel's buildCommand is `niceeval view --out site` (see vercel.json — no custom scripts).
+- `scripts/hooks/pre-commit`: 体积闸。niceeval 原样落盘工具输出，agent 一句 `grep -R` 扫进 node_modules 就能让单个 trace.json 破 100MB，撞死 GitHub 单文件硬上限。hook 会把 >50MB 的文件自动移出本次提交（不拦 commit，文件留在磁盘上）。**新 clone 后需手动启用一次**：`git config core.hooksPath scripts/hooks`。
 
 ## Adding Evals
 
