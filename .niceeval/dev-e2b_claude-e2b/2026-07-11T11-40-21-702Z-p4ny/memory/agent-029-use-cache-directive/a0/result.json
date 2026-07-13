@@ -1,0 +1,156 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "9f602b84109a2b5c638e342483e8d6729e78ae2d4f80479f088658e0ea4249e8",
+  "attempt": 0,
+  "durationMs": 265327,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Admin — Product Catalog',\n  description: 'Admin product catalog with cache-tag-based invalidation',\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nlet catalogData = [\n  { id: 1, name: 'Laptop', price: 999, stock: 42, status: 'active' },\n  { id: 2, name: 'Phone', price: 699, stock: 138, status: 'active' },\n  { id: 3, name: 'Tablet', price: 499, stock: 27, status: 'active' },\n  { id: 4, name: 'Headphones', price: 199, stock: 310, status: 'active' },\n  { id: 5, name: 'Watch', price: 299, stock: 5, status: 'low-stock' },\n];\n\nexport async function getAllProducts() {\n  // Simulate database read delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  return catalogData;\n}\n\n/**\n * Simulates a full sync from an upstream ERP/PIM system.\n * In production this would batch-fetch pricing, inventory, and availability\n * from an external source.  The caller is expected to revalidate any stale\n * cache tags after the sync completes.\n */\nexport async function syncCatalogFromUpstream() {\n  // Simulate network / processing delay for a \"thousands of SKUs\" sync\n  await new Promise(resolve => setTimeout(resolve, 2_000));\n\n  // Perturb stock levels to demonstrate that data actually changed\n  catalogData = catalogData.map((p) => {\n    const newStock = Math.max(0, p.stock + Math.floor((Math.random() - 0.5) * 20));\n    return { ...p, stock: newStock, status: newStock > 10 ? 'active' : 'low-stock' };\n  });\n\n  return { syncedAt: new Date().toISOString(), count: catalogData.length };\n}\n\n// app/page.tsx\nexport default function Page() {\n  return (\n    <div>\n      <h1>Home</h1>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getCachedProducts } from '@/lib/products';\nimport { syncCatalogFromUpstream } from '@/lib/db';\n\n/* Render per-request so cache-tag revalidation takes effect on visits. */\nexport const dynamic = 'force-dynamic';\n\n/* ──────────── Inline Server Action ──────────── */\n\n/**\n * Triggers a full catalog sync from the upstream ERP/PIM system\n * and invalidates all cached data tagged with `\"products\"`.\n *\n * The action returns as soon as the sync completes so the page\n * re-renders with fresh data.  In production the actual sync would\n * be an enqueued background job — the cache invalidation is the\n * critical part that unblocks downstream views.\n */\nasync function syncCatalog() {\n  'use server';\n\n  // 1. Pull latest pricing / inventory / availability from upstream.\n  const { syncedAt, count } = await syncCatalogFromUpstream();\n\n  // 2. Purge every cache entry tagged \"products\" so the NEXT render\n  //    fetches fresh data from wherever it reads the catalog.\n  revalidateTag('products', 'max');\n\n  console.log(`[Sync] ${count} products synced at ${syncedAt}`);\n}\n\n/* ──────────── Page Component ──────────── */\n\nexport default async function AdminCatalogPage() {\n  const products = await getCachedProducts();\n\n  return (\n    <div style={pageStyle}>\n      <header style={headerStyle}>\n        <h1 style={headingStyle}>Product Catalog</h1>\n        <p style={subtitleStyle}>\n          Admin view &middot; data cached with tag <code>&quot;products&quot;</code>\n        </p>\n      </header>\n\n      <form action={syncCatalog} style={formStyle}>\n        <button type=\"submit\" style={buttonStyle}>\n          &#x21bb; Sync Latest Catalog\n        </button>\n        <span style={hintStyle}>\n          Syncs pricing, inventory and availability from the upstream system.\n          Cached data is invalidated so catalog views refresh on next load.\n        </span>\n      </form>\n\n      {products.length === 0 ? (\n        <p style={emptyStyle}>No products found in the catalog.</p>\n      ) : (\n        <table style={tableStyle}>\n          <thead>\n            <tr>\n         …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Admin — Product Catalog',\n  description: 'Admin product catalog with cache-tag-based invalidation',\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nlet catalogData = [\n  { id: 1, name: 'Laptop', price: 999, stock: 42, status: 'active' },\n  { id: 2, name: 'Phone', price: 699, stock: 138, status: 'active' },\n  { id: 3, name: 'Tablet', price: 499, stock: 27, status: 'active' },\n  { id: 4, name: 'Headphones', price: 199, stock: 310, status: 'active' },\n  { id: 5, name: 'Watch', price: 299, stock: 5, status: 'low-stock' },\n];\n\nexport async function getAllProducts() {\n  // Simulate database read delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  return catalogData;\n}\n\n/**\n * Simulates a full sync from an upstream ERP/PIM system.\n * In production this would batch-fetch pricing, inventory, and availability\n * from an external source.  The caller is expected to revalidate any stale\n * cache tags after the sync completes.\n */\nexport async function syncCatalogFromUpstream() {\n  // Simulate network / processing delay for a \"thousands of SKUs\" sync\n  await new Promise(resolve => setTimeout(resolve, 2_000));\n\n  // Perturb stock levels to demonstrate that data actually changed\n  catalogData = catalogData.map((p) => {\n    const newStock = Math.max(0, p.stock + Math.floor((Math.random() - 0.5) * 20));\n    return { ...p, stock: newStock, status: newStock > 10 ? 'active' : 'low-stock' };\n  });\n\n  return { syncedAt: new Date().toISOString(), count: catalogData.length };\n}\n\n// app/page.tsx\nexport default function Page() {\n  return (\n    <div>\n      <h1>Home</h1>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getCachedProducts } from '@/lib/products';\nimport { syncCatalogFromUpstream } from '@/lib/db';\n\n/* Render per-request so cache-tag revalidation takes effect on visits. */\nexport const dynamic = 'force-dynamic';\n\n/* ──────────── Inline Server Action ──────────── */\n\n/**\n * Triggers a full catalog sync from the upstream ERP/PIM system\n * and invalidates all cached data tagged with `\"products\"`.\n *\n * The action returns as soon as the sync completes so the page\n * re-renders with fresh data.  In production the actual sync would\n * be an enqueued background job — the cache invalidation is the\n * critical part that unblocks downstream views.\n */\nasync function syncCatalog() {\n  'use server';\n\n  // 1. Pull latest pricing / inventory / availability from upstream.\n  const { syncedAt, count } = await syncCatalogFromUpstream();\n\n  // 2. Purge every cache entry tagged \"products\" so the NEXT render\n  //    fetches fresh data from wherever it reads the catalog.\n  revalidateTag('products', 'max');\n\n  console.log(`[Sync] ${count} products synced at ${syncedAt}`);\n}\n\n/* ──────────── Page Component ──────────── */\n\nexport default async function AdminCatalogPage() {\n  const products = await getCachedProducts();\n\n  return (\n    <div style={pageStyle}>\n      <header style={headerStyle}>\n        <h1 style={headingStyle}>Product Catalog</h1>\n        <p style={subtitleStyle}>\n          Admin view &middot; data cached with tag <code>&quot;products&quot;</code>\n        </p>\n      </header>\n\n      <form action={syncCatalog} style={formStyle}>\n        <button type=\"submit\" style={buttonStyle}>\n          &#x21bb; Sync Latest Catalog\n        </button>\n        <span style={hintStyle}>\n          Syncs pricing, inventory and availability from the upstream system.\n          Cached data is invalidated so catalog views refresh on next load.\n        </span>\n      </form>\n\n      {products.length === 0 ? (\n        <p style={emptyStyle}>No products found in the catalog.</p>\n      ) : (\n        <table style={tableStyle}>\n          <thead>\n            <tr>\n         …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 99734,
+    "outputTokens": 48859,
+    "cacheReadTokens": 2381824,
+    "requests": 71,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0343123872,
+  "startedAt": "2026-07-11T10:35:48.242Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "dev-e2b_claude-e2b/2026-07-11T10-36-04-079Z-dwih/memory/agent-029-use-cache-directive/a0"
+}

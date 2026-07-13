@@ -1,0 +1,71 @@
+{
+  "id": "memory/swelancer-manager-proposals",
+  "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+  "verdict": "failed",
+  "fingerprint": "dc5f7d490514b7d17d747468a819e487192c3fe8e35907864975550e633270da",
+  "attempt": 0,
+  "durationMs": 91632,
+  "assertions": [
+    {
+      "name": "isTrue(manager_decisions.json exists)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 28,
+        "column": 7
+      }
+    },
+    {
+      "name": "equals(1)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Issue 14268: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(4)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "1",
+      "group": "Issue 15193: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(3)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Issue 25901: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 76918,
+    "outputTokens": 1358,
+    "cacheReadTokens": 46592,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.06729389999999999,
+  "startedAt": "2026-07-11T11:10:55.367Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "dev-e2b_codex-e2b--mempal/2026-07-11T11-07-02-559Z-dy7k/memory/swelancer-manager-proposals/a0"
+}

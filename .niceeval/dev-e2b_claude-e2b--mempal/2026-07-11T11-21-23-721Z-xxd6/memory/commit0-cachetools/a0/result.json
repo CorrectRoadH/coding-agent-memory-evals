@@ -1,0 +1,14 @@
+{
+  "id": "memory/commit0-cachetools",
+  "description": "Commit0-style cachetools: implement the full library from stub signatures + spec until the upstream test suite passes",
+  "verdict": "errored",
+  "fingerprint": "9685af8e71371f672abeaed14ebdb70ed9536d906da173a7060972d2f5d146c5",
+  "attempt": 0,
+  "durationMs": 1199960,
+  "assertions": [],
+  "error": "attempt timed out (1200000ms)\nRecent progress:\n  · starting sandbox...\n  · OTLP in-sandbox collector -> http://127.0.0.1:43483/v1/traces (http/protobuf)\n  · sandbox setup (environment provisioning hooks)...\n  · [mempal] model warm-up: ok\n  · [mempal] state restored from dev-e2b/claude-e2b--mempal.tgz (70 KB)\n  · agent setup (install CLI / write config)...\n  · driving agent...\n  · turn 1 → \"Implement the `cachetools` library i…\"",
+  "startedAt": "2026-07-11T11:21:23.727Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

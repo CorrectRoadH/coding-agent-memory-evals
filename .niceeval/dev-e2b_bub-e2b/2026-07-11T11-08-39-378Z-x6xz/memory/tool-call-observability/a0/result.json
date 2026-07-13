@@ -1,0 +1,14 @@
+{
+  "id": "memory/tool-call-observability",
+  "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+  "verdict": "errored",
+  "fingerprint": "04db588fea38524e3153f26b5f3e73d63b42a705ff9838696efb4bcd8ba61e68",
+  "attempt": 0,
+  "durationMs": 184519,
+  "assertions": [],
+  "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:151:5)\n    at async restoreCheckpoint (/Users/ctrdh/Code/niceeval/src/sandbox/checkpoint.ts:38:3)\n    at async ensureBub (/Users/ctrdh/Code/niceeval/src/agents/bub.ts:111:18)\n    at async Object.setup (/Users/ctrdh/Code/niceeval/src/agents/bub.ts:194:7)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:286:22)",
+  "startedAt": "2026-07-11T11:08:57.433Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

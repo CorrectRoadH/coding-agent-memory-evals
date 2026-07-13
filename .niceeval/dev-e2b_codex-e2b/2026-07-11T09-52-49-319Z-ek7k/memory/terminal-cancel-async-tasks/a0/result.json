@@ -1,0 +1,33 @@
+{
+  "id": "memory/terminal-cancel-async-tasks",
+  "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+  "verdict": "passed",
+  "fingerprint": "e75f3c16219560509b027b60a55bbcbfd97e0b77a080a75e3958ab774643a805",
+  "attempt": 0,
+  "durationMs": 310972,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+        "line": 45,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 97352,
+    "outputTokens": 7101,
+    "cacheReadTokens": 83840,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1112565,
+  "startedAt": "2026-07-11T09:51:53.233Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

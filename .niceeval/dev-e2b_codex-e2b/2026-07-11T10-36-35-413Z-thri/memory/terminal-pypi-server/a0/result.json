@@ -1,0 +1,33 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "c3fdcfe2a06e510ce725f1f2d03a0a19a19adbe22d39fcaac029b8bdf490f972",
+  "attempt": 0,
+  "durationMs": 205163,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 49,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 227423,
+    "outputTokens": 6398,
+    "cacheReadTokens": 209792,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.21509265,
+  "startedAt": "2026-07-11T10:35:48.245Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

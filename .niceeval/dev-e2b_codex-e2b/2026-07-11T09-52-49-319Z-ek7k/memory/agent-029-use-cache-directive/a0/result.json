@@ -1,0 +1,154 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "906293cb69f7fa432ebf75f6cf7bab2a4fee1c2e329e76eb93e90535e8444cc9",
+  "attempt": 0,
+  "durationMs": 472273,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {\n  cacheComponents: true\n};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { cacheTag } from 'next/cache';\n\nconst baseProducts = [\n  { id: 1, name: 'Laptop', price: 999, inventory: 42, availability: 'In stock' },\n  { id: 2, name: 'Phone', price: 699, inventory: 18, availability: 'In stock' },\n  { id: 3, name: 'Tablet', price: 499, inventory: 9, availability: 'Low stock' },\n  { id: 4, name: 'Headphones', price: 199, inventory: 61, availability: 'In stock' },\n  { id: 5, name: 'Watch', price: 299, inventory: 27, availability: 'In stock' }\n];\n\nlet catalog = baseProducts.map(product => ({ ...product }));\nlet catalogRevision = 1;\nlet lastSyncedAt = new Date();\n\nconst delay = ms => new Promise(resolve => setTimeout(resolve, ms));\n\nexport async function getCatalogSnapshot() {\n  'use cache';\n  cacheTag('products');\n\n  await delay(80);\n\n  return {\n    revision: catalogRevision,\n    lastSyncedAt: lastSyncedAt.toISOString(),\n    products: catalog.map(product => ({ ...product }))\n  };\n}\n\nexport function syncCatalogSource() {\n  catalogRevision += 1;\n  lastSyncedAt = new Date();\n\n  catalog = catalog.map((product, index) => {\n    const priceStep = index % 2 === 0 ? 12 : 8;\n    const inventoryStep = (catalogRevision + index) % 4;\n    const inventory = Math.max(0, product.inventory - inventoryStep + 5);\n\n    return {\n      ...product,\n      price: product.price + priceStep,\n      inventory,\n      availability: inventory > 12 ? 'In stock' : inventory > 0 ? 'Low stock' : 'Out of stock'\n    };\n  });\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Product Catalog Admin',\n  description: 'Fast admin product catalog with cache-tagged syncs'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getCatalogSnapshot, syncCatalogSource } from '../lib/db';\n\nconst currency = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: 'USD',\n  maximumFractionDigits: 0\n});\n\nconst datetime = new Intl.DateTimeFormat('en-US', {\n  dateStyle: 'medium',\n  timeStyle: 'short'\n});\n\nexport default async function Page() {\n  const { products, revision, lastSyncedAt } = await getCatalogSnapshot();\n  const totalInventory = products.reduce((sum, product) => sum + product.inventory, 0);\n  const lowStockCount = products.filter(product => product.availability !== 'In stock').length;\n\n  async function syncLatestCatalog() {\n    'use server';\n\n    syncCatalogSource();\n    revalidateTag('products', 'max');\n  }\n\n  return (\n    <main className=\"page-shell\">\n      <section className=\"hero\">\n        <div>\n          <p className=\"eyebrow\">Admin catalog</p>\n          <h1>Product catalog</h1>\n          <p className=\"lede\">\n            Browse the current catalog quickly. Syncs update this shared cache in the background so\n            operators can keep working while the latest ERP and PIM data rolls in.\n          </p>\n        </div>\n\n        <form action={syncLatestCatalog} className=\"sync-card\">\n          <div>\n            <p className=\"sync-label\">Cache tag</p>\n            <strong>products</strong>\n          </div>\n          <button type=\"submit\">Sync latest catalog</button>\n          <p className=\"sync-note\">\n            Uses stale-while-revalidate so the current view stays responsive after submit.\n          </p>\n        </form>\n      </section>\n\n      <section className=\"stats\">\n        <article>\n          <span>Products</span>\n          <strong>{pr…",
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 246248,
+    "outputTokens": 13094,
+    "cacheReadTokens": 224896,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.2604762,
+  "startedAt": "2026-07-11T09:51:53.230Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

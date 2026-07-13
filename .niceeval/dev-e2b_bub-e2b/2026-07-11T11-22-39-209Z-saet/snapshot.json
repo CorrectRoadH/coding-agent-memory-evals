@@ -1,0 +1,21 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 4,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "dev-e2b/bub-e2b",
+  "experiment": {
+    "flags": {},
+    "runs": 1,
+    "earlyExit": true,
+    "sandbox": "e2b:fasteval-agents",
+    "timeoutMs": 1200000,
+    "budget": 2
+  },
+  "agent": "bub",
+  "model": "gpt-5.4-mini",
+  "startedAt": "2026-07-11T11:20:20.316Z",
+  "completedAt": "2026-07-11T12:02:22.058Z"
+}

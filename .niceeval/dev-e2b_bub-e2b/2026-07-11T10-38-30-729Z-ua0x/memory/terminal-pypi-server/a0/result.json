@@ -1,0 +1,34 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "failed",
+  "fingerprint": "9bb8c0ef1a31808bb2cb3cdd219852e84342a26304fead1ff0b26b1387ded412",
+  "attempt": 0,
+  "durationMs": 263940,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "{\"stdout\":\"\",\"stderr\":\"npm error Missing script: \\\"test\\\"\\nnpm error\\nnpm error To see a list of scripts, run:\\nnpm error   npm run\\nnpm error A complete log of this run can be found in: /home/user/.npm/_logs/2026-07-11T10_54_53_133Z-debug-0.log\\n\",\"exitCode\":1}",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 49,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 114505,
+    "outputTokens": 2336,
+    "cacheReadTokens": 44544,
+    "requests": 15,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.09973155,
+  "startedAt": "2026-07-11T10:50:32.158Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

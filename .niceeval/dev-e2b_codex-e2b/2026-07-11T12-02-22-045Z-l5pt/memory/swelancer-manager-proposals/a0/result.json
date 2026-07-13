@@ -1,0 +1,71 @@
+{
+  "id": "memory/swelancer-manager-proposals",
+  "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+  "verdict": "failed",
+  "fingerprint": "5f191b2865a8c959fe2cb7602952ce5f619db24e6dfc4cca8867365d2312ea33",
+  "attempt": 0,
+  "durationMs": 46799,
+  "assertions": [
+    {
+      "name": "isTrue(manager_decisions.json exists)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 28,
+        "column": 7
+      }
+    },
+    {
+      "name": "equals(1)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Issue 14268: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(4)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "1",
+      "group": "Issue 15193: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(3)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Issue 25901: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 57113,
+    "outputTokens": 1896,
+    "cacheReadTokens": 39936,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.05436195,
+  "startedAt": "2026-07-11T10:35:48.245Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "dev-e2b_codex-e2b/2026-07-11T10-36-35-413Z-thri/memory/swelancer-manager-proposals/a0"
+}

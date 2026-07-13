@@ -1,0 +1,157 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "986f49c8e1989a6d1924a8f12df8cfe31714f8250620f073f250a787c53ae0f2",
+  "attempt": 0,
+  "durationMs": 313947,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport { getAllProducts, syncLatestCatalog } from '@/lib/db';\n\nexport const metadata = {\n  title: 'Catalog Admin',\n  description: 'Read-heavy product catalog with background sync'\n};\n\nfunction formatCurrency(value: number) {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n    maximumFractionDigits: 0\n  }).format(value);\n}\n\nexport default async function Page() {\n  const products = await getAllProducts();\n  const totalInventory = products.reduce((sum, product) => sum + product.inventory, 0);\n  const lastUpdated = products.reduce(\n    (latest, product) => (product.updatedAt > latest ? product.updatedAt : latest),\n    products[0]?.updatedAt ?? new Date().toISOString()\n  );\n\n  return (\n    <main className=\"page-shell\">\n      <section className=\"hero\">\n        <div>\n          <p className=\"eyebrow\">Admin catalog</p>\n          <h1>Browse the product catalog without blocking on fresh recomputation.</h1>\n          <p className=\"lede\">\n            Product reads are cached with the <code>products</code> tag. Syncing ERP/PIM changes\n            updates the shared catalog in the background so operators can keep working.\n          </p>\n        </div>\n\n        <form action={syncLatestCatalog}>\n          <button type=\"submit\" className=\"sync-button\">\n            Sync latest catalog\n          </button>\n          <p className=\"form-note\">Submits immediately and refreshes tagged catalog data shortly after.</p>\n        </form>\n      </section>\n\n      <section className=\"stats\">\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Products</span>\n          <strong>{products.length}</strong>\n        </div>\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Units in stock</span>\n          <strong>{totalInventory}</strong>\n        </div>\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Last refresh</span>\n          <strong>{new Date(lastUpdated).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</strong>\n        </div>\n      </section>\n\n      <section className=\"catalog-panel\">\n        <div className=\"catalog-header\">\n          <h2>Catalog snapshot</h2>\n          <p>Stale data is acceptable for a brief period while the background sync settles.</p>\n        </div>\n\n        <div className=\"table-wrap\">\n          <table>\n            <thead>\n              <tr>\n                <th>SKU</th>\n                <th>Product</th>\n                <th>Price</th>\n                <th>Inventory</th>\n                <th>Availability</th>\n                <th>Updated</th>\n              </tr>\n            </thead>\n            <tbody>\n              {products.map(product => (\n                <tr key={product.id}>\n                  <td>#{product.id}</td>\n                  <td>{product.name}</td>\n                  <td>{formatCurrency(product.price)}</td>\n                  <td>{product.inventory}</td>\n                  <td>\n                    <span className={`status status-${product.availability.toLowerCase().replace(/\\s+/g, '-')}`}>\n                      {product.availability}\n                    </span>\n                  </td>\n                  <td>{new Date(product.updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </section>\n    </main>\n  );\n}\n\n\n// lib/db.ts\nimport { unstable_cache } from 'next/cache';\n\ntype Product = {\n  id: number;\n  name: string;\n  price: number;\n  inventory: number;\n  availability: string;\n  up…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport { getAllProducts, syncLatestCatalog } from '@/lib/db';\n\nexport const metadata = {\n  title: 'Catalog Admin',\n  description: 'Read-heavy product catalog with background sync'\n};\n\nfunction formatCurrency(value: number) {\n  return new Intl.NumberFormat('en-US', {\n    style: 'currency',\n    currency: 'USD',\n    maximumFractionDigits: 0\n  }).format(value);\n}\n\nexport default async function Page() {\n  const products = await getAllProducts();\n  const totalInventory = products.reduce((sum, product) => sum + product.inventory, 0);\n  const lastUpdated = products.reduce(\n    (latest, product) => (product.updatedAt > latest ? product.updatedAt : latest),\n    products[0]?.updatedAt ?? new Date().toISOString()\n  );\n\n  return (\n    <main className=\"page-shell\">\n      <section className=\"hero\">\n        <div>\n          <p className=\"eyebrow\">Admin catalog</p>\n          <h1>Browse the product catalog without blocking on fresh recomputation.</h1>\n          <p className=\"lede\">\n            Product reads are cached with the <code>products</code> tag. Syncing ERP/PIM changes\n            updates the shared catalog in the background so operators can keep working.\n          </p>\n        </div>\n\n        <form action={syncLatestCatalog}>\n          <button type=\"submit\" className=\"sync-button\">\n            Sync latest catalog\n          </button>\n          <p className=\"form-note\">Submits immediately and refreshes tagged catalog data shortly after.</p>\n        </form>\n      </section>\n\n      <section className=\"stats\">\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Products</span>\n          <strong>{products.length}</strong>\n        </div>\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Units in stock</span>\n          <strong>{totalInventory}</strong>\n        </div>\n        <div className=\"stat-card\">\n          <span className=\"stat-label\">Last refresh</span>\n          <strong>{new Date(lastUpdated).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</strong>\n        </div>\n      </section>\n\n      <section className=\"catalog-panel\">\n        <div className=\"catalog-header\">\n          <h2>Catalog snapshot</h2>\n          <p>Stale data is acceptable for a brief period while the background sync settles.</p>\n        </div>\n\n        <div className=\"table-wrap\">\n          <table>\n            <thead>\n              <tr>\n                <th>SKU</th>\n                <th>Product</th>\n                <th>Price</th>\n                <th>Inventory</th>\n                <th>Availability</th>\n                <th>Updated</th>\n              </tr>\n            </thead>\n            <tbody>\n              {products.map(product => (\n                <tr key={product.id}>\n                  <td>#{product.id}</td>\n                  <td>{product.name}</td>\n                  <td>{formatCurrency(product.price)}</td>\n                  <td>{product.inventory}</td>\n                  <td>\n                    <span className={`status status-${product.availability.toLowerCase().replace(/\\s+/g, '-')}`}>\n                      {product.availability}\n                    </span>\n                  </td>\n                  <td>{new Date(product.updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </section>\n    </main>\n  );\n}\n\n\n// lib/db.ts\nimport { unstable_cache } from 'next/cache';\n\ntype Product = {\n  id: number;\n  name: string;\n  price: number;\n  inventory: number;\n  availability: string;\n  up…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "detail": "evaluation error: TypeError: Cannot read properties of undefined (reading 'length')\n    at brief (/Users/ctrdh/Code/niceeval/src/util.ts:64:9)\n    at previewCheckedValue (/Users/ctrdh/Code/niceeval/src/context/context.ts:122:12)\n    at Object.evaluate (/Users/ctrdh/Code/niceeval/src/context/context.ts:309:37)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async AssertionCollector.finalize (/Users/ctrdh/Code/niceeval/src/scoring/collector.ts:81:21)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:362:42)",
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "import { unstable_cache } from 'next/cache';\n\ntype Product = {\n  id: number;\n  name: string;\n  price: number;\n  inventory: number;\n  availability: string;\n  updatedAt: string;\n};\n\nconst catalogSnapshot: Product[] = [\n  {\n    id: 1,\n    name: 'Laptop',\n    price: 999,\n    inventory: 42,\n    availability: 'In stock',\n    updatedAt: '2026-07-11T08:00:00.000Z'\n  },\n  {\n    id: 2,\n    name: 'Phone',\n    price: 699,\n    inventory: 14,\n    availability: 'Low stock',\n    updatedAt: '2026-07-11T08:00:00.000Z'\n  },\n  {\n    id: 3,\n    name: 'Tablet',\n    price: 499,\n    inventory: 0,\n    availability: 'Backordered',\n    updatedAt: '2026-07-11T08:00:00.000Z'\n  },\n  {\n    id: 4,\n    name: 'Headphones',\n    price: 199,\n    inventory: 88,\n    availability: 'In stock',\n    updatedAt: '2026-07-11T08:00:00.000Z'\n  },\n  {\n    id: 5,\n    name: 'Watch',\n    price: 299,\n    inventory: 23,\n    availability: 'In stock',\n    updatedAt: '2026-07-11T08:00:00.000Z'\n  }\n];\n\nasync function getAllProductsUncached(): Promise<Product[]> {\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return catalogSnapshot;\n}\n\nexport const getAllProducts = unstable_cache(getAllProductsUncached, ['products'], {\n  revalidate: false,\n  tags: ['products']\n});\n\nexport async function syncLatestCatalog() {\n  'use server';\n\n  await new Promise(resolve => setTimeout(resolve, 1200));\n\n  const now = new Date().toISOString();\n\n  for (const product of catalogSnapshot) {\n    product.price += 1;\n    product.inventory = Math.max(0, product.inventory - 1);\n    product.availability =\n      product.inventory === 0 ? 'Backordered' : product.inventory < 20 ? 'Low stock' : 'In stock';\n    product.updatedAt = now;\n  }\n\n  const { revalidateTag } = await import('next/cache');\n  revalidateTag('products', 'max');\n}\n",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 840421,
+    "outputTokens": 9752,
+    "cacheReadTokens": 743424,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.72995655,
+  "startedAt": "2026-07-11T10:35:48.245Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

@@ -1,0 +1,14 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "errored",
+  "fingerprint": "a1d89389d244babd33858e7ac9da05f47f2b1e98df357736bb0b87af55da306e",
+  "attempt": 0,
+  "durationMs": 62780,
+  "assertions": [],
+  "error": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:151:5)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:151:7)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:268:25)",
+  "startedAt": "2026-07-11T11:20:20.316Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

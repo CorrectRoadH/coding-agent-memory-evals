@@ -1,0 +1,110 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "failed",
+  "fingerprint": "da0b0991326adee0caaf5dc23d203663ba9ba46016add7605b1f8491ac08170f",
+  "attempt": 0,
+  "durationMs": 194467,
+  "assertions": [
+    {
+      "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Posts',\n  description: 'Create and view posts'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// lib/posts.ts\nimport { cacheTag } from \"next/cache\";\n\nexport type Post = {\n  id: string;\n  title: string;\n  content: string;\n  createdAt: string;\n};\n\n// In-memory store for posts\nconst posts: Post[] = [];\n\nexport function createPostRecord(\n  title: string,\n  content: string\n): Post {\n  const post: Post = {\n    id: crypto.randomUUID(),\n    title,\n    content,\n    createdAt: new Date().toISOString(),\n  };\n  posts.push(post);\n  return post;\n}\n\nexport async function getPosts(): Promise<Post[]> {\n  \"use cache\";\n  cacheTag(\"posts\");\n\n  return [...posts].sort(\n    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {\n  experimental: {\n    cacheComponents: true,\n  },\n};\n\nexport default nextConfig;\n\n\n// app/page.tsx\nimport { getPosts } from \"@/lib/posts\";\nimport { createPost } from \"@/lib/actions\";\n\nexport default async function Home() {\n  const posts = await getPosts();\n\n  return (\n    <main>\n      <h1>Posts</h1>\n\n      <form action={createPost}>\n        <div>\n          <label htmlFor=\"title\">Title</label>\n          <input id=\"title\" name=\"title\" required />\n        </div>\n        <div>\n          <label htmlFor=\"content\">Content</label>\n          <textarea id=\"content\" name=\"content\" required />\n        </div>\n        <button type=\"submit\">Create Post</button>\n      </form>\n\n      <section>\n        <h2>All Posts</h2>\n        {posts.length === 0 ? (\n          <p>No posts yet.</p>\n        ) : (\n          <ul>\n            {posts.map((post) => (\n              <li key={post.id}>\n                <h3>{post.title}</h3>\n                <p>{post.content}</p>\n                <small>\n                  Created at {new Date(post.createdAt).toLocaleString()}\n                </small>\n              </li>\n            ))}\n          </ul>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "group": "Server Action imports updateTag from next/cache",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 26,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/['\"]use server['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Posts',\n  description: 'Create and view posts'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// lib/posts.ts\nimport { cacheTag } from \"next/cache\";\n\nexport type Post = {\n  id: string;\n  title: string;\n  content: string;\n  createdAt: string;\n};\n\n// In-memory store for posts\nconst posts: Post[] = [];\n\nexport function createPostRecord(\n  title: string,\n  content: string\n): Post {\n  const post: Post = {\n    id: crypto.randomUUID(),\n    title,\n    content,\n    createdAt: new Date().toISOString(),\n  };\n  posts.push(post);\n  return post;\n}\n\nexport async function getPosts(): Promise<Post[]> {\n  \"use cache\";\n  cacheTag(\"posts\");\n\n  return [...posts].sort(\n    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {\n  experimental: {\n    cacheComponents: true,\n  },\n};\n\nexport default nextConfig;\n\n\n// app/page.tsx\nimport { getPosts } from \"@/lib/posts\";\nimport { createPost } from \"@/lib/actions\";\n\nexport default async function Home() {\n  const posts = await getPosts();\n\n  return (\n    <main>\n      <h1>Posts</h1>\n\n      <form action={createPost}>\n        <div>\n          <label htmlFor=\"title\">Title</label>\n          <input id=\"title\" name=\"title\" required />\n        </div>\n        <div>\n          <label htmlFor=\"content\">Content</label>\n          <textarea id=\"content\" name=\"content\" required />\n        </div>\n        <button type=\"submit\">Create Post</button>\n      </form>\n\n      <section>\n        <h2>All Posts</h2>\n        {posts.length === 0 ? (\n          <p>No posts yet.</p>\n        ) : (\n          <ul>\n            {posts.map((post) => (\n              <li key={post.id}>\n                <h3>{post.title}</h3>\n                <p>{post.content}</p>\n                <small>\n                  Created at {new Date(post.createdAt).toLocaleString()}\n                </small>\n              </li>\n            ))}\n          </ul>\n        )}\n      </section>\n    </main>\n  );\n}\n",
+      "group": "Server Action uses 'use server' directive",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a Server Action calls updateTag)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "detail": "evaluation error: TypeError: Cannot read properties of undefined (reading 'length')\n    at brief (/Users/ctrdh/Code/niceeval/src/util.ts:64:9)\n    at previewCheckedValue (/Users/ctrdh/Code/niceeval/src/context/context.ts:122:12)\n    at Object.evaluate (/Users/ctrdh/Code/niceeval/src/context/context.ts:309:37)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async AssertionCollector.finalize (/Users/ctrdh/Code/niceeval/src/scoring/collector.ts:81:21)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:362:42)",
+      "group": "Server Action calls updateTag() for cache invalidation",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "isTrue(a Server Action invalidates via updateTag)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "false",
+      "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 48,
+        "column": 9
+      }
+    },
+    {
+      "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 49,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(Server Action has post creation logic)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "detail": "evaluation error: TypeError: Cannot read properties of undefined (reading 'length')\n    at brief (/Users/ctrdh/Code/niceeval/src/util.ts:64:9)\n    at previewCheckedValue (/Users/ctrdh/Code/niceeval/src/context/context.ts:122:12)\n    at Object.evaluate (/Users/ctrdh/Code/niceeval/src/context/context.ts:309:37)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async AssertionCollector.finalize (/Users/ctrdh/Code/niceeval/src/scoring/collector.ts:81:21)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:362:42)",
+      "group": "Server Action has post creation logic",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 60,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "startedAt": "2026-07-11T10:35:48.243Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "dev-e2b_claude-e2b/2026-07-11T10-36-04-079Z-dwih/memory/agent-037-updatetag-cache/a0"
+}

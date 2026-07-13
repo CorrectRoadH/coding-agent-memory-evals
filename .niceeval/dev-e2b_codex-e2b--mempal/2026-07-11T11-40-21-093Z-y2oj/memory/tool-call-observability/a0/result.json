@@ -1,0 +1,59 @@
+{
+  "id": "memory/tool-call-observability",
+  "description": "tool-call observability smoke: agent shell calls are recorded as action events",
+  "verdict": "passed",
+  "fingerprint": "bf00292464f204d0f73b336bb64a08db5513b68de7f511823dbd5545a04ca154",
+  "attempt": 0,
+  "durationMs": 36930,
+  "assertions": [
+    {
+      "name": "calledTool(shell)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "evidence": "command_execution [completed]\n  input: {\"command\":\"/bin/bash -lc \\\"printf '%s\\n' 'niceeval-tool-call-ok' > TOOL_CALL_SMOKE.txt\\\"\"}\n  output: {\"output\":\"\",\"exit_code\":0}",
+      "group": "Agent shell tool call is observable",
+      "loc": {
+        "file": "evals/memory/tool-call-observability.eval.ts",
+        "line": 18,
+        "column": 9
+      }
+    },
+    {
+      "name": "eventsSatisfy(emitted a canonical shell action.called event)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Agent shell tool call is observable",
+      "loc": {
+        "file": "evals/memory/tool-call-observability.eval.ts",
+        "line": 19,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/tool-call-observability.eval.ts",
+        "line": 26,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 28197,
+    "outputTokens": 178,
+    "cacheReadTokens": 27392,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.02400315,
+  "startedAt": "2026-07-11T11:19:15.612Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "dev-e2b_codex-e2b--mempal/2026-07-11T11-07-02-559Z-dy7k/memory/tool-call-observability/a0"
+}

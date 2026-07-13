@@ -1,0 +1,22 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "errored",
+  "fingerprint": "c08df374abed8d1996f59c587ef4659ee9298df6200a93130a5843f3391b6f14",
+  "attempt": 0,
+  "durationMs": 244081,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 5805,
+    "outputTokens": 127,
+    "cacheReadTokens": 3072,
+    "requests": 2,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0051556499999999995,
+  "error": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: <html>\r\n<head><title>413 Request Entity Too Large</title></head>\r\n<body>\r\n<center><h1>413 Request Entity Too Large</h1></center>\r\n<hr><center>openresty</center>\r\n</body>\r\n</html> · output tail: <head><title>413 Request Entity Too Large</title></head> ⏎ <body> ⏎ <center><h1>413 Request Entity Too Large</h1></center> ⏎ <hr><center>openresty</center> ⏎ </body> ⏎ </html>",
+  "startedAt": "2026-07-11T10:38:30.731Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

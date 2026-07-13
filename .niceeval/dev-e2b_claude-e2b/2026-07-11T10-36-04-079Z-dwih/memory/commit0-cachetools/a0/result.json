@@ -1,0 +1,14 @@
+{
+  "id": "memory/commit0-cachetools",
+  "description": "Commit0-style cachetools: implement the full library from stub signatures + spec until the upstream test suite passes",
+  "verdict": "errored",
+  "fingerprint": "60f0b3107b04cd58b8ed5210fa9fd5c1beb0daae1b4a5f116c37aed834e7634d",
+  "attempt": 0,
+  "durationMs": 1199974,
+  "assertions": [],
+  "error": "attempt timed out (1200000ms)\nRecent progress:\n  · starting sandbox...\n  · OTLP in-sandbox collector -> http://127.0.0.1:40967/v1/traces (http/protobuf)\n  · agent setup (install CLI / write config)...\n  · driving agent...\n  · turn 1 → \"Implement the `cachetools` library i…\"",
+  "startedAt": "2026-07-11T10:35:48.243Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

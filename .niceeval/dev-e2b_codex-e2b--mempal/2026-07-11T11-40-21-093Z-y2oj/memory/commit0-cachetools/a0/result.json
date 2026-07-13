@@ -1,0 +1,14 @@
+{
+  "id": "memory/commit0-cachetools",
+  "description": "Commit0-style cachetools: implement the full library from stub signatures + spec until the upstream test suite passes",
+  "verdict": "errored",
+  "fingerprint": "8669e0c811af25028b181a3e86590f18076e8c9b59c12c6aa86d5dfa0d1024b9",
+  "attempt": 0,
+  "durationMs": 1200026,
+  "assertions": [],
+  "error": "attempt timed out (1200000ms)\nRecent progress:\n  · starting sandbox...\n  · OTLP in-sandbox collector -> http://127.0.0.1:35639/v1/traces (http/json)\n  · sandbox setup (environment provisioning hooks)...\n  · [mempal] model warm-up: ok\n  · [mempal] state restored from dev-e2b/codex-e2b--mempal.tgz (5 KB)\n  · [mempal] codex hooks feature state: hooks                                stable             true\nplugin_hooks                         removed            false\n  · agent setup (install CLI / write config)...\n  · agent tracing (write OTEL export config)...\n  · driving agent...\n  · turn 1 → \"Implement the `cachetools` library i…\"",
+  "startedAt": "2026-07-11T11:20:20.317Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}
