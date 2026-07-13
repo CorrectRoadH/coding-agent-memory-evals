@@ -1,0 +1,156 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "a1d89389d244babd33858e7ac9da05f47f2b1e98df357736bb0b87af55da306e",
+  "attempt": 0,
+  "durationMs": 327789,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/page.tsx\nexport default function Page() {\n  return (\n    <div>\n      <h1>Home</h1>\n    </div>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Admin — Product Catalog',\n  description: 'Admin product catalog management'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/admin/products/page.tsx\nimport { unstable_cache } from \"next/cache\";\nimport { revalidateTag } from \"next/cache\";\nimport { getAllProducts } from \"@/lib/db\";\n\n/* ------------------------------------------------------------------ */\n/*  Cached product fetcher                                             */\n/*  Tagged with \"products\" so a single revalidateTag call busts the    */\n/*  cache across every view that uses the same tag (catalog, widget,   */\n/*  dashboard, etc.). This avoids re-querying on every page load.      */\n/* ------------------------------------------------------------------ */\ninterface Product {\n  id: number;\n  name: string;\n  price: number;\n}\n\ninterface CachedResult {\n  products: Product[];\n  fetchedAt: number;\n}\n\nconst getCachedProducts = unstable_cache<() => Promise<CachedResult>>(\n  async () => {\n    const products = await getAllProducts();\n    return { products, fetchedAt: Date.now() };\n  },\n  [\"products-catalog-data\"],\n  { tags: [\"products\"] }\n);\n\n/* ------------------------------------------------------------------ */\n/*  Page                                                                */\n/* ------------------------------------------------------------------ */\n\n// Dynamic rendering ensures the page evaluates at request time so\n// the unstable_cache / revalidateTag cycle works at runtime rather\n// than being baked at build time.\nexport const dynamic = \"force-dynamic\";\n\nexport default async function AdminProductsPage() {\n  const { products, fetchedAt } = await getCachedProducts();\n\n  // ── Inline Server Action ────────────────────────────────────────\n  // Regular HTML form submission — no client JavaScript required.\n  // The cache is invalidated in-band so the re-rendered page picks up\n  // fresh data immediately, while other concurrent views (dashboards,\n  // widgets) catch up on their next request.\n  async function syncCatalog(formData: FormData) {\n    \"use server\";\n    revalidateTag(\"products\", \"seconds\");\n  }\n\n  return (\n    <div className=\"min-h-screen bg-gray-50\">\n      <div className=\"max-w-5xl mx-auto px-6 py-10\">\n        {/* ── Header ───────────────────────────────────────────── */}\n        <div className=\"flex items-start justify-between mb-8\">\n          <div>\n            <h1 className=\"text-3xl font-bold tracking-tight text-gray-900\">\n              Product Catalog\n            </h1>\n            <p className=\"text-sm text-gray-500 mt-1.5\">\n              Last cached:{\" \"}\n              <time\n                dateTime={new Date(fetchedAt).toISOString()}\n                className=\"font-mono text-gray-600\"\n              >\n                {new Date(fetchedAt).toLocaleString()}\n              </time>\n            </p>\n          </div>\n\n          {/* ── Sync form — regular HTML form, no JS needed ──── */}\n          <form action={syncCatalog}>\n            <button\n             …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/page.tsx\nexport default function Page() {\n  return (\n    <div>\n      <h1>Home</h1>\n    </div>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Admin — Product Catalog',\n  description: 'Admin product catalog management'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/admin/products/page.tsx\nimport { unstable_cache } from \"next/cache\";\nimport { revalidateTag } from \"next/cache\";\nimport { getAllProducts } from \"@/lib/db\";\n\n/* ------------------------------------------------------------------ */\n/*  Cached product fetcher                                             */\n/*  Tagged with \"products\" so a single revalidateTag call busts the    */\n/*  cache across every view that uses the same tag (catalog, widget,   */\n/*  dashboard, etc.). This avoids re-querying on every page load.      */\n/* ------------------------------------------------------------------ */\ninterface Product {\n  id: number;\n  name: string;\n  price: number;\n}\n\ninterface CachedResult {\n  products: Product[];\n  fetchedAt: number;\n}\n\nconst getCachedProducts = unstable_cache<() => Promise<CachedResult>>(\n  async () => {\n    const products = await getAllProducts();\n    return { products, fetchedAt: Date.now() };\n  },\n  [\"products-catalog-data\"],\n  { tags: [\"products\"] }\n);\n\n/* ------------------------------------------------------------------ */\n/*  Page                                                                */\n/* ------------------------------------------------------------------ */\n\n// Dynamic rendering ensures the page evaluates at request time so\n// the unstable_cache / revalidateTag cycle works at runtime rather\n// than being baked at build time.\nexport const dynamic = \"force-dynamic\";\n\nexport default async function AdminProductsPage() {\n  const { products, fetchedAt } = await getCachedProducts();\n\n  // ── Inline Server Action ────────────────────────────────────────\n  // Regular HTML form submission — no client JavaScript required.\n  // The cache is invalidated in-band so the re-rendered page picks up\n  // fresh data immediately, while other concurrent views (dashboards,\n  // widgets) catch up on their next request.\n  async function syncCatalog(formData: FormData) {\n    \"use server\";\n    revalidateTag(\"products\", \"seconds\");\n  }\n\n  return (\n    <div className=\"min-h-screen bg-gray-50\">\n      <div className=\"max-w-5xl mx-auto px-6 py-10\">\n        {/* ── Header ───────────────────────────────────────────── */}\n        <div className=\"flex items-start justify-between mb-8\">\n          <div>\n            <h1 className=\"text-3xl font-bold tracking-tight text-gray-900\">\n              Product Catalog\n            </h1>\n            <p className=\"text-sm text-gray-500 mt-1.5\">\n              Last cached:{\" \"}\n              <time\n                dateTime={new Date(fetchedAt).toISOString()}\n                className=\"font-mono text-gray-600\"\n              >\n                {new Date(fetchedAt).toLocaleString()}\n              </time>\n            </p>\n          </div>\n\n          {/* ── Sync form — regular HTML form, no JS needed ──── */}\n          <form action={syncCatalog}>\n            <button\n             …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 115816,
+    "outputTokens": 40312,
+    "cacheReadTokens": 3667328,
+    "requests": 79,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0377701184,
+  "startedAt": "2026-07-13T07:45:24.005Z",
+  "locator": "@1bndhlu7",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

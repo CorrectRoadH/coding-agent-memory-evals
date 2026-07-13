@@ -1,0 +1,72 @@
+{
+  "id": "memory/swelancer-manager-proposals",
+  "description": "SWE-Lancer manager tasks: pick the proposal the maintainers actually accepted, across 3 real Expensify issues",
+  "verdict": "failed",
+  "fingerprint": "a529d05cab7b0b3bf673e0bc6cf7df6086624acb89b63928dff28f83790bb2ec",
+  "attempt": 0,
+  "durationMs": 125052,
+  "assertions": [
+    {
+      "name": "isTrue(manager_decisions.json exists)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 28,
+        "column": 7
+      }
+    },
+    {
+      "name": "equals(1)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Issue 14268: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(4)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "1",
+      "group": "Issue 15193: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    },
+    {
+      "name": "equals(3)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "4",
+      "group": "Issue 25901: selected proposal matches the one maintainers accepted",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.eval.ts",
+        "line": 40,
+        "column": 11
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 196485,
+    "outputTokens": 20656,
+    "cacheReadTokens": 902656,
+    "requests": 26,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.035819016800000006,
+  "startedAt": "2026-07-13T08:21:36.214Z",
+  "locator": "@1mkhggks",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
