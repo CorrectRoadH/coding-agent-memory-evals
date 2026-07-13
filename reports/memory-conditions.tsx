@@ -4,11 +4,11 @@ import {
   Col,
   Section,
   Text,
-  DefaultReport,
+  RunOverview,
   MetricBars,
   DeltaTable,
   MetricScatter,
-  CaseList,
+  AttemptList,
   passRate,
   durationMs,
   tokens,
@@ -54,38 +54,50 @@ const repeatedFailedCmds = defineMetric({
 });
 
 export default defineReport(async ({ selection }) => {
-  const bars = await MetricBars.data(selection, {
-    rows: "agent",
-    columns: memoryCondition,
-    cell: passRate,
-  });
+  const [overview, bars, allAttempts] = await Promise.all([
+    RunOverview.data(selection),
+    MetricBars.data(selection, {
+      rows: "agent",
+      columns: memoryCondition,
+      cell: passRate,
+    }),
+    AttemptList.data(selection),
+  ]);
 
   // DeltaTable 的 pairs 直接收 experiment id 字符串,内置口径,同样不用碰 experiment 文件。
   // bub 没有 --mempal 变体(bub 自带 tape 记忆,--mempal 组只在 claude / codex 上开),
   // 少一对是如实反映现状,不补空对照。
-  const deltas = await DeltaTable.data(selection, {
-    pairs: [
-      { a: "compare/bub-gpt-5.4", b: "compare/bub-gpt-5.4--agents-md", label: "bub · +AGENTS.md" },
-      { a: "compare/claude-dp-v4", b: "compare/claude-dp-v4--agents-md", label: "claude · +AGENTS.md" },
-      { a: "compare/claude-dp-v4", b: "compare/claude-dp-v4--mempal", label: "claude · +mempal" },
-      { a: "compare/codex-gpt-5.4", b: "compare/codex-gpt-5.4--agents-md", label: "codex · +AGENTS.md" },
-      { a: "compare/codex-gpt-5.4", b: "compare/codex-gpt-5.4--mempal", label: "codex · +mempal" },
-    ],
-    metrics: [passRate, durationMs, turns, tokens, repeatedFailedCmds, costUSD],
-  });
+  const selectedExperiments = new Set(selection.snapshots.map((snapshot) => snapshot.experimentId));
+  const pairs = [
+    { a: "compare/bub-gpt-5.4", b: "compare/bub-gpt-5.4--agents-md", label: "bub · +AGENTS.md" },
+    { a: "compare/claude-dp-v4", b: "compare/claude-dp-v4--agents-md", label: "claude · +AGENTS.md" },
+    { a: "compare/claude-dp-v4", b: "compare/claude-dp-v4--mempal", label: "claude · +mempal" },
+    { a: "compare/codex-gpt-5.4", b: "compare/codex-gpt-5.4--agents-md", label: "codex · +AGENTS.md" },
+    { a: "compare/codex-gpt-5.4", b: "compare/codex-gpt-5.4--mempal", label: "codex · +mempal" },
+  ].filter(({ a, b }) => selectedExperiments.has(a) && selectedExperiments.has(b));
 
-  const frontier = await MetricScatter.data(selection, {
-    points: "experiment",
-    series: "agent",
-    x: costUSD,
-    y: passRate,
-  });
+  const [deltas, frontier] = await Promise.all([
+    pairs.length > 0
+      ? DeltaTable.data(selection, {
+          pairs,
+          metrics: [passRate, durationMs, turns, tokens, repeatedFailedCmds, costUSD],
+        })
+      : Promise.resolve(null),
+    selectedExperiments.size >= 2
+      ? MetricScatter.data(selection, {
+          points: "experiment",
+          series: "agent",
+          x: costUSD,
+          y: passRate,
+        })
+      : Promise.resolve(null),
+  ]);
 
-  const failures = await CaseList.data(selection, { verdicts: ["failed", "errored"], limit: 30 });
+  const failures = allAttempts.filter((attempt) => attempt.verdict === "failed" || attempt.verdict === "errored");
 
   return (
     <Col>
-      <DefaultReport />
+      <RunOverview data={overview} />
 
       <Section title="Pass rate · agent × memory condition">
         <Text>
@@ -95,21 +107,25 @@ export default defineReport(async ({ selection }) => {
         <MetricBars data={bars} />
       </Section>
 
-      <Section title="记忆条件值不值:同 agent 开关对比">
-        <Text>
-          A→B 是 baseline → 该记忆条件,Δ 列同时看 pass rate 涨跌与效率(耗时 / turns / token / 重复失败命令 /
-          成本)——只看 pass rate 会漏掉「记忆条件让 agent 少走弯路但没提分」这种价值,这正是 CLAUDE.md 定的报告口径。
-        </Text>
-        <DeltaTable data={deltas} />
-      </Section>
+      {deltas ? (
+        <Section title="记忆条件值不值:同 agent 开关对比">
+          <Text>
+            A→B 是 baseline → 该记忆条件,Δ 列同时看 pass rate 涨跌与效率(耗时 / turns / token / 重复失败命令 /
+            成本)——只看 pass rate 会漏掉「记忆条件让 agent 少走弯路但没提分」这种价值,这正是 CLAUDE.md 定的报告口径。
+          </Text>
+          <DeltaTable data={deltas} />
+        </Section>
+      ) : null}
 
-      <Section title="Quality × cost frontier">
-        <Text>同一 agent 不同记忆条件的点连成线——记忆条件是把频率往右上(又好又省)推,还是原地不动甚至倒退。</Text>
-        <MetricScatter data={frontier} />
-      </Section>
+      {frontier ? (
+        <Section title="Quality × cost frontier">
+          <Text>同一 agent 不同记忆条件的点连成线——记忆条件是把频率往右上(又好又省)推,还是原地不动甚至倒退。</Text>
+          <MetricScatter data={frontier} />
+        </Section>
+      ) : null}
 
       <Section title="失败清单">
-        <CaseList data={failures} />
+        <AttemptList items={failures.slice(0, 30)} total={failures.length} />
       </Section>
     </Col>
   );
