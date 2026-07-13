@@ -5,5 +5,3 @@ allowBuilds:
   ssh2: false
 minimumReleaseAgeExclude:
   - niceeval
-overrides:
-  niceeval: link:../niceeval
