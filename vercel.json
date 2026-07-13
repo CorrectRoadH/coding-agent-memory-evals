@@ -1,5 +1,5 @@
 {
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm exec niceeval view --out site",
+  "installCommand": "echo 'skip: 报告构建只读 .niceeval/,不碰本仓库 node_modules'",
+  "buildCommand": "npx -y -p niceeval@latest -p react -p react-dom -c 'niceeval view --out site'",
   "outputDirectory": "site"
 }

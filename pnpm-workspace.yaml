@@ -1,3 +1,9 @@
+# 本地开发指向 sibling checkout /Users/ctrdh/Code/niceeval(niceeval 是本仓库的上游,常一起改)。
+# 这条 override 可以提交:Vercel 构建已改成不跑 install、直接 npx niceeval@latest(见 vercel.json),
+# 对 link: 免疫。代价:clone 本仓库后想 pnpm install,必须同时有 ../niceeval,否则装出空壳。
+overrides:
+  niceeval: link:../niceeval
+
 allowBuilds:
   cpu-features: false
   esbuild: false
