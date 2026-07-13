@@ -79,14 +79,14 @@
 - **验收**:沿用原 pytest。memory 收益看是否更快、更少失败命令、更低 token/cost。
 - **成本**:低。纯 Python,没有大 repo、浏览器或外部网络。
 
-**P0.2 — `SWE-Lancer` manager task 的本地轻量版** ✅ 已落地:`evals/memory/swelancer-manager-proposals.eval.ts`(3 个真实 Expensify manager 任务:15193/14268/25901,label 存 `evals/fixtures/swelancer/manager-proposals/expected.json`)
+**P0.2 — `SWE-Lancer` manager task 的本地轻量版** ✅ 已拆成 3 个独立 eval:`evals/memory/swelancer-manager-{15193,14268,25901}.eval.ts`。每个真实 Expensify manager 任务单独判决，2/3 不再被聚合 gate 记成整题失败；label 存 `evals/fixtures/swelancer/manager-proposals/expected.json`。
 - **类型**:跨会话持久记忆;被否方案理由召回。
 - **为什么有意思**:`all_swelancer_tasks.csv` 里 manager 任务天然有 issue、多个 proposal、正确 proposal 和解释。它正好测“代码里推不出的评审决定”,比普通 bugfix 更贴本仓库 niche。
 - **建议改造成 eval**:先不跑 Expensify monolith。把一个 manager task 抽成本地 fixture,让 agent 选择最佳 proposal 并写出规定输出。
 - **验收**:选择是否匹配原 manager label。memory 收益看多 session 条件下是否更快、更稳,不额外考复述理由。
 - **成本**:低到中。轻量版只需要 fixture;真实 SWE-Lancer harness 以后再接,因为 manager 原版需要 monolith image。
 
-**P0.3 — `Commit0` 小库架构保持任务** ✅ 已落地:`evals/memory/commit0-cachetools.eval.ts`(cachetools 6.1.0,stub 签名+docstring 保留、函数体全部 `NotImplementedError`,上游 213 个测试原样保留;原实现已本地验证全过)
+**P0.3 — `Commit0` 小库架构保持任务** ✅ 作为显式 stress eval 落在 `evals/stress/commit0-cachetools.eval.ts`(cachetools 6.1.0、213 个上游测试)。普通 `compare` 的 experiment filter 会排除 `stress/`；只用 `niceeval exp stress` 显式运行，单 attempt timeout 30 分钟。它不参与日常 memory 矩阵，避免一个超大实现任务长期占槽并把模型能力与任务尺寸混为一谈。
 - **类型**:会话内长程保持。
 - **为什么有意思**:从零实现库最容易出现“前半段定了抽象,后半段为了过测试退回硬编码”的漂移。比 SWE-bench issue 更适合控制 memory trap。
 - **优先库**:`cachetools`、`tinydb`、`pyjwt`、`click`。它们测试数适中,领域明确,能做 registry/policy/serializer 等架构约束。

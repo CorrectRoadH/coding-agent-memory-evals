@@ -1,77 +1,33 @@
+import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { shared } from "niceeval/adapter";
-import type { AgentSetup, AgentTeardown, McpServer } from "niceeval/adapter";
+import type { AgentSetup, AgentTeardown, McpServer, SkillSpec } from "niceeval/adapter";
 
-// ───────────────────────────────────────────────────────────────────────────
-// mempal(https://github.com/ZhangHanDong/mempal)记忆条件的共享沙箱钩子。
-//
-// mempal = 单二进制 Rust CLI:SQLite(~/.mempal/palace.db)+ BM25/向量混合检索,
-// 通过两条通道接进 agent:
-//   1. MCP server(`mempal serve --mcp`)—— mempal_search / mempal_ingest 等工具,
-//      MEMORY_PROTOCOL 嵌在 ServerInfo 里,agent 端零 system prompt 配置。走
-//      adapter 构造期的 `mcpServers` 参数(`mempalMcp` 导出),不在本文件里手写。
-//   2. 生命周期 hook —— Claude Code 用 Stop hook(session 结束前提示把决策存入 mempal);
-//      Codex 的 hooks(~/.codex/hooks.json)被上游 `codex_hooks`/`hooks` 实验 flag 门控,
-//      flag 关着时静默忽略,这里 best-effort enable,不作硬前提。
-//
-// 本文件导出三件东西,分别接进实验的三个不同挂点:
-//   - `mempalMcp`:传给 `claudeCodeAgent({ mcpServers: [mempalMcp] })` /
-//     `codexAgent({ mcpServers: [mempalMcp] })`,adapter 构造期写各自的 MCP 配置文件。
-//   - `mempalSetup(tool)` / `mempalTeardown(tool)`:挂到
-//     `e2bSandbox().setup(mempalSetup(tool)).teardown(mempalTeardown(tool))`
-//     —— 二进制上传、模型预热、生命周期 hook 文件、跨 attempt 记忆态载入/回存。
-//
-// 取舍:旧版本(withMempal 包装已构造 Agent)在这里自己写 MCP 配置文件、并用
-// `claude mcp list` / `codex mcp list` 自省留证据,因为彼时两个 adapter 的
-// mcpServers 写入路径都是错的(见 memory: niceeval-adapter-mcp-config-broken)。
-// 现在 MCP 改走构造期参数,写入逻辑连同自省一起删除 —— 且即便想留自省也做不到:
-// 沙箱生命周期是「sandbox.setup(本文件)→ agent.setup(装 CLI、写 MCP 配置)→ sends」,
-// 沙箱钩子跑在 agent CLI 装好、MCP 配置写好之前,这里跑 `claude/codex mcp list`
-// 只会看到「命令不存在」。上游 0.5 adapter 的 mcpServers 写入路径已修好且有 e2e
-// 覆盖,不再需要下游自证;真要留证据,留给 eval 侧或首轮 send 之后核对。
-//
-// 二进制来源:模板(fasteval-agents)不烘焙 mempal —— 记忆条件是实验自己的事,不是
-// 基础设施的事。mempal 也没有预编译 release(GitHub releases assets 为空),沙箱内
-// 现场 `cargo install mempal` 要 3-6 分钟/沙箱,不可接受。所以改为 host 侧一次性
-// 交叉编译(scripts/build-mempal-linux.sh → .cache/mempal/mempal,gitignored),
-// setup 时从 host 读进 Buffer 直接 uploadFile 到沙箱 —— 二进制仅 ~10MB,秒级。
-// 缺了缓存就快速失败,提示先跑 build 脚本。
-//
-// 记忆状态共享(跨 eval / 跨 run 累积):沙箱是 per-attempt 一次性的,palace.db 随
-// 沙箱销毁 —— 不共享的话每题空库起步,agent 存的决策永远没有下一个消费者,记忆条件
-// 形同虚设。所以把 $HOME/.mempal 按 `ctx.experimentId`(实验路径推导出的稳定 id,
-// 如 `compare/codex-gpt-5.4--mempal`)在 host 上持久化:setup 载入存档
-// (.cache/mempal/state/<experimentId>.tgz,可含子目录),teardown tar 回存。
-// experimentId 缺失(不经实验直接跑沙箱/eval dev)时 fail fast——没有稳定 key
-// 就没法做「跨 attempt 累积」这件事,静默退化成空库比报错更容易被忽略。
-//
-// 【串行前提】attempt 的 [载入 … 回存] 是临界区,并发交错会丢更新(A 载入 → B 载入
-// 旧态 → A 回存 → B 回存覆盖 A)。用 mempalSetup/mempalTeardown 的实验**必须声明
-// `maxConcurrency: 1`**(niceeval ≥0.4.5 按实验限流,不拖慢同批其它实验)——串行由
-// 调度器保证,本文件不持锁。跨进程并发同样不防(两个 niceeval 进程同跑同一实验不是
-// 本 repo 的工作流)。做干净对照前 rm -rf .cache/mempal/state/,报告注明状态起点
-// (空库/带积累)。
-//
-// 【settings.json 覆盖核查】claudeCodeAgent 的 agent.setup 只写 `~/.claude.json`
-// (mcpServers)和(装 skill 时的)skills-lock.json,不碰 `~/.claude/settings.json`
-// ——所以 mempalSetup 在 agent.setup 之前写的 Stop hook settings.json 不会被后跑的
-// agent.setup 覆盖或合并冲突(核对自 fastevals src/agents/claude-code.ts,2026-07-10)。
-// codex 同理:codexAgent 的 agent.setup 整体覆写 `~/.codex/config.toml`,但 mempalSetup
-// 写的是不同文件 `~/.codex/hooks.json`,两者互不影响。
-//
-// 本文件没有 default export,niceeval 的 discoverExperiments 会跳过它。
-// ───────────────────────────────────────────────────────────────────────────
-
-/** host 上缓存的 linux/amd64 mempal 二进制路径(scripts/build-mempal-linux.sh 产出)。 */
-const BIN = fileURLToPath(new URL("../../.cache/mempal/mempal", import.meta.url));
+// mempal 记忆条件的共享环境层：MCP 注册归 adapter；二进制和 514 MB 模型 cache
+// 归专用 E2B template；本 hook 只做 fail-fast 预检、状态恢复/回存和 agent 特有提示。
+// Claude 用 Stop hook 促成写入；Codex 用 mempalCodexSkill，已删除对单 agent 无作用的
+// cowork-drain hook。状态按 MEMPAL_COHORT + experimentId 隔离，实验必须 maxConcurrency: 1
+// 以保护 [restore … save] 临界区。本文件无 default export，不会被当成 experiment。
 
 /** host 上按 experimentId 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
 
+/** Mempal 变体专用模板；分别从 E2B 官方 Agent template 派生。 */
+export function mempalTemplate(tool: "claude" | "codex"): string {
+  return process.env[`MEMPAL_E2B_${tool.toUpperCase()}_TEMPLATE`] ?? `memory-evals-${tool}-mempal`;
+}
+
 /** mempal MCP server 描述符,传给 `claudeCodeAgent`/`codexAgent` 构造期的 `mcpServers`。 */
 export const mempalMcp: McpServer = { name: "mempal", command: "mempal", args: ["serve", "--mcp"] };
+
+/** Codex 没有等价 Stop hook，用 Skill 明确约束 search/ingest 行为。 */
+export const mempalCodexSkill: SkillSpec = {
+  kind: "local",
+  path: "experiments/shared/mempal-skill",
+  name: "mempal-memory",
+};
 
 // Stop hook:session 每次收尾前 block 一次,提示 agent 把本轮关键决策经
 // mempal_ingest 落库。stop_hook_active 防循环(被 block 后的下一次 stop 放行),
@@ -85,33 +41,10 @@ if printf '%s' "$input" | grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*tr
   exit 0
 fi
 cat <<'JSON'
-{"decision": "block", "reason": "Before stopping, save the key decisions from this session to mempal: for each decision call the mempal_ingest MCP tool with content = the decision plus its rationale (why, not just what). Query mempal_search first to avoid duplicates. If nothing new was decided this session, just stop."}
+{"decision": "block", "reason": "Before stopping, save only durable engineering decisions or reusable debugging lessons to mempal. Include rationale and search first to avoid duplicates. Never store benchmark answers, accepted proposal numbers, hidden-test guesses, raw transcripts, or task-specific output that would reveal an answer on rerun. If nothing reusable was decided, just stop."}
 JSON
 exit 0
 `;
-
-// Codex 原生 hook 配置(schema 依 mempal P8 spec,自 Codex 源码验证:CamelCase +
-// 嵌套 hooks,UserPromptSubmit 的 matcher 被忽略故省略)。作用是 cowork inbox
-// drain(伙伴消息随下一次 prompt 注入 additionalContext);单 agent 记忆题上是
-// no-op,装上是为了让「mempal 出厂形态」完整可测。
-const CODEX_HOOKS_JSON = JSON.stringify(
-  {
-    hooks: {
-      UserPromptSubmit: [
-        {
-          hooks: [
-            {
-              type: "command",
-              command: "mempal cowork-drain --target codex --format codex-hook-json --cwd-source stdin-json",
-            },
-          ],
-        },
-      ],
-    },
-  },
-  null,
-  2,
-);
 
 /** host 上 <experimentId>.tgz 的存档路径;experimentId 缺失时 fail fast(见文件头注)。 */
 function statePathFor(experimentId: string | undefined): string {
@@ -122,11 +55,27 @@ function statePathFor(experimentId: string | undefined): string {
         "an experiment discovered under experiments/ (not a bare sandbox/eval dev run).",
     );
   }
-  return join(STATE_DIR, `${experimentId}.tgz`);
+  const cohort = process.env.MEMPAL_COHORT?.trim() || "local";
+  return join(STATE_DIR, cohort, `${experimentId}.tgz`);
+}
+
+function commandFailure(label: string, result: { exitCode: number; stdout: string; stderr: string }): Error {
+  const tail = (result.stderr || result.stdout).trim().slice(-500) || "no output";
+  return new Error(`[mempal] ${label} failed (exit ${result.exitCode}): ${tail}`);
+}
+
+async function requireCommand(
+  sb: Parameters<AgentSetup>[0],
+  label: string,
+  script: string,
+  opts?: Parameters<Parameters<AgentSetup>[0]["runShell"]>[1],
+): Promise<void> {
+  const result = await sb.runShell(script, opts);
+  if (result.exitCode !== 0) throw commandFailure(label, result);
 }
 
 /**
- * 沙箱级 setup 钩子:二进制上传、embed 模型预热、按 tool 装生命周期 hook、记忆态载入。
+ * 沙箱级 setup 钩子:专用模板预检、按 tool 装生命周期提示、记忆态载入。
  * 挂到 `e2bSandbox().setup(mempalSetup(tool))`。跑在 workspace 上传 / eval.setup /
  * agent.setup 之前(见 SandboxHooks 执行顺序),所以这里还没有 agent CLI、也还没有
  * MCP 配置 —— MCP 由 `mempalMcp` 走 adapter 构造期单独接。
@@ -135,34 +84,39 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
   return async (sb, ctx) => {
     const statePath = statePathFor(ctx.experimentId);
 
-    // 1. 二进制:沙箱已有(比如自定义模板)就跳过;否则从 host 缓存上传。host 缓存
-    //    缺失 → 快速失败,别退化成"跑完了但记忆条件没生效"——错误信息指向构建脚本。
+    // 1. 专用模板必须已经提供二进制。这里不再把 14 MB 文件逐 attempt 上传；缺失时
+    //    fail fast，并给出构建模板的唯一修复路径。
     const probe = await sb.runShell("command -v mempal");
     if (probe.exitCode !== 0) {
-      let bin: Buffer;
-      try {
-        bin = readFileSync(BIN);
-      } catch {
-        throw new Error(
-          `mempal 二进制缓存不存在(${BIN})。先在 host 上跑一次 ` +
-            "`bash scripts/build-mempal-linux.sh`(host 侧交叉编译,只需一次)。",
-        );
-      }
-      await sb.uploadFile("/tmp/mempal", bin);
-      await sb.runShell("install -m755 /tmp/mempal /usr/local/bin/mempal && rm -f /tmp/mempal", { root: true });
+      throw new Error(
+        `[mempal] template does not contain mempal. Build ${mempalTemplate(tool)} with ` +
+          `\`bash scripts/build-mempal-linux.sh && pnpm template:mempal ${tool}\`, then use that template.`,
+      );
     }
 
-    // 2. 预热 embed 模型(minishlab/potion-multilingual-128M,~514MB):hf-hub 只认
-    //    $HOME/.cache/huggingface,不认 HF_HOME env(mempal 0.7.0 实测)。以沙箱默认
-    //    用户跑一次假 ingest 触发下载,让缓存落对 $HOME,再清掉预热产生的 palace.db,
-    //    好让 agent 从空库开始。best-effort:失败不阻塞 run(首次真 ingest 会重试
-    //    下载,只是变慢),但记进 log 供事后核对。
-    const warm = await sb.runShell(
-      "mkdir -p /tmp/mempal-warm && echo warm > /tmp/mempal-warm/w.md && " +
-        "mempal init /tmp/mempal-warm && mempal ingest /tmp/mempal-warm --wing warm && " +
-        'rm -rf /tmp/mempal-warm "$HOME/.mempal"',
+    // 2. 在隔离 HOME 里做真实 ingest→search 与 MCP 进程存活预检。复用模板里的模型
+    //    cache，但不会读写随后恢复的实验状态，也不会把 sentinel 带进 benchmark。
+    await requireCommand(
+      sb,
+      "binary/model/ingest/search preflight",
+      "set -euo pipefail; real_home=\"$HOME\"; " +
+        "rm -rf /tmp/mempal-preflight-home /tmp/mempal-preflight-docs; " +
+        "mkdir -p /tmp/mempal-preflight-home /tmp/mempal-preflight-docs; " +
+        "ln -s \"$real_home/.cache\" /tmp/mempal-preflight-home/.cache; " +
+        "printf '%s\\n' 'niceeval-mempal-preflight-sentinel' >/tmp/mempal-preflight-docs/sentinel.md; " +
+        "HOME=/tmp/mempal-preflight-home mempal init /tmp/mempal-preflight-docs; " +
+        "HOME=/tmp/mempal-preflight-home mempal ingest /tmp/mempal-preflight-docs --wing niceeval-preflight; " +
+        "HOME=/tmp/mempal-preflight-home mempal search niceeval-mempal-preflight-sentinel --json " +
+        "| grep -q niceeval-mempal-preflight-sentinel; " +
+        "rm -rf /tmp/mempal-preflight-home /tmp/mempal-preflight-docs",
     );
-    ctx.log(`[mempal] model warm-up: ${warm.exitCode === 0 ? "ok" : "failed (will retry on first ingest)"}`);
+    await requireCommand(
+      sb,
+      "MCP server preflight",
+      "set +e; timeout 1s sh -c 'tail -f /dev/null | mempal serve --mcp >/tmp/mempal-mcp.out 2>/tmp/mempal-mcp.err'; " +
+        "code=$?; test \"$code\" -eq 124",
+    );
+    ctx.log("[mempal] preflight passed: binary, cached model, ingest/search, and MCP process");
 
     // 3. 记忆态载入:[载入 … 回存] 临界区的串行由实验声明 maxConcurrency: 1 保证
     //    (niceeval ≥0.4.5 按实验限流;见文件头注的【串行前提】)。
@@ -176,13 +130,13 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
       // 恢复历史积累的 $HOME/.mempal(palace.db + audit.jsonl)—— 记忆条件的
       // 价值正在于「第二次见到同类问题」,跨 eval / 跨 run 都要延续。
       await sb.uploadFile("/tmp/mempal-state.tgz", state);
-      await sb.runShell('tar -xzf /tmp/mempal-state.tgz -C "$HOME" && rm -f /tmp/mempal-state.tgz');
+      await requireCommand(sb, "state restore", 'tar -xzf /tmp/mempal-state.tgz -C "$HOME" && rm -f /tmp/mempal-state.tgz');
       ctx.log(`[mempal] state restored from ${ctx.experimentId}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
     } else {
       // 空库初始化:$HOME/.mempal/palace.db。workspace 此时还没上传(eval test()
       // 里才 uploadDirectory),所以不 init 项目结构、不预 ingest —— 记忆积累
       // 应该来自 agent 自己 session 内写、后续 eval/run 读。
-      await sb.runShell("mempal init . || true");
+      await requireCommand(sb, "empty state initialization", "mempal init .");
       ctx.log(`[mempal] no saved state for "${ctx.experimentId}", starting from empty palace`);
     }
 
@@ -203,19 +157,7 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
           2,
         ),
       );
-      await sb.runShell('chmod +x "$HOME/.claude/hooks/mempal-stop.sh"');
-    } else {
-      await shared.writeFile(sb, "~/.codex/hooks.json", CODEX_HOOKS_JSON);
-      // hooks 的 feature flag 随 codex 版本变名:0.142.x 里叫 `hooks` 且 stable 默认开
-      // (mempal 文档里的 `codex_hooks` 是旧名)。两个名字都试着 enable,失败不阻塞
-      // (flag 关着时 hooks.json 被静默忽略)—— 把实际状态记进 log 供事后核对。
-      // 注意:`codex features` 子命令此刻可能还没装(codex CLI 由后跑的 agent.setup
-      // 负责装),best-effort 静默失败即可,不视为异常。
-      await sb.runShell(
-        "codex features enable hooks 2>/dev/null || codex features enable codex_hooks 2>/dev/null || true",
-      );
-      const st = await sb.runShell("codex features list 2>/dev/null | grep -i hook || true");
-      ctx.log(`[mempal] codex hooks feature state: ${st.stdout.trim() || "(unknown, codex CLI may not be installed yet)"}`);
+      await requireCommand(sb, "Claude Stop hook chmod", 'chmod +x "$HOME/.claude/hooks/mempal-stop.sh"');
     }
   };
 }
@@ -241,6 +183,16 @@ export function mempalTeardown(_tool: "claude" | "codex"): AgentTeardown {
         const tmp = `${statePath}.tmp`;
         writeFileSync(tmp, data);
         renameSync(tmp, statePath);
+        writeFileSync(
+          `${statePath}.meta.json`,
+          JSON.stringify({
+            experimentId: ctx.experimentId,
+            cohort: process.env.MEMPAL_COHORT?.trim() || "local",
+            sha256: createHash("sha256").update(data).digest("hex"),
+            bytes: data.length,
+            savedAt: new Date().toISOString(),
+          }, null, 2) + "\n",
+        );
         ctx.log(`[mempal] state saved to ${ctx.experimentId}.tgz (${(data.length / 1024).toFixed(0)} KB)`);
       } else {
         // $HOME/.mempal 不存在(比如 agent 半路挂了没 ingest 过)也走这里:不覆盖旧存档。

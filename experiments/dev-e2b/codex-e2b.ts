@@ -2,16 +2,12 @@ import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 
-// dev/e2b 组:用 E2B 微 VM 作为沙箱后端(对照 docker / vercel)。
-// 用预制模板 fasteval-agents:4096MB 内存(base 只有 ~481MB,npm install Next.js 依赖会 OOM)
-// + 烘焙好 node24 / codex / claude-code / bub,setup 跳过安装。
-// 构建:cd niceeval/src/sandbox/templates && e2b template create fasteval-agents \
-//        --memory-mb 4096 --cpu-count 2 -c "tail -f /dev/null" --ready-cmd "command -v codex"
+// dev/e2b 组:用 E2B 官方 Codex template；环境变量可切换到项目派生版本。
 export default defineExperiment({
   description: "codex · gpt-5.4-mini · E2B sandbox",
   agent: codexAgent(),
   model: "gpt-5.4-mini",
-  sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  sandbox: e2bSandbox({ template: process.env.CODEX_E2B_TEMPLATE ?? "codex" }),
   runs: 1,
   earlyExit: true,
   budget: 2,

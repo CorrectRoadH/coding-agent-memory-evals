@@ -6,7 +6,7 @@
 # assets 为空),只能 `cargo install mempal`(crates.io),沙箱内现场 rustup + 编译
 # 要 3-6 分钟/沙箱,不可接受 —— 所以 host 侧一次性构建、结果缓存复用。
 #
-# 为什么用 node:24-slim 做构建基底:要和 e2b 沙箱模板(fasteval-agents)的 glibc
+# 为什么用 node:24-slim 做构建基底:要和 E2B coding-agent 模板的 glibc
 # ABI 一致,否则 host 编译的二进制在沙箱里跑不起来(GLIBC_2.xx not found)。
 #
 # 为什么显式 --platform linux/amd64:沙箱后端(e2b/docker/vercel)统一是

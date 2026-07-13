@@ -3,7 +3,7 @@ import { bubAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 
 // dev/e2b 组:bub(tape 记忆)跑在 E2B 微 VM 上。
-// 用预制模板 fasteval-agents:4096MB + 烘焙好 bub(uv 装到 /usr/local/bin)。
+// 用本 team 构建的 Bub 专用模板；配方固定版本并写 NiceEval 安装规格指纹。
 // 构建命令见 codex-e2b.ts。
 //
 // ⚠️ niceeval 的 bub adapter 默认把 BUB_OVERRIDE 钉死在一个 git+ 分支上(修 tape 丢工具调用
@@ -18,7 +18,7 @@ export default defineExperiment({
   description: "bub · gpt-5.4-mini · E2B sandbox",
   agent: bubAgent(),
   model: "gpt-5.4-mini",
-  sandbox: e2bSandbox({ template: "fasteval-agents" }),
+  sandbox: e2bSandbox({ template: process.env.BUB_E2B_TEMPLATE ?? "memory-evals-bub" }),
   runs: 1,
   earlyExit: true,
   budget: 2,
