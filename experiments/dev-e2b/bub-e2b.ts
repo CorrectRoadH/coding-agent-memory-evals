@@ -1,6 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { bubAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
+import { agentE2BTemplate } from "../shared/e2b-templates.ts";
 
 // dev/e2b 组:bub(tape 记忆)跑在 E2B 微 VM 上。
 // 用本 team 构建的 Bub 专用模板；配方固定版本并写 NiceEval 安装规格指纹。
@@ -18,7 +19,7 @@ export default defineExperiment({
   description: "bub · gpt-5.4-mini · E2B sandbox",
   agent: bubAgent(),
   model: "gpt-5.4-mini",
-  sandbox: e2bSandbox({ template: process.env.BUB_E2B_TEMPLATE ?? "memory-evals-bub" }),
+  sandbox: e2bSandbox({ template: agentE2BTemplate("bub") }),
   runs: 1,
   earlyExit: true,
   budget: 2,

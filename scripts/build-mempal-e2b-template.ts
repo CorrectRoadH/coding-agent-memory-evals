@@ -1,6 +1,7 @@
 import { access } from "node:fs/promises";
 import { resolve } from "node:path";
 import { defaultBuildLogger, Template } from "e2b";
+import { NICEEVAL_PUBLIC_E2B_TEMPLATES } from "niceeval/sandbox/e2b-template";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const binary = ".cache/mempal/mempal";
@@ -8,7 +9,9 @@ const agent = process.argv[2];
 if (agent !== "claude" && agent !== "codex") {
   throw new Error("Usage: pnpm template:mempal <claude|codex>");
 }
-const officialBase = agent;
+const baseTemplate = agent === "claude"
+  ? `${NICEEVAL_PUBLIC_E2B_TEMPLATES["claude-code"]}:v0.6.1`
+  : `${NICEEVAL_PUBLIC_E2B_TEMPLATES.codex}:v0.6.1`;
 const templateName =
   process.env[`MEMPAL_E2B_${agent.toUpperCase()}_TEMPLATE`] ?? `memory-evals-${agent}-mempal`;
 
@@ -18,10 +21,10 @@ await access(resolve(projectRoot, binary)).catch(() => {
   );
 });
 
-// Extend E2B's official per-agent template. The binary and 514 MB embedding cache are paid once
-// at template build time, not once per attempt; project-specific dependencies can be chained here.
+// Extend NiceEval's public, release-pinned Agent template. It derives from E2B's official base,
+// while aligning CLI versions across Docker/E2B/Vercel.
 const template = Template({ fileContextPath: projectRoot, fileIgnorePatterns: [".git", "node_modules", ".niceeval"] })
-  .fromTemplate(officialBase)
+  .fromTemplate(baseTemplate)
   .copy(binary, "/usr/local/bin/mempal", { user: "root", mode: 0o755, forceUpload: true })
   .runCmd(
     "set -euo pipefail; " +
@@ -41,6 +44,6 @@ const built = await Template.build(template, templateName, {
 });
 
 console.log(
-  `Built ${built.name} (${built.templateId}) from E2B official ${officialBase}; ` +
+  `Built ${built.name} (${built.templateId}) from ${baseTemplate}; ` +
     `use e2bSandbox({ template: ${JSON.stringify(templateName)} }).`,
 );

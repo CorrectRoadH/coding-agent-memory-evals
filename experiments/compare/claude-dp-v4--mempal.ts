@@ -9,7 +9,7 @@ import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 // Stop hook(session 收尾提示存决策,由沙箱 setup 钩子装)。
 // 对照 claude-dp-v4.ts 看 pass 率与效率(时间/token/重复失败命令)的差异。
 //
-// 前提:先从 E2B 官方 Claude template 构建专用 Mempal 模板。
+// 前提:先从 NiceEval release-pinned Claude 公共模板构建专用 Mempal 模板。
 // 注意:Stop hook 每 session 会多出一轮「存记忆」,该开销计入本条件的成本,是被测的一部分。
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/claude-dp-v4--mempal`)跨 eval /
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,

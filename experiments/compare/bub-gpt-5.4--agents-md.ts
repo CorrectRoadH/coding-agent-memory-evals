@@ -2,6 +2,7 @@ import { defineExperiment } from "niceeval";
 import { e2bSandbox } from "niceeval/sandbox";
 import { bubAgent } from "niceeval/adapter";
 import { STANDARD_EVALS } from "../shared/eval-selection.ts";
+import { agentE2BTemplate } from "../shared/e2b-templates.ts";
 
 // 文件夹 compare = 唯一一组【可对比】的实验:同一批记忆 eval、同一个模型(gpt-5.4),
 // 比 bub(带 tape 记忆)和 codex(无对应持久记忆机制)。`niceeval exp compare` 跑整组。
@@ -32,7 +33,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
     },
   },
   model: "gpt-5.4", // 两边钉同一个模型,差异才归因到 agent / 记忆机制
-  sandbox: e2bSandbox({ template: process.env.BUB_E2B_TEMPLATE ?? "memory-evals-bub" }),
+  sandbox: e2bSandbox({ template: agentE2BTemplate("bub") }),
   // 注:workspace(starter repo)上传 + 装依赖不在这儿 —— 那属于「eval 在什么上面干活」,
   // 写在各 eval 的 test(t) 里(t.sandbox.uploadDirectory + runCommand)。experiment 只管怎么跑。
   runs: 1,

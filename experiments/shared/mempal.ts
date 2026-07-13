@@ -14,7 +14,7 @@ import type { AgentSetup, AgentTeardown, McpServer, SkillSpec } from "niceeval/a
 /** host 上按 experimentId 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
 
-/** Mempal 变体专用模板；分别从 E2B 官方 Agent template 派生。 */
+/** Mempal 变体专用模板；分别从 NiceEval release-pinned 公共 Agent template 派生。 */
 export function mempalTemplate(tool: "claude" | "codex"): string {
   return process.env[`MEMPAL_E2B_${tool.toUpperCase()}_TEMPLATE`] ?? `memory-evals-${tool}-mempal`;
 }

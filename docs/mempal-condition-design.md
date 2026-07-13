@@ -4,14 +4,14 @@
 
 mempal 条件由四个独立部分组成：
 
-1. 两个 Agent 专属 E2B template：分别从 E2B 官方 `claude` / `codex` 派生，预置 mempal 二进制与约 514 MB embedding cache。
+1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 514 MB embedding cache。
 2. NiceEval adapter 的 `mcpServers`：把 `mempal serve --mcp` 接给 Claude Code / Codex。
 3. agent 行为提示：Claude Code 用 Stop hook；Codex 用本仓库的 `mempal-memory` Skill。原 Codex `cowork-drain` hook 对单 agent 任务是 no-op，已删除。
 4. sandbox setup/teardown：做无污染预检，按 cohort 恢复和回存 `$HOME/.mempal`。
 
 旧方案“普通模板 + 每 attempt 上传 14 MB 二进制 + 每 attempt 下载模型”已废弃。实测 E2B 上传曾在 `sb.uploadFile` 报 `TypeError: fetch failed`，而模型预热把 setup 放大到数分钟。稳定、体积大且每次相同的依赖应在模板构建时付一次成本；运行时 hook 只处理按实验变化的状态和验证。
 
-E2B 当前官方 SDK 支持从同 team 已有 template 派生 (`Template().fromTemplate(...)`) 并复制文件、执行构建命令；本仓库据此维护派生模板。参考 [E2B Template 定义](https://e2b.dev/docs/template/defining-template) 与 [构建](https://e2b.dev/docs/template/build)。
+E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fromTemplate(...)`) 并复制文件、执行构建命令；本仓库从 NiceEval 的 `v0.6.1` 公共 Agent 模板派生，保证 Claude Code/Codex CLI 版本与其它 provider 的官方基线一致。参考 [E2B Template 定义](https://e2b.dev/docs/template/defining-template) 与 [构建](https://e2b.dev/docs/template/build)。
 
 ## 构建模板
 
@@ -19,7 +19,7 @@ E2B 当前官方 SDK 支持从同 team 已有 template 派生 (`Template().fromT
 # 1. host 上产出 linux/amd64 二进制；已存在时自动跳过
 bash scripts/build-mempal-linux.sh
 
-# 2. 分别从 E2B 官方 claude / codex template 派生
+# 2. 分别从 NiceEval 的 release-pinned Claude / Codex 公共模板派生
 pnpm template:mempal claude
 pnpm template:mempal codex
 ```

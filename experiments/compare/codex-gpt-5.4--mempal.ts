@@ -7,7 +7,7 @@ import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 // codex-gpt-5.4 的 mempal 变体:MCP server(mempal_search / mempal_ingest)接进
 // codexAgent，并安装显式要求先搜索、后写入耐久决策的 Skill。
 //
-// 前提:先从 E2B 官方 Codex template 构建专用 Mempal 模板。
+// 前提:先从 NiceEval release-pinned Codex 公共模板构建专用 Mempal 模板。
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/codex-gpt-5.4--mempal`)跨 eval /
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
