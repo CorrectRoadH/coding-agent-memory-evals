@@ -1,0 +1,157 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "54c6e9c7d37cf73b6d5161fbbb19d2fa7a9f689b6fb6fbf7799152e2fcb81b5c",
+  "attempt": 0,
+  "durationMs": 188112,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nconst PRODUCTS_TAG = 'products';\n\nasync function getAllProductsFromSource() {\n  // Simulate a database read.\n  await new Promise((resolve) => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999, inventory: 42, availability: 'In stock' },\n    { id: 2, name: 'Phone', price: 699, inventory: 11, availability: 'Limited' },\n    { id: 3, name: 'Tablet', price: 499, inventory: 0, availability: 'Out of stock' },\n    { id: 4, name: 'Headphones', price: 199, inventory: 83, availability: 'In stock' },\n    { id: 5, name: 'Watch', price: 299, inventory: 24, availability: 'In stock' }\n  ];\n}\n\nexport const getAllProducts = unstable_cache(getAllProductsFromSource, ['products'], {\n  tags: [PRODUCTS_TAG]\n});\n\nexport { PRODUCTS_TAG };\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_TAG } from '../lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_TAG, 'max');\n  }\n\n  return (\n    <main\n      style={{\n        minHeight: '100vh',\n        padding: '48px',\n        background:\n          'radial-gradient(circle at top left, #f4efe7 0%, #f8f5ef 40%, #eef2f7 100%)',\n        color: '#111827',\n        fontFamily:\n          'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif'\n      }}\n    >\n      <div style={{ maxWidth: 1120, margin: '0 auto' }}>\n        <section\n          style={{\n            display: 'flex',\n            flexWrap: 'wrap',\n            gap: 24,\n            justifyContent: 'space-between',\n            alignItems: 'end',\n            marginBottom: 28\n          }}\n        >\n          <div>\n            <p\n              style={{\n                margin: 0,\n                letterSpacing: '0.18em',\n                textTransform: 'uppercase',\n                fontSize: 12,\n                color: '#6b7280'\n              }}\n            >\n              Admin Catalog\n            </p>\n            <h1 style={{ margin: '10px 0 8px', fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>\n              Product catalog\n            </h1>\n            <p style={{ margin: 0, maxWidth: 720, fontSize: 16, color: '#4b5563', lineHeight: 1.6 }}>\n              Browse cached catalog data quickly. Use sync when ERP or PIM changes land; the\n              catalog will refresh in the background while you keep working.\n            </p>\n          </div>\n\n          <form action={syncLatestCatalog}>\n            <button\n              type=\"submit\"\n              style={{\n                border: 'none',\n                borderRadius: 999,\n                background: '#111827',\n                color: '#fff',\n                padding: '14px 20px',\n                fontSize: 15,\n                fontWeight: 600,\n                cursor: 'pointer',\n                boxShadow: '0 10px 30px rgba(17, 24, 39, 0.18)'\n              }}\n            >\n              Sync latest catalog\n            </button>\n          </form>\n        </section>\n\n        <section\n          style={{\n            borderRadius: 24,\n            background: 'rgba(255, 255, 255, 0.72)',\n            backdropFilter: 'blur(10px)',\n            border: '1px solid rgba(17, 24, 39, 0.08)',\n            boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)',\n            overflow: 'hidden'\n          }}\n        >\n          <div\n            style={{\n              display: 'grid',\n              gridTemplateColumns: '1.6fr 0.8fr 0.8fr 0.8fr',\n              gap: 0,\n              padding: '18px…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nconst PRODUCTS_TAG = 'products';\n\nasync function getAllProductsFromSource() {\n  // Simulate a database read.\n  await new Promise((resolve) => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999, inventory: 42, availability: 'In stock' },\n    { id: 2, name: 'Phone', price: 699, inventory: 11, availability: 'Limited' },\n    { id: 3, name: 'Tablet', price: 499, inventory: 0, availability: 'Out of stock' },\n    { id: 4, name: 'Headphones', price: 199, inventory: 83, availability: 'In stock' },\n    { id: 5, name: 'Watch', price: 299, inventory: 24, availability: 'In stock' }\n  ];\n}\n\nexport const getAllProducts = unstable_cache(getAllProductsFromSource, ['products'], {\n  tags: [PRODUCTS_TAG]\n});\n\nexport { PRODUCTS_TAG };\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_TAG } from '../lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_TAG, 'max');\n  }\n\n  return (\n    <main\n      style={{\n        minHeight: '100vh',\n        padding: '48px',\n        background:\n          'radial-gradient(circle at top left, #f4efe7 0%, #f8f5ef 40%, #eef2f7 100%)',\n        color: '#111827',\n        fontFamily:\n          'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif'\n      }}\n    >\n      <div style={{ maxWidth: 1120, margin: '0 auto' }}>\n        <section\n          style={{\n            display: 'flex',\n            flexWrap: 'wrap',\n            gap: 24,\n            justifyContent: 'space-between',\n            alignItems: 'end',\n            marginBottom: 28\n          }}\n        >\n          <div>\n            <p\n              style={{\n                margin: 0,\n                letterSpacing: '0.18em',\n                textTransform: 'uppercase',\n                fontSize: 12,\n                color: '#6b7280'\n              }}\n            >\n              Admin Catalog\n            </p>\n            <h1 style={{ margin: '10px 0 8px', fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>\n              Product catalog\n            </h1>\n            <p style={{ margin: 0, maxWidth: 720, fontSize: 16, color: '#4b5563', lineHeight: 1.6 }}>\n              Browse cached catalog data quickly. Use sync when ERP or PIM changes land; the\n              catalog will refresh in the background while you keep working.\n            </p>\n          </div>\n\n          <form action={syncLatestCatalog}>\n            <button\n              type=\"submit\"\n              style={{\n                border: 'none',\n                borderRadius: 999,\n                background: '#111827',\n                color: '#fff',\n                padding: '14px 20px',\n                fontSize: 15,\n                fontWeight: 600,\n                cursor: 'pointer',\n                boxShadow: '0 10px 30px rgba(17, 24, 39, 0.18)'\n              }}\n            >\n              Sync latest catalog\n            </button>\n          </form>\n        </section>\n\n        <section\n          style={{\n            borderRadius: 24,\n            background: 'rgba(255, 255, 255, 0.72)',\n            backdropFilter: 'blur(10px)',\n            border: '1px solid rgba(17, 24, 39, 0.08)',\n            boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)',\n            overflow: 'hidden'\n          }}\n        >\n          <div\n            style={{\n              display: 'grid',\n              gridTemplateColumns: '1.6fr 0.8fr 0.8fr 0.8fr',\n              gap: 0,\n              padding: '18px…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "import { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_TAG } from '../lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_TAG, 'max');\n  }\n\n  return (\n    <main\n      style={{\n        minHeight: '100vh',\n        padding: '48px',\n        background:\n          'radial-gradient(circle at top left, #f4efe7 0%, #f8f5ef 40%, #eef2f7 100%)',\n        color: '#111827',\n        fontFamily:\n          'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif'\n      }}\n    >\n      <div style={{ maxWidth: 1120, margin: '0 auto' }}>\n        <section\n          style={{\n            display: 'flex',\n            flexWrap: 'wrap',\n            gap: 24,\n            justifyContent: 'space-between',\n            alignItems: 'end',\n            marginBottom: 28\n          }}\n        >\n          <div>\n            <p\n              style={{\n                margin: 0,\n                letterSpacing: '0.18em',\n                textTransform: 'uppercase',\n                fontSize: 12,\n                color: '#6b7280'\n              }}\n            >\n              Admin Catalog\n            </p>\n            <h1 style={{ margin: '10px 0 8px', fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>\n              Product catalog\n            </h1>\n            <p style={{ margin: 0, maxWidth: 720, fontSize: 16, color: '#4b5563', lineHeight: 1.6 }}>\n              Browse cached catalog data quickly. Use sync when ERP or PIM changes land; the\n              catalog will refresh in the background while you keep working.\n            </p>\n          </div>\n\n          <form action={syncLatestCatalog}>\n            <button\n              type=\"submit\"\n              style={{\n                border: 'none',\n                borderRadius: 999,\n                background: '#111827',\n                color: '#fff',\n                padding: '14px 20px',\n                fontSize: 15,\n                fontWeight: 600,\n                cursor: 'pointer',\n                boxShadow: '0 10px 30px rgba(17, 24, 39, 0.18)'\n              }}\n            >\n              Sync latest catalog\n            </button>\n          </form>\n        </section>\n\n        <section\n          style={{\n            borderRadius: 24,\n            background: 'rgba(255, 255, 255, 0.72)',\n            backdropFilter: 'blur(10px)',\n            border: '1px solid rgba(17, 24, 39, 0.08)',\n            boxShadow: '0 20px 60px rgba(15, 23, 42, 0.08)',\n            overflow: 'hidden'\n          }}\n        >\n          <div\n            style={{\n              display: 'grid',\n              gridTemplateColumns: '1.6fr 0.8fr 0.8fr 0.8fr',\n              gap: 0,\n              padding: '18px 24px',\n              borderBottom: '1px solid rgba(17, 24, 39, 0.08)',\n              fontSize: 12,\n              letterSpacing: '0.14em',\n              textTransform: 'uppercase',\n              color: '#6b7280',\n              fontWeight: 700\n            }}\n          >\n            <div>Product</div>\n            <div>Price</div>\n            <div>Inventory</div>\n            <div>Status</div>\n          </div>\n\n          <div>\n            {products.map((product) => (\n              <div\n                key={product.id}\n                style={{\n                  display: 'grid',\n                  gridTemplateColumns: '1.6fr 0.8fr 0.8fr 0.8fr',\n                  gap: 0,\n                  padding: '20px 24px',\n                  borderBottom: '1px solid rgba(17, 24, 39, 0.06)',\n                  alignItems: 'center'\n                }}\n              >\n                <div>\n                  <div style={{ fontSize: 16, fontWeight: 700 }}>{product.name}</div>\n                  <div style={{ marginTop: 6, fontSize: 13, color: '#6b7280' }}>SKU #{product.id}</div>\n                </div>\n                <div style={{ fontSize: 15 }}>${product.price.toLocaleString()}</div>\n                <div style={{ fontSize: 15 }}…",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 342647,
+    "outputTokens": 6273,
+    "cacheReadTokens": 311040,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.30854175,
+  "locator": "@1627w6cj",
+  "startedAt": "2026-07-14T05:17:07.540Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

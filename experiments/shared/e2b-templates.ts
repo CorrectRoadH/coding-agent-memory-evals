@@ -1,14 +1,14 @@
-export type CodingAgentTemplate = "claude-code" | "codex" | "bub";
+import { NICEEVAL_PUBLIC_E2B_TEMPLATES } from "niceeval/sandbox/e2b-template";
 
+export type CodingAgentTemplate = keyof typeof NICEEVAL_PUBLIC_E2B_TEMPLATES;
+
+/**
+ * NiceEval 公共 E2B 模板的 release tag。三个 agent CLI、bub 的安装指纹、系统包全部
+ * 烘焙在里面 —— attempt 里零运行时安装。升 niceeval 大版本时同步 bump 这个 tag。
+ */
 export const NICEEVAL_E2B_RELEASE = "v0.6.1";
 
-const PUBLIC_TEMPLATES: Record<CodingAgentTemplate, string> = {
-  "claude-code": `correctroads-default-team/niceeval-claude-code:${NICEEVAL_E2B_RELEASE}`,
-  codex: `correctroads-default-team/niceeval-codex:${NICEEVAL_E2B_RELEASE}`,
-  bub: `correctroads-default-team/niceeval-bub:${NICEEVAL_E2B_RELEASE}`,
-};
-
+/** baseline 实验直接引用公共模板;本仓库不再派生自己的 agent 模板(没有额外依赖要加)。 */
 export function agentE2BTemplate(agent: CodingAgentTemplate): string {
-  const envName = agent === "claude-code" ? "CLAUDE_E2B_TEMPLATE" : `${agent.toUpperCase()}_E2B_TEMPLATE`;
-  return process.env[envName] ?? PUBLIC_TEMPLATES[agent];
+  return `${NICEEVAL_PUBLIC_E2B_TEMPLATES[agent]}:${NICEEVAL_E2B_RELEASE}`;
 }

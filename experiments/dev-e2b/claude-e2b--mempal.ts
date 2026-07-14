@@ -1,6 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
+import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 import { mempalMcp, mempalSetup, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // dev/e2b 组的 mempal 变体:验证 claude-code 侧全链路(构造期 MCP + 沙箱 setup
@@ -16,6 +17,7 @@ export default defineExperiment({
   }),
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
+  evals: STANDARD_EVALS,
   runs: 1,
   earlyExit: true,
   budget: 2,

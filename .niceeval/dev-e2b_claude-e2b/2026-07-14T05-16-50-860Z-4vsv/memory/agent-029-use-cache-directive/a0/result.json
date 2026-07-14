@@ -1,0 +1,159 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "4b85cb859d7734aea3e73937321188cf144036dd9e54935ab491c355af4b3fa4",
+  "attempt": 0,
+  "durationMs": 188143,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/admin/layout.tsx\nimport Link from \"next/link\";\nimport type { ReactNode } from \"react\";\n\nexport default function AdminLayout({ children }: { children: ReactNode }) {\n  return (\n    <div className=\"admin-layout\">\n      <header className=\"admin-header\">\n        <nav className=\"admin-nav\">\n          <Link href=\"/admin/catalog\" className=\"admin-logo\">\n            ⚡ Admin\n          </Link>\n          <Link href=\"/admin/catalog\">Catalog</Link>\n        </nav>\n      </header>\n      <main className=\"admin-main\">{children}</main>\n      <style>{`\n        .admin-layout {\n          min-height: 100vh;\n          background: #f5f5f7;\n          font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n            Oxygen, Ubuntu, sans-serif;\n        }\n        .admin-header {\n          background: #1a1a2e;\n          color: #fff;\n          padding: 0 24px;\n          position: sticky;\n          top: 0;\n          z-index: 10;\n        }\n        .admin-nav {\n          display: flex;\n          align-items: center;\n          gap: 24px;\n          height: 56px;\n          max-width: 1200px;\n          margin: 0 auto;\n        }\n        .admin-nav a {\n          color: #ccc;\n          text-decoration: none;\n          font-size: 14px;\n          font-weight: 500;\n          transition: color 0.15s;\n        }\n        .admin-nav a:hover {\n          color: #fff;\n        }\n        .admin-logo {\n          color: #fff !important;\n          font-size: 18px !important;\n          font-weight: 700 !important;\n          letter-spacing: -0.3px;\n        }\n        .admin-main {\n          max-width: 1200px;\n          margin: 0 auto;\n          padding: 32px 24px;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/error.tsx\n\"use client\";\n\nexport default function CatalogError({\n  error,\n  reset,\n}: {\n  error: Error & { digest?: string };\n  reset: () => void;\n}) {\n  console.error(\"Catalog page error:\", error);\n\n  return (\n    <div className=\"error-state\">\n      <div className=\"error-icon\">⚠️</div>\n      <h2 className=\"error-title\">Failed to load catalog</h2>\n      <p className=\"error-message\">\n        {error.message || \"Something went wrong while loading the product catalog. Please try again.\"}\n      </p>\n      <button onClick={reset} className=\"error-btn\">\n        Try Again\n      </button>\n\n      <style>{`\n        .error-state {\n          display: flex;\n          flex-direction: column;\n          align-items: center;\n          justify-content: center;\n          padding: 64px 24px;\n          text-align: center;\n        }\n        .error-icon {\n          font-size: 40px;\n          margin-bottom: 16px;\n        }\n        .error-title {\n          font-size: 20px;\n          font-weight: 700;\n          margin: 0 0 8px;\n          color: #111;\n        }\n        .error-message {\n          margin: 0 0 24px;\n          color: #888;\n          font-size: 14px;\n          max-width: 400px;\n        }\n        .error-btn {\n          padding: 10px 24px;\n          border: none;\n          border-radius: 8px;\n          background: #1a1a2e;\n          color: #fff;\n          font-size: 14px;\n          font-weight: 600;\n          cursor: pointer;\n          transition: background 0.15s;\n        }\n        .error-btn:hover {\n          background: #16213e;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/loading.tsx\nexport default function CatalogLoading() {\n  return (\n    <div className=\"catalog-loading\">\n      <header className=\"loading-header\">\n        <div>\n          <div className=\"skeleton skeleton-title\" />\n          <div className=\"skeleton skeleton-subtitle\" />\n        </div>\n        <div className=\"skeleton skeleton-btn\" />\n      </header>\n\n      <div className=\"skeleton-stats\">\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n      </div>\n\n      <div className=\"skeleton skeleton-table\" />\n\n      <s…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/admin/layout.tsx\nimport Link from \"next/link\";\nimport type { ReactNode } from \"react\";\n\nexport default function AdminLayout({ children }: { children: ReactNode }) {\n  return (\n    <div className=\"admin-layout\">\n      <header className=\"admin-header\">\n        <nav className=\"admin-nav\">\n          <Link href=\"/admin/catalog\" className=\"admin-logo\">\n            ⚡ Admin\n          </Link>\n          <Link href=\"/admin/catalog\">Catalog</Link>\n        </nav>\n      </header>\n      <main className=\"admin-main\">{children}</main>\n      <style>{`\n        .admin-layout {\n          min-height: 100vh;\n          background: #f5f5f7;\n          font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n            Oxygen, Ubuntu, sans-serif;\n        }\n        .admin-header {\n          background: #1a1a2e;\n          color: #fff;\n          padding: 0 24px;\n          position: sticky;\n          top: 0;\n          z-index: 10;\n        }\n        .admin-nav {\n          display: flex;\n          align-items: center;\n          gap: 24px;\n          height: 56px;\n          max-width: 1200px;\n          margin: 0 auto;\n        }\n        .admin-nav a {\n          color: #ccc;\n          text-decoration: none;\n          font-size: 14px;\n          font-weight: 500;\n          transition: color 0.15s;\n        }\n        .admin-nav a:hover {\n          color: #fff;\n        }\n        .admin-logo {\n          color: #fff !important;\n          font-size: 18px !important;\n          font-weight: 700 !important;\n          letter-spacing: -0.3px;\n        }\n        .admin-main {\n          max-width: 1200px;\n          margin: 0 auto;\n          padding: 32px 24px;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/error.tsx\n\"use client\";\n\nexport default function CatalogError({\n  error,\n  reset,\n}: {\n  error: Error & { digest?: string };\n  reset: () => void;\n}) {\n  console.error(\"Catalog page error:\", error);\n\n  return (\n    <div className=\"error-state\">\n      <div className=\"error-icon\">⚠️</div>\n      <h2 className=\"error-title\">Failed to load catalog</h2>\n      <p className=\"error-message\">\n        {error.message || \"Something went wrong while loading the product catalog. Please try again.\"}\n      </p>\n      <button onClick={reset} className=\"error-btn\">\n        Try Again\n      </button>\n\n      <style>{`\n        .error-state {\n          display: flex;\n          flex-direction: column;\n          align-items: center;\n          justify-content: center;\n          padding: 64px 24px;\n          text-align: center;\n        }\n        .error-icon {\n          font-size: 40px;\n          margin-bottom: 16px;\n        }\n        .error-title {\n          font-size: 20px;\n          font-weight: 700;\n          margin: 0 0 8px;\n          color: #111;\n        }\n        .error-message {\n          margin: 0 0 24px;\n          color: #888;\n          font-size: 14px;\n          max-width: 400px;\n        }\n        .error-btn {\n          padding: 10px 24px;\n          border: none;\n          border-radius: 8px;\n          background: #1a1a2e;\n          color: #fff;\n          font-size: 14px;\n          font-weight: 600;\n          cursor: pointer;\n          transition: background 0.15s;\n        }\n        .error-btn:hover {\n          background: #16213e;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/loading.tsx\nexport default function CatalogLoading() {\n  return (\n    <div className=\"catalog-loading\">\n      <header className=\"loading-header\">\n        <div>\n          <div className=\"skeleton skeleton-title\" />\n          <div className=\"skeleton skeleton-subtitle\" />\n        </div>\n        <div className=\"skeleton skeleton-btn\" />\n      </header>\n\n      <div className=\"skeleton-stats\">\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n      </div>\n\n      <div className=\"skeleton skeleton-table\" />\n\n      <s…",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "import { unstable_cache } from \"next/cache\";\nimport { getAllProducts, getProductCount, type Product } from \"@/lib/db\";\n\n/**\n * Cached product list tagged with \"products\".\n * Returns a stable reference until the cache is invalidated via revalidateTag(\"products\").\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => getAllProducts(),\n  [\"catalog-all-products\"],\n  { tags: [\"products\"] }\n);\n\n/**\n * Cached product count tagged with \"products\".\n */\nexport const getCachedProductCount = unstable_cache(\n  async (): Promise<number> => getProductCount(),\n  [\"catalog-product-count\"],\n  { tags: [\"products\"] }\n);\n\n/**\n * Aggregate catalog stats derived from cached data.\n */\nexport async function getCatalogStats(): Promise<{\n  total: number;\n  totalInventory: number;\n  inStock: number;\n  outOfStock: number;\n}> {\n  const products = await getCachedProducts();\n  return {\n    total: products.length,\n    totalInventory: products.reduce((sum, p) => sum + p.inventory, 0),\n    inStock: products.filter((p) => p.available).length,\n    outOfStock: products.filter((p) => !p.available).length,\n  };\n}\n",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "import { unstable_cache } from \"next/cache\";\nimport { getAllProducts, getProductCount, type Product } from \"@/lib/db\";\n\n/**\n * Cached product list tagged with \"products\".\n * Returns a stable reference until the cache is invalidated via revalidateTag(\"products\").\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => getAllProducts(),\n  [\"catalog-all-products\"],\n  { tags: [\"products\"] }\n);\n\n/**\n * Cached product count tagged with \"products\".\n */\nexport const getCachedProductCount = unstable_cache(\n  async (): Promise<number> => getProductCount(),\n  [\"catalog-product-count\"],\n  { tags: [\"products\"] }\n);\n\n/**\n * Aggregate catalog stats derived from cached data.\n */\nexport async function getCatalogStats(): Promise<{\n  total: number;\n  totalInventory: number;\n  inStock: number;\n  outOfStock: number;\n}> {\n  const products = await getCachedProducts();\n  return {\n    total: products.length,\n    totalInventory: products.reduce((sum, p) => sum + p.inventory, 0),\n    inStock: products.filter((p) => p.available).length,\n    outOfStock: products.filter((p) => !p.available).length,\n  };\n}\n",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// app/admin/layout.tsx\nimport Link from \"next/link\";\nimport type { ReactNode } from \"react\";\n\nexport default function AdminLayout({ children }: { children: ReactNode }) {\n  return (\n    <div className=\"admin-layout\">\n      <header className=\"admin-header\">\n        <nav className=\"admin-nav\">\n          <Link href=\"/admin/catalog\" className=\"admin-logo\">\n            ⚡ Admin\n          </Link>\n          <Link href=\"/admin/catalog\">Catalog</Link>\n        </nav>\n      </header>\n      <main className=\"admin-main\">{children}</main>\n      <style>{`\n        .admin-layout {\n          min-height: 100vh;\n          background: #f5f5f7;\n          font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto,\n            Oxygen, Ubuntu, sans-serif;\n        }\n        .admin-header {\n          background: #1a1a2e;\n          color: #fff;\n          padding: 0 24px;\n          position: sticky;\n          top: 0;\n          z-index: 10;\n        }\n        .admin-nav {\n          display: flex;\n          align-items: center;\n          gap: 24px;\n          height: 56px;\n          max-width: 1200px;\n          margin: 0 auto;\n        }\n        .admin-nav a {\n          color: #ccc;\n          text-decoration: none;\n          font-size: 14px;\n          font-weight: 500;\n          transition: color 0.15s;\n        }\n        .admin-nav a:hover {\n          color: #fff;\n        }\n        .admin-logo {\n          color: #fff !important;\n          font-size: 18px !important;\n          font-weight: 700 !important;\n          letter-spacing: -0.3px;\n        }\n        .admin-main {\n          max-width: 1200px;\n          margin: 0 auto;\n          padding: 32px 24px;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/error.tsx\n\"use client\";\n\nexport default function CatalogError({\n  error,\n  reset,\n}: {\n  error: Error & { digest?: string };\n  reset: () => void;\n}) {\n  console.error(\"Catalog page error:\", error);\n\n  return (\n    <div className=\"error-state\">\n      <div className=\"error-icon\">⚠️</div>\n      <h2 className=\"error-title\">Failed to load catalog</h2>\n      <p className=\"error-message\">\n        {error.message || \"Something went wrong while loading the product catalog. Please try again.\"}\n      </p>\n      <button onClick={reset} className=\"error-btn\">\n        Try Again\n      </button>\n\n      <style>{`\n        .error-state {\n          display: flex;\n          flex-direction: column;\n          align-items: center;\n          justify-content: center;\n          padding: 64px 24px;\n          text-align: center;\n        }\n        .error-icon {\n          font-size: 40px;\n          margin-bottom: 16px;\n        }\n        .error-title {\n          font-size: 20px;\n          font-weight: 700;\n          margin: 0 0 8px;\n          color: #111;\n        }\n        .error-message {\n          margin: 0 0 24px;\n          color: #888;\n          font-size: 14px;\n          max-width: 400px;\n        }\n        .error-btn {\n          padding: 10px 24px;\n          border: none;\n          border-radius: 8px;\n          background: #1a1a2e;\n          color: #fff;\n          font-size: 14px;\n          font-weight: 600;\n          cursor: pointer;\n          transition: background 0.15s;\n        }\n        .error-btn:hover {\n          background: #16213e;\n        }\n      `}</style>\n    </div>\n  );\n}\n\n\n// app/admin/catalog/loading.tsx\nexport default function CatalogLoading() {\n  return (\n    <div className=\"catalog-loading\">\n      <header className=\"loading-header\">\n        <div>\n          <div className=\"skeleton skeleton-title\" />\n          <div className=\"skeleton skeleton-subtitle\" />\n        </div>\n        <div className=\"skeleton skeleton-btn\" />\n      </header>\n\n      <div className=\"skeleton-stats\">\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n        <div className=\"skeleton skeleton-stat\" />\n      </div>\n\n      <div className=\"skeleton skeleton-table\" />\n\n      <s…",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 91282,
+    "outputTokens": 35728,
+    "cacheReadTokens": 2515456,
+    "requests": 80,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0298265968,
+  "locator": "@1snymd95",
+  "startedAt": "2026-07-14T05:16:25.479Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

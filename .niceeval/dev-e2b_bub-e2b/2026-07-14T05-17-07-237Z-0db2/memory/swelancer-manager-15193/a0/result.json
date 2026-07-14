@@ -1,0 +1,46 @@
+{
+  "id": "memory/swelancer-manager-15193",
+  "description": "SWE-Lancer manager task 15193: pick the proposal the maintainers actually accepted",
+  "verdict": "failed",
+  "fingerprint": "ed00f39dea3c42c0953529b34d20451c7932c2a5b153a50b5ec506a0167aa0ca",
+  "attempt": 0,
+  "durationMs": 41594,
+  "assertions": [
+    {
+      "name": "isTrue(manager_decisions.json exists)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.shared.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "equals(4)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "1",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.shared.ts",
+        "line": 41,
+        "column": 9
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 29411,
+    "outputTokens": 212,
+    "cacheReadTokens": 21504,
+    "requests": 5,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.02462505,
+  "locator": "@1nm12hxx",
+  "startedAt": "2026-07-14T05:16:25.475Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

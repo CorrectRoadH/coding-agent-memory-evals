@@ -14,9 +14,9 @@ import type { AgentSetup, AgentTeardown, McpServer, SkillSpec } from "niceeval/a
 /** host 上按 experimentId 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
 
-/** Mempal 变体专用模板；分别从 NiceEval release-pinned 公共 Agent template 派生。 */
+/** Mempal 变体专用模板；由 `pnpm template:mempal <tool>` 从公共 Agent 模板派生构建。 */
 export function mempalTemplate(tool: "claude" | "codex"): string {
-  return process.env[`MEMPAL_E2B_${tool.toUpperCase()}_TEMPLATE`] ?? `memory-evals-${tool}-mempal`;
+  return `memory-evals-${tool}-mempal`;
 }
 
 /** mempal MCP server 描述符,传给 `claudeCodeAgent`/`codexAgent` 构造期的 `mcpServers`。 */
@@ -106,8 +106,11 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
         "printf '%s\\n' 'niceeval-mempal-preflight-sentinel' >/tmp/mempal-preflight-docs/sentinel.md; " +
         "HOME=/tmp/mempal-preflight-home mempal init /tmp/mempal-preflight-docs; " +
         "HOME=/tmp/mempal-preflight-home mempal ingest /tmp/mempal-preflight-docs --wing niceeval-preflight; " +
-        "HOME=/tmp/mempal-preflight-home mempal search niceeval-mempal-preflight-sentinel --json " +
-        "| grep -q niceeval-mempal-preflight-sentinel; " +
+        // 不要 `mempal search … | grep -q`:grep -q 命中即关管道,mempal 还在写 stdout 就吃
+        // SIGPIPE,rust 的 println! 直接 panic(exit 134)——实测偶发,把整个 attempt 判 errored。
+        // 先把输出落进变量,再在本地匹配。
+        "out=$(HOME=/tmp/mempal-preflight-home mempal search niceeval-mempal-preflight-sentinel --json); " +
+        "case \"$out\" in *niceeval-mempal-preflight-sentinel*) ;; *) echo \"$out\" >&2; exit 1 ;; esac; " +
         "rm -rf /tmp/mempal-preflight-home /tmp/mempal-preflight-docs",
     );
     await requireCommand(

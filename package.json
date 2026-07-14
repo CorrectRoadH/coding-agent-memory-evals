@@ -7,7 +7,6 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "smoke": "niceeval exp dev memory/agent-029-use-cache-directive",
-    "template:agent": "tsx scripts/build-agent-e2b-template.ts",
     "template:mempal": "tsx scripts/build-mempal-e2b-template.ts"
   },
   "devDependencies": {

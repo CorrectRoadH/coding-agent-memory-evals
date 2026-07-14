@@ -1,0 +1,1 @@
+{"skills":[{"kind":"local","name":"mempal-memory","path":"experiments/shared/mempal-skill","sha256":"4f03561048370202012e9eebc61a176d686bb3dbfe570dd1340fa3a4fa62e835"}],"mcpServers":[{"name":"mempal","command":"mempal","args":["serve","--mcp"]}]}

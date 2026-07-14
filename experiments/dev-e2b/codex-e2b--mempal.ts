@@ -1,6 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
+import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 import { mempalCodexSkill, mempalMcp, mempalSetup, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // dev/e2b 组的 mempal 变体:验证记忆条件全链路(构造期 MCP、二进制上传、模型预热、
@@ -12,6 +13,7 @@ export default defineExperiment({
   agent: codexAgent({ mcpServers: [mempalMcp], skills: [mempalCodexSkill] }),
   model: "gpt-5.4-mini",
   sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
+  evals: STANDARD_EVALS,
   runs: 1,
   earlyExit: true,
   budget: 2,

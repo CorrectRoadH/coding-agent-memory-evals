@@ -4,7 +4,7 @@
 
 mempal 条件由四个独立部分组成：
 
-1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 514 MB embedding cache。
+1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 507 MB embedding cache（host 预取，见下）。
 2. NiceEval adapter 的 `mcpServers`：把 `mempal serve --mcp` 接给 Claude Code / Codex。
 3. agent 行为提示：Claude Code 用 Stop hook；Codex 用本仓库的 `mempal-memory` Skill。原 Codex `cowork-drain` hook 对单 agent 任务是 no-op，已删除。
 4. sandbox setup/teardown：做无污染预检，按 cohort 恢复和回存 `$HOME/.mempal`。
@@ -16,23 +16,27 @@ E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fro
 ## 构建模板
 
 ```bash
-# 1. host 上产出 linux/amd64 二进制；已存在时自动跳过
+# 1. host 上产出模板的两份输入(都已存在时自动跳过,--force 强制重来):
+#      .cache/mempal/mempal        linux/amd64 二进制
+#      .cache/mempal/hf-cache.tgz  预取好的 embedding 模型 cache(~484 MB)
 bash scripts/build-mempal-linux.sh
 
 # 2. 分别从 NiceEval 的 release-pinned Claude / Codex 公共模板派生
-pnpm template:mempal claude
-pnpm template:mempal codex
+pnpm template:mempal claude   # → memory-evals-claude-mempal
+pnpm template:mempal codex    # → memory-evals-codex-mempal
 ```
 
-需要换模板名时，构建和运行使用对应的环境变量：
+**模型 cache 必须在 host 预取，不能在模板构建时现下。** mempal 首次 ingest 会去
+HuggingFace 拉 model2vec 模型（`minishlab/potion-multilingual-128M`），而 HF 的 xet CDN 在
+E2B 构建环境里恒定返回 403（预签名 URL 带 `ByteRange` policy，客户端不发匹配 Range 头就被拒），
+两个模板同样的报错、复现两次。host（residential IP）能正常下载，所以 `build-mempal-linux.sh`
+用同一个 linux/amd64 容器跑一次真实 ingest 把模型灌进 HF cache 并打包，模板里只做解压 + 一次
+自检 ingest（命中 cache，不碰网络）。
 
-```bash
-MEMPAL_E2B_CLAUDE_TEMPLATE=my-claude-template pnpm template:mempal claude
-MEMPAL_E2B_CODEX_TEMPLATE=my-codex-template pnpm template:mempal codex
-MEMPAL_E2B_CODEX_TEMPLATE=my-codex-template niceeval exp compare/codex-gpt-5.4--mempal
-```
-
-模板构建脚本在 `scripts/build-mempal-e2b-template.ts`。它不会在 `pnpm install`、typecheck 或普通 eval 中隐式发布远端资源。
+模板构建脚本在 `scripts/build-mempal-e2b-template.ts`。模板名由 `mempalTemplate()`
+（`experiments/shared/mempal.ts`）唯一决定，构建和运行读同一个常量——没有环境变量覆盖，
+免得构建的模板和实验引用的模板悄悄错位。它不会在 `pnpm install`、typecheck 或普通 eval 中
+隐式发布远端资源。
 
 ## Attempt 生命周期与 fail-fast
 

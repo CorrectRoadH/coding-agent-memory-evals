@@ -1,0 +1,157 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "25ed33c64bf5a4ec0c972204330ba53e3016ed0504b8e071118091e70db377d3",
+  "attempt": 0,
+  "durationMs": 947907,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Catalog Admin',\n  description: 'Admin product catalog with cached reads and background sync invalidation'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nexport const PRODUCTS_CACHE_TAG = 'products';\n\nasync function loadProducts() {\n  // Simulate the catalog query work we want to avoid repeating on every request.\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\nexport const getAllProducts = unstable_cache(\n  loadProducts,\n  ['products-catalog'],\n  {\n    tags: [PRODUCTS_CACHE_TAG]\n  }\n);\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_CACHE_TAG } from '@/lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n  const totalValue = products.reduce((sum, product) => sum + product.price, 0);\n  const averagePrice = Math.round(totalValue / products.length);\n\n  async function syncCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_CACHE_TAG, 'max');\n  }\n\n  return (\n    <main className=\"catalog-page\">\n      <style>{`\n        :root {\n          color-scheme: light;\n        }\n\n        * {\n          box-sizing: border-box;\n        }\n\n        body {\n          margin: 0;\n          font-family: Arial, Helvetica, sans-serif;\n          background:\n            radial-gradient(circle at top left, rgba(19, 78, 74, 0.16), transparent 32%),\n            radial-gradient(circle at top right, rgba(219, 168, 88, 0.16), transparent 28%),\n            linear-gradient(180deg, #f4f7f5 0%, #eef2ee 100%);\n          color: #10211f;\n        }\n\n        .catalog-page {\n          min-height: 100vh;\n          padding: 40px 24px 56px;\n        }\n\n        .catalog-shell {\n          max-width: 1120px;\n          margin: 0 auto;\n          display: grid;\n          gap: 24px;\n        }\n\n        .hero {\n          display: grid;\n          grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);\n          gap: 20px;\n          align-items: stretch;\n        }\n\n        .panel {\n          border: 1px solid rgba(16, 33, 31, 0.08);\n          background: rgba(255, 255, 255, 0.82);\n          backdrop-filter: blur(14px);\n          box-shadow: 0 18px 40px rgba(16, 33, 31, 0.08);\n          border-radius: 24px;\n        }\n\n        .hero-copy {\n          padding: 30px;\n        }\n\n        .eyebrow {\n          display: inline-flex;\n          align-items: center;\n          gap: 8px;\n          padding: 7px 12px;\n          border-radius: 999px;\n          background: rgba(19, 78, 74, 0.08);\n          color: #134e4a;\n          font-size: 12px;\n          font-weight: 700;\n          letter-spacing: 0.08em;\n          text-transform: uppercase;\n        }\n\n        h1 {\n          margin: 18px 0 12px;\n          font-size: clamp(2rem, 4vw, 3.3rem);\n          line-height: 1.02;\n          letter-spacing: -0.04em;\n        }\n\n        .lede {\n          max-width: 60ch;\n          margin: 0;\n          color: rgba(16, 33, 31, 0.76);\n          font-size: 1.03rem;\n          line-height: 1.6;\n        }\n\n        .stats {\n          display: grid;\n          gap: 14px;\n          padding: 20px;\n        }\n\n     …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 30,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Catalog Admin',\n  description: 'Admin product catalog with cached reads and background sync invalidation'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nexport const PRODUCTS_CACHE_TAG = 'products';\n\nasync function loadProducts() {\n  // Simulate the catalog query work we want to avoid repeating on every request.\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\nexport const getAllProducts = unstable_cache(\n  loadProducts,\n  ['products-catalog'],\n  {\n    tags: [PRODUCTS_CACHE_TAG]\n  }\n);\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_CACHE_TAG } from '@/lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n  const totalValue = products.reduce((sum, product) => sum + product.price, 0);\n  const averagePrice = Math.round(totalValue / products.length);\n\n  async function syncCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_CACHE_TAG, 'max');\n  }\n\n  return (\n    <main className=\"catalog-page\">\n      <style>{`\n        :root {\n          color-scheme: light;\n        }\n\n        * {\n          box-sizing: border-box;\n        }\n\n        body {\n          margin: 0;\n          font-family: Arial, Helvetica, sans-serif;\n          background:\n            radial-gradient(circle at top left, rgba(19, 78, 74, 0.16), transparent 32%),\n            radial-gradient(circle at top right, rgba(219, 168, 88, 0.16), transparent 28%),\n            linear-gradient(180deg, #f4f7f5 0%, #eef2ee 100%);\n          color: #10211f;\n        }\n\n        .catalog-page {\n          min-height: 100vh;\n          padding: 40px 24px 56px;\n        }\n\n        .catalog-shell {\n          max-width: 1120px;\n          margin: 0 auto;\n          display: grid;\n          gap: 24px;\n        }\n\n        .hero {\n          display: grid;\n          grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);\n          gap: 20px;\n          align-items: stretch;\n        }\n\n        .panel {\n          border: 1px solid rgba(16, 33, 31, 0.08);\n          background: rgba(255, 255, 255, 0.82);\n          backdrop-filter: blur(14px);\n          box-shadow: 0 18px 40px rgba(16, 33, 31, 0.08);\n          border-radius: 24px;\n        }\n\n        .hero-copy {\n          padding: 30px;\n        }\n\n        .eyebrow {\n          display: inline-flex;\n          align-items: center;\n          gap: 8px;\n          padding: 7px 12px;\n          border-radius: 999px;\n          background: rgba(19, 78, 74, 0.08);\n          color: #134e4a;\n          font-size: 12px;\n          font-weight: 700;\n          letter-spacing: 0.08em;\n          text-transform: uppercase;\n        }\n\n        h1 {\n          margin: 18px 0 12px;\n          font-size: clamp(2rem, 4vw, 3.3rem);\n          line-height: 1.02;\n          letter-spacing: -0.04em;\n        }\n\n        .lede {\n          max-width: 60ch;\n          margin: 0;\n          color: rgba(16, 33, 31, 0.76);\n          font-size: 1.03rem;\n          line-height: 1.6;\n        }\n\n        .stats {\n          display: grid;\n          gap: 14px;\n          padding: 20px;\n        }\n\n     …",
+      "group": "Catalog reads use use-cache directive and products cache tag",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 31,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 35,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Page fetches products via lib/db",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 36,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Inline form-triggered Server Action flow exists",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 46,
+        "column": 9
+      }
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 53,
+        "column": 9
+      }
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "score": 0,
+      "passed": false,
+      "evidence": "import { revalidateTag } from 'next/cache';\nimport { getAllProducts, PRODUCTS_CACHE_TAG } from '@/lib/db';\n\nexport default async function Page() {\n  const products = await getAllProducts();\n  const totalValue = products.reduce((sum, product) => sum + product.price, 0);\n  const averagePrice = Math.round(totalValue / products.length);\n\n  async function syncCatalog() {\n    'use server';\n\n    revalidateTag(PRODUCTS_CACHE_TAG, 'max');\n  }\n\n  return (\n    <main className=\"catalog-page\">\n      <style>{`\n        :root {\n          color-scheme: light;\n        }\n\n        * {\n          box-sizing: border-box;\n        }\n\n        body {\n          margin: 0;\n          font-family: Arial, Helvetica, sans-serif;\n          background:\n            radial-gradient(circle at top left, rgba(19, 78, 74, 0.16), transparent 32%),\n            radial-gradient(circle at top right, rgba(219, 168, 88, 0.16), transparent 28%),\n            linear-gradient(180deg, #f4f7f5 0%, #eef2ee 100%);\n          color: #10211f;\n        }\n\n        .catalog-page {\n          min-height: 100vh;\n          padding: 40px 24px 56px;\n        }\n\n        .catalog-shell {\n          max-width: 1120px;\n          margin: 0 auto;\n          display: grid;\n          gap: 24px;\n        }\n\n        .hero {\n          display: grid;\n          grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);\n          gap: 20px;\n          align-items: stretch;\n        }\n\n        .panel {\n          border: 1px solid rgba(16, 33, 31, 0.08);\n          background: rgba(255, 255, 255, 0.82);\n          backdrop-filter: blur(14px);\n          box-shadow: 0 18px 40px rgba(16, 33, 31, 0.08);\n          border-radius: 24px;\n        }\n\n        .hero-copy {\n          padding: 30px;\n        }\n\n        .eyebrow {\n          display: inline-flex;\n          align-items: center;\n          gap: 8px;\n          padding: 7px 12px;\n          border-radius: 999px;\n          background: rgba(19, 78, 74, 0.08);\n          color: #134e4a;\n          font-size: 12px;\n          font-weight: 700;\n          letter-spacing: 0.08em;\n          text-transform: uppercase;\n        }\n\n        h1 {\n          margin: 18px 0 12px;\n          font-size: clamp(2rem, 4vw, 3.3rem);\n          line-height: 1.02;\n          letter-spacing: -0.04em;\n        }\n\n        .lede {\n          max-width: 60ch;\n          margin: 0;\n          color: rgba(16, 33, 31, 0.76);\n          font-size: 1.03rem;\n          line-height: 1.6;\n        }\n\n        .stats {\n          display: grid;\n          gap: 14px;\n          padding: 20px;\n        }\n\n        .stat {\n          padding: 18px 18px 16px;\n          border-radius: 18px;\n          background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 248, 246, 0.92));\n          border: 1px solid rgba(16, 33, 31, 0.08);\n        }\n\n        .stat-label {\n          margin: 0 0 8px;\n          color: rgba(16, 33, 31, 0.62);\n          font-size: 0.82rem;\n          text-transform: uppercase;\n          letter-spacing: 0.08em;\n          font-weight: 700;\n        }\n\n        .stat-value {\n          margin: 0;\n          font-size: 1.7rem;\n          font-weight: 800;\n          letter-spacing: -0.03em;\n        }\n\n        .sync-bar {\n          padding: 18px 20px;\n          display: flex;\n          align-items: center;\n          justify-content: space-between;\n          gap: 16px;\n          flex-wrap: wrap;\n        }\n\n        .sync-copy {\n          display: grid;\n          gap: 4px;\n        }\n\n        .sync-title {\n          margin: 0;\n          font-size: 1rem;\n          font-weight: 800;\n        }\n\n        .sync-help {\n          margin: 0;\n          color: rgba(16, 33, 31, 0.68);\n          line-height: 1.45;\n        }\n\n        .sync-button {\n          appearance: none;\n          border: 0;\n          border-radius: 999px;\n          padding: 14px 18px;\n          background: linear-gradient(180deg, #134e4a, #0f3f3b);\n          color: white;\n          font-weight: 800;\n          letter-spacing: 0.01em;\n          cursor: pointer;…",
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 54,
+        "column": 9
+      }
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "group": "Server Action revalidates products using revalidateTag profile",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 9
+      }
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 58,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 1318866,
+    "outputTokens": 13480,
+    "cacheReadTokens": 1252736,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 1.1437647,
+  "locator": "@17c0i6hj",
+  "startedAt": "2026-07-14T05:17:07.241Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
