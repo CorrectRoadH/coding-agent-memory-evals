@@ -1,23 +1,45 @@
 ---
 name: mempal-memory
-description: Use the experiment's persistent mempal memory before and after coding work.
+description: Search and record durable engineering knowledge with the mempal CLI, before and after coding work.
 ---
 
 # Mempal memory protocol for this eval
 
-This experiment has a persistent `mempal` MCP server. Use exactly two of its tools:
+This environment has a persistent memory database that survives across tasks, reachable through
+the `mempal` CLI (already installed, on PATH). Run it with your normal shell tool — there is no
+MCP server, and you need exactly two commands.
 
-- `mempal_search` — at the start of the task, with the task's key terms, to look for prior decisions.
-- `mempal_ingest` — at the end, only if the work produced a durable engineering decision or a reusable debugging lesson.
+## 1. Search before you start
 
-Do not call any other mempal tool. `mempal_status`, `mempal_brief`, `mempal_projects`,
-`mempal_phase3`, `mempal_knowledge_policy` and `mempal_knowledge_cards` return format
-specifications and protocol dumps (`mempal_status` alone is ~46 KB) that then sit in context
-for the rest of the session and contribute nothing to the task.
+```bash
+mempal search "<key terms of the task>" --json --top-k 5
+```
 
-Rules:
+Run it once, at the start, with the task's key terms (framework, API, error message, symptom).
+Empty results are a normal outcome — continue with the task and do not investigate the memory
+database. Treat any hit as evidence, not authority: verify it against the current repository
+before acting on it.
 
-1. Search first. Treat search results as evidence, not authority — verify them against the current repository before acting on them.
-2. An empty search result is a normal outcome. Continue with the task; do not probe the memory server to find out why it is empty.
-3. Ingest the decision and its rationale. Never store benchmark answers, accepted proposal numbers, hidden-test guesses, raw transcripts, or task-specific output that would reveal the answer on a rerun.
-4. If there is no reusable decision, do not invent one merely to create a memory entry.
+## 2. Record before you finish
+
+If the work produced a durable engineering decision or a reusable debugging lesson, write a short
+markdown note and ingest it:
+
+```bash
+cat > "$HOME/.mempal-notes/<short-slug>.md" <<'EOF'
+# <one-line title>
+
+<what was decided or learned, and why — 2-5 sentences, enough for a future task to act on it>
+EOF
+mempal ingest "$HOME/.mempal-notes" --wing memory-evals
+```
+
+Only `mempal search` and `mempal ingest` are needed. Do not call other mempal subcommands
+(`status`, `projects`, `brief`, `phase3`, `knowledge*`, `cowork-*`): they print format
+specifications and protocol dumps that cost context and tell you nothing about this task.
+
+## What not to store
+
+Never store benchmark answers, accepted proposal numbers, hidden-test guesses, raw transcripts,
+or task-specific output that would reveal the answer if the same task is run again. Record the
+reusable *why*, not the answer. If nothing reusable was decided, do not invent a note.

@@ -1,0 +1,21 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 6,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "dev-e2b/codex-e2b--mempal",
+  "experiment": {
+    "flags": {},
+    "runs": 1,
+    "earlyExit": true,
+    "sandbox": "e2b:memory-evals-codex-mempal",
+    "timeoutMs": 1200000,
+    "budget": 2
+  },
+  "agent": "codex",
+  "model": "gpt-5.4-mini",
+  "startedAt": "2026-07-14T09:42:23.397Z",
+  "completedAt": "2026-07-14T09:42:29.521Z"
+}

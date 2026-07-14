@@ -3,37 +3,41 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { shared } from "niceeval/adapter";
-import type { AgentSetup, AgentTeardown, McpServer, SkillSpec } from "niceeval/adapter";
+import type { AgentSetup, AgentTeardown, SkillSpec } from "niceeval/adapter";
 
-// mempal 记忆条件的共享环境层：MCP 注册归 adapter；二进制和 514 MB 模型 cache
-// 归专用 E2B template；本 hook 只做 fail-fast 预检、状态恢复/回存和 agent 特有提示。
-// Claude 用 Stop hook 促成写入；Codex 用 mempalCodexSkill，已删除对单 agent 无作用的
-// cowork-drain hook。状态按 MEMPAL_COHORT + experimentId 隔离，实验必须 maxConcurrency: 1
-// 以保护 [restore … save] 临界区。本文件无 default export，不会被当成 experiment。
+// mempal 记忆条件的共享环境层：二进制和 embedding cache 归专用 E2B template；本 hook 只做
+// fail-fast 预检、状态恢复/回存和 agent 行为提示。
+//
+// 【为什么不用 MCP】mempal 的 `serve --mcp` 暴露 25 个工具，tools/list 就是 82 KB
+// (≈20.5k tokens)，每个模型请求都要重发一遍——我们只用得上 search/ingest 两个，却要为另外
+// 23 个付"工具定义税"。实测 codex 上单 attempt 因此从 ~150k 涨到 0.9-1.3M tokens。mempal 的
+// CLI 本身就有 `search --json` 和 `ingest`，agent 用它自带的 shell 工具直接调即可，工具定义
+// 开销为零。MCP 那条路等上游给 tool allowlist(见 memory: mempal-codex-token-blowup)再说。
+//
+// 状态按 MEMPAL_COHORT + experimentId 隔离，实验必须 maxConcurrency: 1 以保护
+// [restore … save] 临界区。本文件无 default export，不会被当成 experiment。
 
 /** host 上按 experimentId 持久化记忆态的目录(gitignored,随 .cache/)。 */
 const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.meta.url));
+
+/** 跨 attempt 持久化的两个目录(相对 $HOME):记忆库本体 + agent 写下的原始笔记。 */
+const STATE_PATHS = [".mempal", ".mempal-notes"];
 
 /** Mempal 变体专用模板；由 `pnpm template:mempal <tool>` 从公共 Agent 模板派生构建。 */
 export function mempalTemplate(tool: "claude" | "codex"): string {
   return `memory-evals-${tool}-mempal`;
 }
 
-/** mempal MCP server 描述符,传给 `claudeCodeAgent`/`codexAgent` 构造期的 `mcpServers`。 */
-export const mempalMcp: McpServer = { name: "mempal", command: "mempal", args: ["serve", "--mcp"] };
-
-/** Codex 没有等价 Stop hook，用 Skill 明确约束 search/ingest 行为。 */
-export const mempalCodexSkill: SkillSpec = {
+/** 教 agent 用 mempal CLI 检索/落库的 Skill(claude 与 codex 共用)。 */
+export const mempalSkill: SkillSpec = {
   kind: "local",
   path: "experiments/shared/mempal-skill",
   name: "mempal-memory",
 };
 
-// Stop hook:session 每次收尾前 block 一次,提示 agent 把本轮关键决策经
-// mempal_ingest 落库。stop_hook_active 防循环(被 block 后的下一次 stop 放行),
-// 所以每个 session 恰好触发一次,不会死循环。
-// 改编自 mempal 仓库 hooks/mempal_save_hook.sh(原版每 N 次 stop 触发一次,
-// eval session 短,这里改成每次 stop 都触发)。
+// Stop hook:session 每次收尾前 block 一次,提示 agent 把本轮关键决策落库。
+// stop_hook_active 防循环(被 block 后的下一次 stop 放行),所以每个 session 恰好触发一次。
+// Codex 没有等价 hook,只能靠 Skill。
 const STOP_HOOK = `#!/usr/bin/env bash
 set -uo pipefail
 input=$(cat)
@@ -41,7 +45,7 @@ if printf '%s' "$input" | grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*tr
   exit 0
 fi
 cat <<'JSON'
-{"decision": "block", "reason": "Before stopping, save only durable engineering decisions or reusable debugging lessons to mempal. Include rationale and search first to avoid duplicates. Never store benchmark answers, accepted proposal numbers, hidden-test guesses, raw transcripts, or task-specific output that would reveal an answer on rerun. If nothing reusable was decided, just stop."}
+{"decision": "block", "reason": "Before stopping, save durable engineering decisions or reusable debugging lessons to mempal, following the mempal-memory skill: write a short markdown note into $HOME/.mempal-notes/ and run 'mempal ingest \\"$HOME/.mempal-notes\\" --wing memory-evals'. Never store benchmark answers, accepted proposal numbers, hidden-test guesses, raw transcripts, or task-specific output that would reveal an answer on rerun. If nothing reusable was decided, just stop."}
 JSON
 exit 0
 `;
@@ -113,13 +117,7 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
         "case \"$out\" in *niceeval-mempal-preflight-sentinel*) ;; *) echo \"$out\" >&2; exit 1 ;; esac; " +
         "rm -rf /tmp/mempal-preflight-home /tmp/mempal-preflight-docs",
     );
-    await requireCommand(
-      sb,
-      "MCP server preflight",
-      "set +e; timeout 1s sh -c 'tail -f /dev/null | mempal serve --mcp >/tmp/mempal-mcp.out 2>/tmp/mempal-mcp.err'; " +
-        "code=$?; test \"$code\" -eq 124",
-    );
-    ctx.log("[mempal] preflight passed: binary, cached model, ingest/search, and MCP process");
+    ctx.log("[mempal] preflight passed: binary, cached model, ingest/search");
 
     // 3. 记忆态载入:[载入 … 回存] 临界区的串行由实验声明 maxConcurrency: 1 保证
     //    (niceeval ≥0.4.5 按实验限流;见文件头注的【串行前提】)。
@@ -132,8 +130,16 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
     if (state) {
       // 恢复历史积累的 $HOME/.mempal(palace.db + audit.jsonl)—— 记忆条件的
       // 价值正在于「第二次见到同类问题」,跨 eval / 跨 run 都要延续。
-      await sb.uploadFile("/tmp/mempal-state.tgz", state);
-      await requireCommand(sb, "state restore", 'tar -xzf /tmp/mempal-state.tgz -C "$HOME" && rm -f /tmp/mempal-state.tgz');
+      //
+      // 落点用 $HOME 而不是 /tmp:实测 envd 的文件写 API 偶发对 /tmp 报
+      // `500: error opening file: … permission denied`(/tmp 是 1777、同一实验里其它
+      // attempt 又写得进去,所以是 envd 抽风),而 niceeval 把 permission 类错误归为
+      // 不可重试 → 整个 attempt 判 errored。$HOME 是用户自己的目录,不碰 sticky bit。
+      // 沙箱 home 路径按 provider 变(不 hardcode /home/user),动态取。
+      const home = (await sb.runShell('printf "%s" "$HOME"')).stdout.trim();
+      const archive = `${home}/mempal-state.tgz`;
+      await sb.uploadFile(archive, state);
+      await requireCommand(sb, "state restore", `tar -xzf '${archive}' -C "$HOME" && rm -f '${archive}'`);
       ctx.log(`[mempal] state restored from ${ctx.experimentId}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
     } else {
       // 空库初始化:$HOME/.mempal/palace.db。workspace 此时还没上传(eval test()
@@ -143,7 +149,11 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
       ctx.log(`[mempal] no saved state for "${ctx.experimentId}", starting from empty palace`);
     }
 
-    // 4. 按 tool 装生命周期 hook(MCP 已经不在这里接,见文件头注)。
+    // agent 写笔记的目录(Skill 里教它往这里写,再 ingest 整个目录)。先建好,免得
+    // agent 还要自己 mkdir;它随状态一起跨 attempt 持久化。
+    await requireCommand(sb, "notes dir", 'mkdir -p "$HOME/.mempal-notes"');
+
+    // 4. 按 tool 装生命周期 hook。
     if (tool === "claude") {
       // 用户级 settings:不落在 workspace 里,躲开上传覆盖与 diff 捕获。
       await shared.writeFile(sb, "~/.claude/hooks/mempal-stop.sh", STOP_HOOK);
@@ -176,9 +186,12 @@ export function mempalTeardown(_tool: "claude" | "codex"): AgentTeardown {
     // 回存记忆态。best-effort:失败只记 log 不抛(runner 本来也会吞 teardown 的错,
     // 但显式 log 才能事后核对)。
     try {
-      const pack = await sb.runShell('tar -C "$HOME" -czf /tmp/mempal-state.tgz .mempal');
+      // 同 setup:走 $HOME 而不是 /tmp(envd 对 /tmp 的文件 API 偶发 500 permission denied)。
+      const home = (await sb.runShell('printf "%s" "$HOME"')).stdout.trim();
+      const archive = `${home}/mempal-state.tgz`;
+      const pack = await sb.runShell(`tar -C "$HOME" -czf '${archive}' ${STATE_PATHS.join(" ")}`);
       if (pack.exitCode === 0) {
-        const data = await sb.downloadFile("/tmp/mempal-state.tgz");
+        const data = await sb.downloadFile(archive);
         // host 侧原子写回:先落 .tmp 再 rename,进程半途被杀也不会留下半截 tgz。
         // experimentId 可能含 "/"(如 "compare/codex-gpt-5.4--mempal"),statePath 落在
         // 嵌套目录下,先 mkdir -p 到父目录。

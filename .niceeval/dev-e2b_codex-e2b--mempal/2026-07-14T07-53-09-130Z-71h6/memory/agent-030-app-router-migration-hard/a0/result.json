@@ -1,0 +1,20 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "errored",
+  "fingerprint": "3fd91787b4f14be258a0f2724483376fc9cbd77f32a2ebb7d8e7cf6d8779fc42",
+  "attempt": 0,
+  "durationMs": 38665,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "500: error opening file: open /tmp/mempal-state.tgz: permission denied",
+    "operation": "sandbox.setup",
+    "stack": "SandboxError: 500: error opening file: open /tmp/mempal-state.tgz: permission denied\n    at handleEnvdApiError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/api.ts:140:10)\n    at handleFilesystemEnvdApiError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:82:10)\n    at Filesystem2.write (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:773:25)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async E2BSandbox.uploadFile (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:154:5)\n    at async withSandboxIoRetry (/Users/ctrdh/Code/niceeval/src/sandbox/io-retry.ts:36:14)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/mempal.ts:135:7)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:380:25)"
+  },
+  "locator": "@1lerep72",
+  "startedAt": "2026-07-14T07:53:09.140Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

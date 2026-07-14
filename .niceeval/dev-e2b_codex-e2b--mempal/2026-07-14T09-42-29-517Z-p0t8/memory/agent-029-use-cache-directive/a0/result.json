@@ -1,0 +1,20 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "errored",
+  "fingerprint": "25ed33c64bf5a4ec0c972204330ba53e3016ed0504b8e071118091e70db377d3",
+  "attempt": 0,
+  "durationMs": 6112,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "2: [unknown] fetch failed",
+    "operation": "sandbox.provision",
+    "stack": "SandboxError: 2: [unknown] fetch failed\n    at handleRpcError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:109:12)\n    at handleRpcErrorWithHealthCheck (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:142:10)\n    at Commands.start (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:485:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Commands.run (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:421:18)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:62:5)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:33:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:76:40)"
+  },
+  "locator": "@12tc0gcf",
+  "startedAt": "2026-07-14T09:42:23.403Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

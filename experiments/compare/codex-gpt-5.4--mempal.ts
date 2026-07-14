@@ -1,11 +1,11 @@
 import { defineExperiment } from "niceeval";
 import { e2bSandbox } from "niceeval/sandbox";
 import { codexAgent } from "niceeval/adapter";
-import { mempalCodexSkill, mempalMcp, mempalSetup, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
+import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 
-// codex-gpt-5.4 的 mempal 变体:MCP server(mempal_search / mempal_ingest)接进
-// codexAgent，并安装显式要求先搜索、后写入耐久决策的 Skill。
+// codex-gpt-5.4 的 mempal 变体:agent 用自带 shell 跑 mempal CLI(`search` / `ingest`),
+// Skill 教它先搜索、后写入耐久决策。不走 MCP(见 shared/mempal.ts 文件头注)。
 //
 // 前提:先从 NiceEval release-pinned Codex 公共模板构建专用 Mempal 模板。
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/codex-gpt-5.4--mempal`)跨 eval /
@@ -14,7 +14,7 @@ import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 export default defineExperiment({
   evals: STANDARD_EVALS,
   description: "codex · gpt-5.4 · mempal",
-  agent: codexAgent({ mcpServers: [mempalMcp], skills: [mempalCodexSkill] }),
+  agent: codexAgent({ skills: [mempalSkill] }),
   model: "gpt-5.4",
   sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
   runs: 1,

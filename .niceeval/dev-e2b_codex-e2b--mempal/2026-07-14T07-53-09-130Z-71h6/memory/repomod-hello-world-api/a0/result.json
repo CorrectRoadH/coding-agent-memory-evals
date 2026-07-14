@@ -1,0 +1,34 @@
+{
+  "id": "memory/repomod-hello-world-api",
+  "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+  "verdict": "passed",
+  "fingerprint": "278cb898f7aa5acd7c7fe9909ead70d55be4a18c41c53d3a1ca4f9cbda03b829",
+  "attempt": 0,
+  "durationMs": 401000,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "score": 1,
+      "passed": true,
+      "loc": {
+        "file": "evals/memory/repomod-hello-world-api.eval.ts",
+        "line": 67,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 744415,
+    "outputTokens": 3972,
+    "cacheReadTokens": 625920,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.62312925,
+  "locator": "@1bl1egga",
+  "startedAt": "2026-07-14T08:05:44.895Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

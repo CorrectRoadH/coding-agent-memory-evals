@@ -2,10 +2,12 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { STANDARD_EVALS } from "../shared/eval-selection.ts";
-import { mempalMcp, mempalSetup, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
+import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
-// dev/e2b 组的 mempal 变体:验证 claude-code 侧全链路(构造期 MCP + 沙箱 setup
+// dev/e2b 组的 mempal 变体:验证 claude-code 侧全链路(mempal CLI + Skill + 沙箱 setup
 // 装的 Stop hook + 记忆态跨 eval 累积)用的便宜配置,正式对比走 compare/ 组。
+// 不走 MCP —— mempal 的 MCP 暴露 25 个工具、tools/list 82 KB 每轮重发,成本压过记忆本身
+// (见 shared/mempal.ts 文件头注)。
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `dev-e2b/claude-e2b--mempal`)跨 eval /
 // 跨 run 累积;干净验证前 rm -rf .cache/mempal/state/。
 export default defineExperiment({
@@ -13,7 +15,7 @@ export default defineExperiment({
   agent: claudeCodeAgent({
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseUrl: process.env.DEEPSEEK_BASE_URL,
-    mcpServers: [mempalMcp],
+    skills: [mempalSkill],
   }),
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
