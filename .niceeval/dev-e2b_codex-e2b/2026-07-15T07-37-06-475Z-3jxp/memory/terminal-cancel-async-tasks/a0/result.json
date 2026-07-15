@@ -1,0 +1,238 @@
+{
+  "id": "memory/terminal-cancel-async-tasks",
+  "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+  "verdict": "passed",
+  "fingerprint": "1732d0daa686331cd8d55fc88c644dfcf558f92e2f7d1152fc77bac56908d526",
+  "attempt": 0,
+  "durationMs": 215483,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "usage": {
+    "inputTokens": 129810,
+    "outputTokens": 8187,
+    "cacheReadTokens": 124160,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.143511,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "inifa7qf6llyrf9v3x7ng"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 7519
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 590,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 7519,
+          "durationMs": 590,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 729,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 8109,
+          "durationMs": 224,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 8333,
+          "durationMs": 232,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrlrnzwq_bk6p9k'\nmodel = \"gpt-5.4-mini\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 222,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 8838,
+          "durationMs": 222,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 204737,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 9322,
+          "durationMs": 11881,
+          "command": {
+            "display": "python3 -c 'import pytest' 2>/dev/null || {\n  apt-get update &&\n  apt-get install -y python3 python3-pip &&\n  python3 -m pip install --break-system-packages py…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 21205,
+          "durationMs": 267,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 21473,
+          "durationMs": 171639,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check 'Implement `run_tasks` in `run.py`.\n\nIt must accept a list of async zero-arg…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 193113,
+          "durationMs": 267,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 21204,
+          "durationMs": 172176,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 193652,
+          "durationMs": 20144,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 578,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 213797,
+          "durationMs": 578,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 213797,
+              "durationMs": 296,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1108
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 466
+    }
+  ],
+  "locator": "@157c783t",
+  "startedAt": "2026-07-15T07:36:23.805Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

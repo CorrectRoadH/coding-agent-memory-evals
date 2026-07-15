@@ -1,0 +1,249 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "ea3e4adbc3c688d5f60f64012b5edabde923347784dd41fdfbad3ced11d4d784",
+  "attempt": 0,
+  "durationMs": 223610,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "usage": {
+    "inputTokens": 213364,
+    "outputTokens": 6895,
+    "cacheReadTokens": 202752,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.2062569,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iqltpijnj8stee05yqdlq"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6942
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 301,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6942,
+          "durationMs": 301,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 767,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 7243,
+          "durationMs": 259,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 7502,
+          "durationMs": 231,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrlrnz9o_eta2y6'\nmodel = \"gpt-5.4-mini\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 773,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 8010,
+          "durationMs": 773,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 212305,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 9050,
+          "durationMs": 1949,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 10999,
+          "durationMs": 7306,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip python3-venv curl",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 18307,
+          "durationMs": 247,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 18554,
+          "durationMs": 195148,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check 'Create a python package called vectorops, then build this package and set u…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 213704,
+          "durationMs": 262,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 18307,
+          "durationMs": 195659,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 214240,
+          "durationMs": 6842,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 588,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 11 files",
+          "startOffsetMs": 221088,
+          "durationMs": 587,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 221088,
+              "durationMs": 311,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1934
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 451
+    }
+  ],
+  "locator": "@10v0meqk",
+  "startedAt": "2026-07-15T07:36:23.806Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

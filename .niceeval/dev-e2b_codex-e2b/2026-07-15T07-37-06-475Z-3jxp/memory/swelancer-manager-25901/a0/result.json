@@ -1,0 +1,227 @@
+{
+  "id": "memory/swelancer-manager-25901",
+  "description": "SWE-Lancer manager task 25901: pick the proposal the maintainers actually accepted",
+  "verdict": "passed",
+  "fingerprint": "31b81e97acc7b3c30893aae730ac5e4c8a160756efd3df6a7b054e8fa0c442cb",
+  "attempt": 0,
+  "durationMs": 76572,
+  "assertions": [
+    {
+      "name": "isTrue(manager_decisions.json exists)",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.shared.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(3)",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/swelancer-manager-proposals.shared.ts",
+        "line": 39,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "usage": {
+    "inputTokens": 73402,
+    "outputTokens": 1785,
+    "cacheReadTokens": 65280,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.06798,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "immkrcpuvah9pccujyl7h"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 7230
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 756,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 7230,
+          "durationMs": 756,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 728,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 7986,
+          "durationMs": 228,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 8214,
+          "durationMs": 254,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrlrnztf_df3ion'\nmodel = \"gpt-5.4-mini\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 265,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 8714,
+          "durationMs": 265,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 65442,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 9324,
+          "durationMs": 256,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 9580,
+          "durationMs": 64000,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check 'You are the engineering manager for issue 25901. Read tasks/25901/issue.md …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 73580,
+          "durationMs": 322,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 9324,
+          "durationMs": 64578,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 553,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 74421,
+          "durationMs": 553,
+          "children": [
+            {
+              "id": "n10",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 74421,
+              "durationMs": 296,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1598
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 464
+    }
+  ],
+  "locator": "@1paxit03",
+  "startedAt": "2026-07-15T07:36:23.805Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
