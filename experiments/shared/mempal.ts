@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { shared } from "niceeval/adapter";
 import type { AgentSetup, AgentTeardown, SkillSpec } from "niceeval/adapter";
+import { NICEEVAL_E2B_RELEASE } from "./e2b-templates.ts";
 
 // mempal 记忆条件的共享环境层：二进制和 embedding cache 归专用 E2B template；本 hook 只做
 // fail-fast 预检、状态恢复/回存和 agent 行为提示。
@@ -23,9 +24,22 @@ const STATE_DIR = fileURLToPath(new URL("../../.cache/mempal/state/", import.met
 /** 跨 attempt 持久化的两个目录(相对 $HOME):记忆库本体 + agent 写下的原始笔记。 */
 const STATE_PATHS = [".mempal", ".mempal-notes"];
 
-/** Mempal 变体专用模板；由 `pnpm template:mempal <tool>` 从公共 Agent 模板派生构建。 */
+/**
+ * mempal 二进制的 crates.io 版本；构建脚本 `cargo install mempal --version` 用它 pin 死。
+ * bump 时同步 rebuild 两个模板(模板名不含它,靠内容变化触发重建)。
+ */
+export const MEMPAL_VERSION = "0.9.0";
+
+/**
+ * Mempal 变体专用模板；由 `pnpm template:mempal <tool>` 从公共 Agent 模板派生构建。
+ *
+ * 名字 pin 到 base 模板的 release tag —— 和公共模板的 `:v0.6.1` 对齐(见
+ * [[e2b-templates-inventory]])。base bump 后模板名自动变,所有实验(都走这个函数)
+ * 跟着指向新模板,不会出现「base 升了、mempal 模板还是旧 base」的静默漂移。
+ */
 export function mempalTemplate(tool: "claude" | "codex"): string {
-  return `memory-evals-${tool}-mempal`;
+  const rel = NICEEVAL_E2B_RELEASE.replace(/[^a-z0-9]+/gi, "-");
+  return `memory-evals-${tool}-mempal-${rel}`;
 }
 
 /** 教 agent 用 mempal CLI 检索/落库的 Skill(claude 与 codex 共用)。 */
@@ -88,13 +102,13 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
   return async (sb, ctx) => {
     const statePath = statePathFor(ctx.experimentId);
 
-    // 1. 专用模板必须已经提供二进制。这里不再把 14 MB 文件逐 attempt 上传；缺失时
+    // 1. 专用模板必须已经提供二进制。这里不再把二进制逐 attempt 上传；缺失时
     //    fail fast，并给出构建模板的唯一修复路径。
     const probe = await sb.runShell("command -v mempal");
     if (probe.exitCode !== 0) {
       throw new Error(
         `[mempal] template does not contain mempal. Build ${mempalTemplate(tool)} with ` +
-          `\`bash scripts/build-mempal-linux.sh && pnpm template:mempal ${tool}\`, then use that template.`,
+          `\`pnpm template:mempal ${tool}\`, then use that template.`,
       );
     }
 

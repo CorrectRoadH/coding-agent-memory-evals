@@ -4,7 +4,7 @@
 
 mempal 条件由四个独立部分组成：
 
-1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 507 MB embedding cache（host 预取，见下）。
+1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 507 MB embedding cache（构建期从官方源现取，见下）。
 2. NiceEval adapter 的 `mcpServers`：把 `mempal serve --mcp` 接给 Claude Code / Codex。
 3. agent 行为提示：Claude Code 用 Stop hook；Codex 用本仓库的 `mempal-memory` Skill。原 Codex `cowork-drain` hook 对单 agent 任务是 no-op，已删除。
 4. sandbox setup/teardown：做无污染预检，按 cohort 恢复和回存 `$HOME/.mempal`。
@@ -16,27 +16,35 @@ E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fro
 ## 构建模板
 
 ```bash
-# 1. host 上产出模板的两份输入(都已存在时自动跳过,--force 强制重来):
-#      .cache/mempal/mempal        linux/amd64 二进制
-#      .cache/mempal/hf-cache.tgz  预取好的 embedding 模型 cache(~484 MB)
-bash scripts/build-mempal-linux.sh
-
-# 2. 分别从 NiceEval 的 release-pinned Claude / Codex 公共模板派生
-pnpm template:mempal claude   # → memory-evals-claude-mempal
-pnpm template:mempal codex    # → memory-evals-codex-mempal
+# 从 NiceEval 的 release-pinned Claude / Codex 公共模板派生。两样输入都在构建期从官方源
+# 现取,无 host 前置步骤:
+pnpm template:mempal claude   # → memory-evals-claude-mempal-v0-6-1
+pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1
 ```
 
-**模型 cache 必须在 host 预取，不能在模板构建时现下。** mempal 首次 ingest 会去
-HuggingFace 拉 model2vec 模型（`minishlab/potion-multilingual-128M`），而 HF 的 xet CDN 在
-E2B 构建环境里恒定返回 403（预签名 URL 带 `ByteRange` policy，客户端不发匹配 Range 头就被拒），
-两个模板同样的报错、复现两次。host（residential IP）能正常下载，所以 `build-mempal-linux.sh`
-用同一个 linux/amd64 容器跑一次真实 ingest 把模型灌进 HF cache 并打包，模板里只做解压 + 一次
-自检 ingest（命中 cache，不碰网络）。
+**两样输入都在模板构建期从官方源现取,不再 host 预取:**
+
+- **二进制**:构建期 `cargo install mempal --version <pin> --locked`（crates.io 官方源）。在 base
+  模板里编译,glibc ABI 与运行时天然一致,不再需要 host 侧 docker 交叉编译去对 ABI。装完把二进制
+  挪到 `/usr/local/bin`,删掉 rustup toolchain 和 cargo registry。
+- **模型 cache**:构建期跑一次 warmup ingest,让 mempal 自己从 HuggingFace 官方拉 model2vec
+  模型（`minishlab/potion-multilingual-128M` ≈507 MB）灌进 `~/.cache/huggingface`,烘焙进镜像;
+  运行时命中 cache、零下载。
+
+> **历史注记(2026-07-15 修正)**:旧方案坚持「模型必须 host 预取」,理由是 mempal 首次 ingest
+> 会从 HF xet CDN 拉模型而 E2B 里恒 403（预签名 URL 带 `ByteRange` policy,客户端不发匹配 Range
+> 头就被拒）。**这个前提已被实测推翻**:那是旧 mempal/hf-hub 下载器的客户端 bug。当前 mempal 0.9.0
+> （model2vec-rs 0.1.4 → 新 hf-hub）在真实 E2B 沙箱里 ingest 直接成功、cache 落到
+> `~/.cache/huggingface`;裸 `curl -L` 该 `model.safetensors` 在 E2B 也返回 200(512 MB 全下)。
+> 于是整套 host docker 交叉编译 + 预取 + 64 MB 分片 + `.copy` 重组的 workaround 全部删除,输入
+> 改为构建期从 crates.io / HuggingFace 官方源现取。
 
 模板构建脚本在 `scripts/build-mempal-e2b-template.ts`。模板名由 `mempalTemplate()`
-（`experiments/shared/mempal.ts`）唯一决定，构建和运行读同一个常量——没有环境变量覆盖，
-免得构建的模板和实验引用的模板悄悄错位。它不会在 `pnpm install`、typecheck 或普通 eval 中
-隐式发布远端资源。
+（`experiments/shared/mempal.ts`）唯一决定,并 pin 到 base 模板的 release tag（`v0-6-1`)——和公共
+模板的 `:v0.6.1` 对齐,base bump 后模板名自动变,不会出现「base 升了、mempal 模板还是旧 base」的
+静默漂移。mempal 版本由 `MEMPAL_VERSION` 常量 pin 死。构建和运行读同一处,没有环境变量覆盖,
+免得构建的模板和实验引用的模板悄悄错位。它不会在 `pnpm install`、typecheck 或普通 eval 中隐式
+发布远端资源。
 
 ## Attempt 生命周期与 fail-fast
 

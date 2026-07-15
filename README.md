@@ -93,12 +93,12 @@ correctroads-default-team/niceeval-bub:v0.6.1
 ```
 
 无需先在自己的 Team 构建，agent CLI（含 bub 的安装指纹）全部烘焙在模板里，attempt 里零运行时安装。
-唯一需要自建的是 mempal 变体模板——它在公共模板之上加 mempal 二进制和预热好的 embedding cache：
+唯一需要自建的是 mempal 变体模板——它在公共模板之上补 mempal 二进制和预热好的 embedding cache，
+两样都在构建期从官方源现取（`cargo install` + warmup ingest 自动拉 HF 模型），无 host 前置步骤：
 
 ```sh
-bash scripts/build-mempal-linux.sh     # host 侧交叉编译 linux/amd64 二进制(一次性)
-pnpm template:mempal claude            # → memory-evals-claude-mempal
-pnpm template:mempal codex             # → memory-evals-codex-mempal
+pnpm template:mempal claude            # → memory-evals-claude-mempal-v0-6-1
+pnpm template:mempal codex             # → memory-evals-codex-mempal-v0-6-1
 ```
 
 设计见 [`docs/mempal-condition-design.md`](docs/mempal-condition-design.md)。
