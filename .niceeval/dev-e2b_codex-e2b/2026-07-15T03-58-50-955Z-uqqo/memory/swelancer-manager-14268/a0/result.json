@@ -1,0 +1,169 @@
+{
+  "id": "memory/swelancer-manager-14268",
+  "description": "SWE-Lancer manager task 14268: pick the proposal the maintainers actually accepted",
+  "verdict": "errored",
+  "fingerprint": "695f5c6da468f47e5bd551207487650c2560dd4f78ed95dd711d4f476ee1c002",
+  "attempt": 0,
+  "durationMs": 5937,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 0
+  },
+  "error": {
+    "code": "unexpected-error",
+    "message": "workspace baseline failed: fatal: not a git repository (or any of the parent directories): .git\n",
+    "phase": "eval.run",
+    "stack": "Error: workspace baseline failed: fatal: not a git repository (or any of the parent directories): .git\n\n    at Object.test (/Users/ctrdh/Code/coding-agent-memory-evals/evals/memory/swelancer-manager-proposals.shared.ts:17:42)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:675:7)"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iu7aaa1hzx6iqf6eg0fx3"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2894
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 403,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2896,
+          "durationMs": 401,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 798,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 3298,
+          "durationMs": 266,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3564,
+          "durationMs": 279,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrljvznj_45gfdp'\nmodel = \"gpt-5.4-mini\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 264,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 4097,
+          "durationMs": 263,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 554,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 4674,
+          "durationMs": 240,
+          "failed": true,
+          "command": {
+            "display": "git add -A && git commit -q -m \"workspace\" --allow-empty",
+            "exitCode": 128
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 240,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 4914,
+          "durationMs": 240,
+          "command": {
+            "display": "git log --reverse --format='%H %s'",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1312
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 527
+    }
+  ],
+  "locator": "@1af64jru",
+  "startedAt": "2026-07-15T03:58:44.563Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

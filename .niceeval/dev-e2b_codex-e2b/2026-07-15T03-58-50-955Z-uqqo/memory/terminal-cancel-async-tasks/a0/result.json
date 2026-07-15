@@ -1,0 +1,295 @@
+{
+  "id": "memory/terminal-cancel-async-tasks",
+  "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+  "verdict": "passed",
+  "fingerprint": "d0955714a7205b71cba4ac9c847ee8d286d4c74077abaabb463082c5809dae25",
+  "attempt": 0,
+  "durationMs": 167457,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+        "line": 45,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "usage": {
+    "inputTokens": 104772,
+    "outputTokens": 6892,
+    "cacheReadTokens": 84864,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1159578,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iu2xynfx25nwkpul1he8v"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2781
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 348,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2782,
+          "durationMs": 348,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 752,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 3130,
+          "durationMs": 243,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3374,
+          "durationMs": 250,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrljvzia_b2zlhs'\nmodel = \"gpt-5.4-mini\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 241,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3882,
+          "durationMs": 241,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 160683,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 4381,
+          "durationMs": 262,
+          "command": {
+            "display": "git add -A && git commit -q -m \"workspace\" --allow-empty || true",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 4643,
+          "durationMs": 1984,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 6629,
+          "durationMs": 6518,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 13148,
+          "durationMs": 3781,
+          "command": {
+            "display": "python3 -m pip install --break-system-packages pytest==8.4.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 16931,
+          "durationMs": 264,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 17195,
+          "durationMs": 132143,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check 'Implement `run_tasks` in `run.py`.\n\nIt must accept a list of async zero-arg…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 149355,
+          "durationMs": 275,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 16931,
+          "durationMs": 132699,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 149923,
+          "durationMs": 14880,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 1063,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 164807,
+          "durationMs": 260,
+          "command": {
+            "display": "git log --reverse --format='%H %s'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 165067,
+          "durationMs": 267,
+          "command": {
+            "display": "git diff --name-status 157f01212b84b001307fe18742c05fa00f1b65e0^ 157f01212b84b001307fe18742c05fa00f1b65e0",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 165335,
+          "durationMs": 264,
+          "command": {
+            "display": "git diff --numstat 157f01212b84b001307fe18742c05fa00f1b65e0^ 157f01212b84b001307fe18742c05fa00f1b65e0",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 165600,
+          "durationMs": 268,
+          "command": {
+            "display": "git show 157f01212b84b001307fe18742c05fa00f1b65e0:'run.py'",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 2
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 2372
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 779
+    }
+  ],
+  "locator": "@1q9rn46c",
+  "startedAt": "2026-07-15T03:58:44.564Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
