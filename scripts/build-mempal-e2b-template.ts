@@ -17,6 +17,9 @@ const BUILD_DIR = "/opt/mempal-template-build";
 
 const template = Template({ fileContextPath: import.meta.dirname })
   .fromTemplate(baseTemplate)
+  // e2b 的 .copy 不像 Dockerfile COPY 会自动建父目录:目标目录不存在时它只报
+  // "failed to move files in sandbox: exit status 1"(不透明)。先显式 makeDir。
+  .makeDir(BUILD_DIR, { user: "root" })
   .copy(
     ["mempal-template/install-mempal.sh", "mempal-template/warmup-model-cache.sh"],
     `${BUILD_DIR}/`,
