@@ -106,6 +106,28 @@ function hookLog(ctx: SandboxHookContext, message: string): void {
 }
 
 /**
+ * E2B envd 的文件 API(uploadFile / downloadFile)偶发挂起,~80s 后 abort（`TimeoutError:
+ * operation aborted due to timeout`），把整个 attempt 判 errored。实测串行跑 10 个 eval 时
+ * 有 20-50% 撞这个,状态存档才 <100KB,纯 envd 抽风、非体积问题（见 memory
+ * e2b-fetch-failed-transient）。这里给状态恢复/回存的关键操作套一层有限重试,envd 恢复后即成。
+ * 候选上游:niceeval 的 e2b provider 应自己容忍 envd transience,一次 40KB 上传不该崩整个 attempt。
+ */
+async function withRetry<T>(label: string, fn: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (i < attempts) await new Promise((r) => setTimeout(r, 2000 * i));
+    }
+  }
+  throw new Error(
+    `[mempal] ${label} failed after ${attempts} attempts: ${lastErr instanceof Error ? lastErr.message : String(lastErr)}`,
+  );
+}
+
+/**
  * 沙箱级 setup 钩子:专用模板预检、按 tool 装生命周期提示、记忆态载入。
  * 挂到 `e2bSandbox().setup(mempalSetup(tool))`。跑在 workspace 上传 / eval.setup /
  * agent.setup 之前(见 SandboxHooks 执行顺序),所以这里还没有 agent CLI、也还没有
@@ -165,7 +187,7 @@ export function mempalSetup(tool: "claude" | "codex"): SandboxHook {
       // 沙箱 home 路径按 provider 变(不 hardcode /home/user),动态取。
       const home = (await sb.runShell('printf "%s" "$HOME"')).stdout.trim();
       const archive = `${home}/mempal-state.tgz`;
-      await sb.uploadFile(archive, state);
+      await withRetry("state upload", () => sb.uploadFile(archive, state as Buffer));
       await requireCommand(sb, "state restore", `tar -xzf '${archive}' -C "$HOME" && rm -f '${archive}'`);
       hookLog(ctx, `[mempal] state restored from ${ctx.experimentId}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
     } else {
@@ -218,7 +240,7 @@ export function mempalTeardown(_tool: "claude" | "codex"): SandboxHook {
       const archive = `${home}/mempal-state.tgz`;
       const pack = await sb.runShell(`tar -C "$HOME" -czf '${archive}' ${STATE_PATHS.join(" ")}`);
       if (pack.exitCode === 0) {
-        const data = await sb.downloadFile(archive);
+        const data = await withRetry("state download", () => sb.downloadFile(archive));
         // host 侧原子写回:先落 .tmp 再 rename,进程半途被杀也不会留下半截 tgz。
         // experimentId 可能含 "/"(如 "compare/codex-gpt-5.4--mempal"),statePath 落在
         // 嵌套目录下,先 mkdir -p 到父目录。
