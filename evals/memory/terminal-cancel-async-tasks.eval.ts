@@ -11,11 +11,15 @@ export default defineEval({
     await t.sandbox.uploadDirectory("../../workspaces/terminal-cancel-async-tasks");
 
     // 装系统依赖需要 root(apt / 系统级 pip);{ root: true } 跨后端一致。agent 阶段仍默认非 root。
-    await t.sandbox.runCommand("apt-get", ["update"], { root: true });
-    await t.sandbox.runCommand("apt-get", ["install", "-y", "python3", "python3-pip"], { root: true });
-    await t.sandbox.runCommand(
-      "python3",
-      ["-m", "pip", "install", "--break-system-packages", "pytest==8.4.1"],
+    // 幂等预检按「末态」guard——目标是 pytest 可导入,不是 python3 存在。
+    // python3 在 ≠ pip/pytest 在:若照 `command -v python3` 短路,模板只烘焙了 python3 时会静默漏装。
+    // `import pytest` 成功已蕴含 python3+pip 就位,是正确的跳过键;失败(含 python3 缺失)才跑整段安装。
+    await t.sandbox.runShell(
+      "python3 -c 'import pytest' 2>/dev/null || {\n" +
+        "  apt-get update &&\n" +
+        "  apt-get install -y python3 python3-pip &&\n" +
+        "  python3 -m pip install --break-system-packages pytest==8.4.1 ;\n" +
+        "}",
       { root: true },
     );
 
@@ -31,7 +35,7 @@ export default defineEval({
     const testPy = await readFile(fixture("tests/test.py"), "utf8");
     const rawOutputs = await readFile(fixture("tests/test_outputs.py"), "utf8");
     const testOutputs = rawOutputs
-      .replace('Path("/app/run.py")', 'Path("run.py")')
+      .replaceAll('Path("/app/run.py")', 'Path("run.py")')
       .replaceAll('"python",', '"python3",');
 
     await t.sandbox.writeFiles({
