@@ -3,8 +3,16 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { shared } from "niceeval/adapter";
-import type { AgentSetup, AgentTeardown, SkillSpec } from "niceeval/adapter";
+import type { SkillSpec } from "niceeval/adapter";
+import type { E2BSandboxSpec, Sandbox } from "niceeval/sandbox";
 import { NICEEVAL_E2B_RELEASE } from "./e2b-templates.ts";
+
+// niceeval 的沙箱级钩子签名。`.setup()/.teardown()` 收的是 SandboxHook —— 一个**窄**上下文
+// (只有 experimentId / signal / progress / diagnostic),不是 agent 级 AgentContext,所以拿
+// 不到 `ctx.log`(那是 AgentContext 上 `progress` 的别名)。niceeval/sandbox 目前没直接导出
+// SandboxHook / SandboxHookContext 类型(候选上游:补导出),这里从 E2BSandboxSpec 派生。
+type SandboxHook = Parameters<E2BSandboxSpec["setup"]>[0];
+type SandboxHookContext = Parameters<SandboxHook>[1];
 
 // mempal 记忆条件的共享环境层：二进制和 embedding cache 归专用 E2B template；本 hook 只做
 // fail-fast 预检、状态恢复/回存和 agent 行为提示。
@@ -83,13 +91,18 @@ function commandFailure(label: string, result: { exitCode: number; stdout: strin
 }
 
 async function requireCommand(
-  sb: Parameters<AgentSetup>[0],
+  sb: Sandbox,
   label: string,
   script: string,
-  opts?: Parameters<Parameters<AgentSetup>[0]["runShell"]>[1],
+  opts?: Parameters<Sandbox["runShell"]>[1],
 ): Promise<void> {
   const result = await sb.runShell(script, opts);
   if (result.exitCode !== 0) throw commandFailure(label, result);
+}
+
+/** 沙箱钩子的信息日志:hook ctx 没有 AgentContext 的 `log` 别名,直接走 `progress`。 */
+function hookLog(ctx: SandboxHookContext, message: string): void {
+  ctx.progress({ message });
 }
 
 /**
@@ -98,7 +111,7 @@ async function requireCommand(
  * agent.setup 之前(见 SandboxHooks 执行顺序),所以这里还没有 agent CLI、也还没有
  * MCP 配置 —— MCP 由 `mempalMcp` 走 adapter 构造期单独接。
  */
-export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
+export function mempalSetup(tool: "claude" | "codex"): SandboxHook {
   return async (sb, ctx) => {
     const statePath = statePathFor(ctx.experimentId);
 
@@ -131,7 +144,7 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
         "case \"$out\" in *niceeval-mempal-preflight-sentinel*) ;; *) echo \"$out\" >&2; exit 1 ;; esac; " +
         "rm -rf /tmp/mempal-preflight-home /tmp/mempal-preflight-docs",
     );
-    ctx.log("[mempal] preflight passed: binary, cached model, ingest/search");
+    hookLog(ctx, "[mempal] preflight passed: binary, cached model, ingest/search");
 
     // 3. 记忆态载入:[载入 … 回存] 临界区的串行由实验声明 maxConcurrency: 1 保证
     //    (niceeval ≥0.4.5 按实验限流;见文件头注的【串行前提】)。
@@ -154,13 +167,13 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
       const archive = `${home}/mempal-state.tgz`;
       await sb.uploadFile(archive, state);
       await requireCommand(sb, "state restore", `tar -xzf '${archive}' -C "$HOME" && rm -f '${archive}'`);
-      ctx.log(`[mempal] state restored from ${ctx.experimentId}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
+      hookLog(ctx, `[mempal] state restored from ${ctx.experimentId}.tgz (${(state.length / 1024).toFixed(0)} KB)`);
     } else {
       // 空库初始化:$HOME/.mempal/palace.db。workspace 此时还没上传(eval test()
       // 里才 uploadDirectory),所以不 init 项目结构、不预 ingest —— 记忆积累
       // 应该来自 agent 自己 session 内写、后续 eval/run 读。
       await requireCommand(sb, "empty state initialization", "mempal init .");
-      ctx.log(`[mempal] no saved state for "${ctx.experimentId}", starting from empty palace`);
+      hookLog(ctx, `[mempal] no saved state for "${ctx.experimentId}", starting from empty palace`);
     }
 
     // agent 写笔记的目录(Skill 里教它往这里写,再 ingest 整个目录)。先建好,免得
@@ -194,7 +207,7 @@ export function mempalSetup(tool: "claude" | "codex"): AgentSetup {
  * `tool` 参数当前未被回存逻辑本身使用(回存的是 `$HOME/.mempal` 全量,与 tool 无关),
  * 保留是为了和 `mempalSetup(tool)` 调用形态对称、方便以后按 tool 差异化回存内容。
  */
-export function mempalTeardown(_tool: "claude" | "codex"): AgentTeardown {
+export function mempalTeardown(_tool: "claude" | "codex"): SandboxHook {
   return async (sb, ctx) => {
     const statePath = statePathFor(ctx.experimentId);
     // 回存记忆态。best-effort:失败只记 log 不抛(runner 本来也会吞 teardown 的错,
@@ -223,13 +236,13 @@ export function mempalTeardown(_tool: "claude" | "codex"): AgentTeardown {
             savedAt: new Date().toISOString(),
           }, null, 2) + "\n",
         );
-        ctx.log(`[mempal] state saved to ${ctx.experimentId}.tgz (${(data.length / 1024).toFixed(0)} KB)`);
+        hookLog(ctx, `[mempal] state saved to ${ctx.experimentId}.tgz (${(data.length / 1024).toFixed(0)} KB)`);
       } else {
         // $HOME/.mempal 不存在(比如 agent 半路挂了没 ingest 过)也走这里:不覆盖旧存档。
-        ctx.log(`[mempal] state save skipped: tar failed (${(pack.stderr || pack.stdout).trim().slice(0, 200)})`);
+        hookLog(ctx, `[mempal] state save skipped: tar failed (${(pack.stderr || pack.stdout).trim().slice(0, 200)})`);
       }
     } catch (e) {
-      ctx.log(`[mempal] state save failed: ${e instanceof Error ? e.message : String(e)}`);
+      hookLog(ctx, `[mempal] state save failed: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 }
