@@ -1,0 +1,368 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "6a1afe501ddce3418083fc077dd47faab33fa6cf0d24f05d85f00a32f778975d",
+  "attempt": 0,
+  "durationMs": 261813,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// lib/db.js\nimport { unstable_cache } from \"next/cache\";\n\n// ---------------------------------------------------------------------------\n// Simulated product database — in production this would be PostgreSQL, a PIM\n// API, or another backing store.  Module-level state means it resets on every\n// dev server restart; a real DB would persist naturally.\n// ---------------------------------------------------------------------------\n\nlet products = [\n  { id: 1, name: \"Laptop Pro 15″\", sku: \"LAP-001\", price: 1299.99, stock: 42, status: \"active\" },\n  { id: 2, name: \"Wireless Phone\", sku: \"PHN-002\", price: 799.99, stock: 128, status: \"active\" },\n  { id: 3, name: \"10″ Tablet\", sku: \"TAB-003\", price: 499.99, stock: 87, status: \"active\" },\n  { id: 4, name: \"Noise-Cancelling Headphones\", sku: \"HPH-004\", price: 249.99, stock: 0, status: \"inactive\" },\n  { id: 5, name: \"Smart Watch\", sku: \"WCH-005\", price: 349.99, stock: 65, status: \"active\" },\n];\n\nlet lastSync = new Date(\"2026-07-14T12:00:00Z\");\n\n// ---------------------------------------------------------------------------\n// Cached catalog reader  (used by the admin page for day-to-day browsing)\n//\n// Wrapped with unstable_cache so repeated requests served from the same\n// render cycle (or within the cache lifetime) skip the simulated DB delay.\n// The \"products\" tag lets us bulk-invalidate from the sync action.\n// ---------------------------------------------------------------------------\n\nexport const getCachedProducts = unstable_cache(\n  async () => {\n    // Simulate a database round-trip.\n    await new Promise((resolve) => setTimeout(resolve, 100));\n\n    return {\n      items: products.map((p) => ({ ...p })),\n      lastSync: lastSync.toISOString(),\n      total: products.length,\n    };\n  },\n  [\"admin-products-all\"],\n  { tags: [\"products\"] },\n);\n\n// ---------------------------------------------------------------------------\n// Direct (non-cached) reader — useful after a sync when we want to bypass the\n// stale cache entry and confirm the new data is visible.\n// ---------------------------------------------------------------------------\n\nexport async function getAllProducts() {\n  await new Promise((resolve) => setTimeout(resolve, 100));\n  return {\n    items: products.map((p) => ({ ...p })),\n    lastSync: lastSync.toISOString(),\n    total: products.length,\n  };\n}\n\n// ---------------------------------------------------------------------------\n// Background sync  — simulates pulling updated pricing / inventory from an\n// upstream ERP or PIM system and writing it into the local database.\n//\n// In production this would call an external API, transform the response, and\n// upsert rows.  The key property for the admin experience is that it runs\n// *after* the server action returns so the operator isn't blocked.\n// ---------------------------------------------------------------------------\n\nexport async function syncFromERP() {\n  // Simulate the latency of a real ERP round-trip (network + processing).\n  await new Promise((resolve) => setTimeout(resolve, 4_000));\n\n  // \"New data from the upstream\" — prices updated, stock adjusted, a new SKU\n  // added, one delisted.\n  products = [\n    { id: 1, name: \"Laptop Pro 15″ 2026 Edition\", sku: \"LAP-001\", price: 1199.99, stock: 55, status: \"active\" },\n    { id: 2, name: \"Wireless Phone\", sku: \"PHN-002\", price: 749.99, stock: 200, status: \"active\" },\n    { id: 3, name: \"10″ Tablet\", sku: \"TAB-003\", price: 499.99, stock: 87, status: \"active\" },\n    { id: 4, name: \"Noise-Cancelling Headphones\", sku: \"HPH-004\", price: 199.99, stock: 30, status: \"active\" },\n    { id: 5, name: \"Smart Watch Series 2\", sku: \"WCH-005\", price: 379.99, stock: 42, status: \"active\" },\n    { id: 6, name: \"Bluetooth Speaker\", sku: \"SPK-006\", price: 89.99, stock: 150, status: \"active\" },\n  ];\n\n  lastSync = new Date();\n}\n\n\n// app/layout.tsx\nimport type { Metadata } from \"next\";\n\nexport const metadata: Metadata = {\n  title: \"Admin Product Catalog\",\n  description: \"E-commerce admin catalog man…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// lib/db.js\nimport { unstable_cache } from \"next/cache\";\n\n// ---------------------------------------------------------------------------\n// Simulated product database — in production this would be PostgreSQL, a PIM\n// API, or another backing store.  Module-level state means it resets on every\n// dev server restart; a real DB would persist naturally.\n// ---------------------------------------------------------------------------\n\nlet products = [\n  { id: 1, name: \"Laptop Pro 15″\", sku: \"LAP-001\", price: 1299.99, stock: 42, status: \"active\" },\n  { id: 2, name: \"Wireless Phone\", sku: \"PHN-002\", price: 799.99, stock: 128, status: \"active\" },\n  { id: 3, name: \"10″ Tablet\", sku: \"TAB-003\", price: 499.99, stock: 87, status: \"active\" },\n  { id: 4, name: \"Noise-Cancelling Headphones\", sku: \"HPH-004\", price: 249.99, stock: 0, status: \"inactive\" },\n  { id: 5, name: \"Smart Watch\", sku: \"WCH-005\", price: 349.99, stock: 65, status: \"active\" },\n];\n\nlet lastSync = new Date(\"2026-07-14T12:00:00Z\");\n\n// ---------------------------------------------------------------------------\n// Cached catalog reader  (used by the admin page for day-to-day browsing)\n//\n// Wrapped with unstable_cache so repeated requests served from the same\n// render cycle (or within the cache lifetime) skip the simulated DB delay.\n// The \"products\" tag lets us bulk-invalidate from the sync action.\n// ---------------------------------------------------------------------------\n\nexport const getCachedProducts = unstable_cache(\n  async () => {\n    // Simulate a database round-trip.\n    await new Promise((resolve) => setTimeout(resolve, 100));\n\n    return {\n      items: products.map((p) => ({ ...p })),\n      lastSync: lastSync.toISOString(),\n      total: products.length,\n    };\n  },\n  [\"admin-products-all\"],\n  { tags: [\"products\"] },\n);\n\n// ---------------------------------------------------------------------------\n// Direct (non-cached) reader — useful after a sync when we want to bypass the\n// stale cache entry and confirm the new data is visible.\n// ---------------------------------------------------------------------------\n\nexport async function getAllProducts() {\n  await new Promise((resolve) => setTimeout(resolve, 100));\n  return {\n    items: products.map((p) => ({ ...p })),\n    lastSync: lastSync.toISOString(),\n    total: products.length,\n  };\n}\n\n// ---------------------------------------------------------------------------\n// Background sync  — simulates pulling updated pricing / inventory from an\n// upstream ERP or PIM system and writing it into the local database.\n//\n// In production this would call an external API, transform the response, and\n// upsert rows.  The key property for the admin experience is that it runs\n// *after* the server action returns so the operator isn't blocked.\n// ---------------------------------------------------------------------------\n\nexport async function syncFromERP() {\n  // Simulate the latency of a real ERP round-trip (network + processing).\n  await new Promise((resolve) => setTimeout(resolve, 4_000));\n\n  // \"New data from the upstream\" — prices updated, stock adjusted, a new SKU\n  // added, one delisted.\n  products = [\n    { id: 1, name: \"Laptop Pro 15″ 2026 Edition\", sku: \"LAP-001\", price: 1199.99, stock: 55, status: \"active\" },\n    { id: 2, name: \"Wireless Phone\", sku: \"PHN-002\", price: 749.99, stock: 200, status: \"active\" },\n    { id: 3, name: \"10″ Tablet\", sku: \"TAB-003\", price: 499.99, stock: 87, status: \"active\" },\n    { id: 4, name: \"Noise-Cancelling Headphones\", sku: \"HPH-004\", price: 199.99, stock: 30, status: \"active\" },\n    { id: 5, name: \"Smart Watch Series 2\", sku: \"WCH-005\", price: 379.99, stock: 42, status: \"active\" },\n    { id: 6, name: \"Bluetooth Speaker\", sku: \"SPK-006\", price: 89.99, stock: 150, status: \"active\" },\n  ];\n\n  lastSync = new Date();\n}\n\n\n// app/layout.tsx\nimport type { Metadata } from \"next\";\n\nexport const metadata: Metadata = {\n  title: \"Admin Product Catalog\",\n  description: \"E-commerce admin catalog man…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "defined",
+      "received": "undefined"
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "usage": {
+    "inputTokens": 75574,
+    "outputTokens": 52070,
+    "cacheReadTokens": 2807808,
+    "requests": 77,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.033021822400000005,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iroued4q0n7zgdpbrisxt"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3018
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 296,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3019,
+          "durationMs": 296,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 418,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 3315,
+          "durationMs": 205,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 256729,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 3963,
+          "durationMs": 34062,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 38026,
+          "durationMs": 250,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 38276,
+          "durationMs": 212350,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 250626,
+          "durationMs": 279,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 251164,
+          "durationMs": 259,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 38026,
+          "durationMs": 213397,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 251945,
+          "durationMs": 8517,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 552,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 9 files",
+          "startOffsetMs": 260462,
+          "durationMs": 552,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 260462,
+              "durationMs": 243,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 798
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 500
+    }
+  ],
+  "locator": "@1t607p5v",
+  "startedAt": "2026-07-15T09:04:52.668Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4/2026-07-15T09-08-05-994Z-jo0s/memory/agent-029-use-cache-directive/a0"
+}

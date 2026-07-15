@@ -1,0 +1,119 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "errored",
+  "fingerprint": "906421b83fc3b53e0a00ab48b20ba80d671d88e110debb7364e353141e7a5f38",
+  "attempt": 0,
+  "durationMs": 1199928,
+  "assertions": [],
+  "error": {
+    "code": "timeout",
+    "message": "attempt timed out (1200000ms)",
+    "phase": "agent.run",
+    "stack": "Recent progress:\n  · starting sandbox...\n  · OTLP in-sandbox collector -> http://127.0.0.1:36059/v1/traces (http/protobuf)\n  · agent setup (install CLI / write config)...\n  · driving agent...\n  · turn 1 → \"Create a Server Action that creates …\""
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2976
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 426,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2978,
+          "durationMs": 425,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exc…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1192,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3404,
+          "durationMs": 250,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3655,
+          "durationMs": 255,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4122,
+          "durationMs": 259,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrm3ohuj_2ze7w6'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 1195333,
+      "failed": true,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4814,
+          "durationMs": 17942,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 22767,
+          "durationMs": 277,
+          "command": {
+            "display": "git add -A -f -- . ':(exclude).git' ':(exclude)node_modules' ':(exclude).next' ':(exclude)dist' ':(exclude)build' ':(exclude).turbo' ':(exclude).niceeval' ':(e…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 4438
+    }
+  ],
+  "locator": "@1202l1x1",
+  "startedAt": "2026-07-15T13:12:46.657Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

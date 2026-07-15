@@ -1,0 +1,1 @@
+{"skills":[{"kind":"local","name":"mempal-memory","path":"experiments/shared/mempal-skill","sha256":"679abe817a7def400c6c021a31f23aa3a1326889504b3d3e5b2afe3b11658b11"}],"nativeConfigFile":{"agent":"claude-code","path":"configs/claude-code/mempal.json","sha256":"cb7e03461ea009caa3636f6a01962f024ce390d0d0740b03da840657785877e3"}}

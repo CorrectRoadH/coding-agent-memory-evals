@@ -1,0 +1,39 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "dev-e2b/bub-e2b",
+  "experiment": {
+    "description": "bub · gpt-5.4-mini · E2B sandbox",
+    "flags": {
+      "memory": "baseline"
+    },
+    "runs": 1,
+    "earlyExit": true,
+    "timeoutMs": 1200000,
+    "budget": 2,
+    "selectedEvalIds": [
+      "memory/agent-029-use-cache-directive",
+      "memory/agent-030-app-router-migration-hard",
+      "memory/agent-037-updatetag-cache",
+      "memory/repomod-hello-world-api",
+      "memory/terminal-cancel-async-tasks",
+      "memory/terminal-pypi-server"
+    ],
+    "evalFilterFingerprint": "2512344f010b590f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-bub:v0.6.1"
+      },
+      "fingerprint": "32f4d1a3ef7968f0"
+    }
+  },
+  "agent": "bub",
+  "model": "gpt-5.4-mini",
+  "startedAt": "2026-07-15T07:59:52.063Z",
+  "completedAt": "2026-07-15T08:04:31.569Z"
+}
