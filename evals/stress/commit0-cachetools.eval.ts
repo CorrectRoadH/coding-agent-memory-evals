@@ -7,7 +7,11 @@ export default defineEval({
   timeoutMs: 1800000,
   async test(t) {
     await t.sandbox.uploadDirectory("../../workspaces/commit0-cachetools");
-    const baselineCommit = await t.sandbox.runShell('git add -A && git commit -q -m "workspace" --allow-empty');
+    // 这条 verifier 要用 git diff 确认 agent 没改 tests/,因此 fixture 自己需要真实仓库;
+    // NiceEval 的私有 diff ledger 不会在 workspace 里暴露 .git。
+    const baselineCommit = await t.sandbox.runShell(
+      'git init -q && git add -A && git -c user.name=niceeval -c user.email=niceeval@localhost commit -q -m "workspace" --allow-empty',
+    );
     if (baselineCommit.exitCode !== 0) throw new Error(`workspace baseline failed: ${baselineCommit.stderr || baselineCommit.stdout}`);
     const baseline = (await t.sandbox.runCommand("git", ["rev-parse", "HEAD"])).stdout.trim();
 

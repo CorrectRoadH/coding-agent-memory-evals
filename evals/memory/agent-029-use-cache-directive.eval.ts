@@ -5,9 +5,6 @@ export default defineEval({
   description: "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
   async test(t) {
     await t.sandbox.uploadDirectory("../../workspaces/agent-029-use-cache-directive");
-    // runner 在 test() 之前已经打过一次空 git 基线;workspace 现在是 test() 里手工上传的,
-    // 晚于那次空提交,所以重新 commit 一次,不然 starter 文件会被当成 agent 生成的文件进最终 diff。
-    await t.sandbox.runShell('git add -A && git commit -q -m "workspace" --allow-empty || true');
     await t.sandbox.runCommand("npm", ["install", "--no-audit", "--no-fund"]);
 
     await t

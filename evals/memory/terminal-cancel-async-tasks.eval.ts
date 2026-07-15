@@ -9,9 +9,6 @@ export default defineEval({
   description: "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
   async test(t) {
     await t.sandbox.uploadDirectory("../../workspaces/terminal-cancel-async-tasks");
-    // runner 在 test() 之前已经打过一次空 git 基线;workspace 现在是 test() 里手工上传的,
-    // 晚于那次空提交,所以重新 commit 一次,不然 starter 文件会被当成 agent 生成的文件进最终 diff。
-    await t.sandbox.runShell('git add -A && git commit -q -m "workspace" --allow-empty || true');
 
     // 装系统依赖需要 root(apt / 系统级 pip);{ root: true } 跨后端一致。agent 阶段仍默认非 root。
     await t.sandbox.runCommand("apt-get", ["update"], { root: true });

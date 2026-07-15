@@ -13,8 +13,6 @@ export function managerProposalEval(issue: IssueId) {
     description: `SWE-Lancer manager task ${issue}: pick the proposal the maintainers actually accepted`,
     async test(t) {
       await t.sandbox.uploadDirectory("../../workspaces/swelancer-manager-proposals");
-      const baseline = await t.sandbox.runShell('git add -A && git commit -q -m "workspace" --allow-empty');
-      if (baseline.exitCode !== 0) throw new Error(`workspace baseline failed: ${baseline.stderr || baseline.stdout}`);
 
       await t
         .send(
