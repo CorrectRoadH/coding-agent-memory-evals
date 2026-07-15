@@ -1,7 +1,5 @@
 import { defaultBuildLogger, Template } from "e2b";
-import { NICEEVAL_PUBLIC_E2B_TEMPLATES } from "niceeval/sandbox/e2b-template";
-import { NICEEVAL_E2B_RELEASE } from "../experiments/shared/e2b-templates.ts";
-import { MEMPAL_VERSION, mempalTemplate } from "../experiments/shared/mempal.ts";
+import { MEMPAL_VERSION, mempalBaseTemplate, mempalTemplate } from "../experiments/shared/mempal.ts";
 
 // 本仓库唯一需要自建的 E2B 模板。基底是 NiceEval 的 release-pinned 公共 Agent 模板
 // (CLI 已烘焙),这里在构建期补两样每个 attempt 都相同、稳定、体积大的东西:
@@ -20,8 +18,7 @@ const agent = process.argv[2];
 if (agent !== "claude" && agent !== "codex") {
   throw new Error("Usage: pnpm template:mempal <claude|codex>");
 }
-const base = agent === "claude" ? NICEEVAL_PUBLIC_E2B_TEMPLATES["claude-code"] : NICEEVAL_PUBLIC_E2B_TEMPLATES.codex;
-const baseTemplate = `${base}:${NICEEVAL_E2B_RELEASE}`;
+const baseTemplate = mempalBaseTemplate(agent);
 const templateName = mempalTemplate(agent);
 
 const template = Template()
@@ -49,6 +46,9 @@ const template = Template()
       "printf '%s\\n' 'niceeval template warmup' >/tmp/mempal-template-warm/warmup.md; " +
       "mempal init /tmp/mempal-template-warm; " +
       "mempal ingest /tmp/mempal-template-warm --wing niceeval-template; " +
+      // 不用 `... | grep -q`，避免 grep 提前关管道令 Rust stdout 吃 SIGPIPE。
+      "out=$(mempal search 'niceeval template warmup' --json); " +
+      "case \"$out\" in *'niceeval template warmup'*) ;; *) echo \"$out\" >&2; exit 1 ;; esac; " +
       // 自检:cache 已落盘就该有模型文件;没有就是没烘上,构建当场失败。
       'test -n "$(find "$HOME/.cache/huggingface" -name "*.safetensors" 2>/dev/null | head -1)"; ' +
       'rm -rf /tmp/mempal-template-warm "$HOME/.mempal"',

@@ -5,21 +5,20 @@
 mempal 条件由四个独立部分组成：
 
 1. 两个 Agent 专属 E2B template：分别从 NiceEval 的 release-pinned Claude/Codex 公共模板派生，预置 mempal 二进制与约 507 MB embedding cache（构建期从官方源现取，见下）。
-2. NiceEval adapter 的 `mcpServers`：把 `mempal serve --mcp` 接给 Claude Code / Codex。
-3. agent 行为提示：Claude Code 用 Stop hook；Codex 用本仓库的 `mempal-memory` Skill。原 Codex `cowork-drain` hook 对单 agent 任务是 no-op，已删除。
-4. sandbox setup/teardown：做无污染预检，按 cohort 恢复和回存 `$HOME/.mempal`。
+2. agent 行为提示：Claude Code / Codex 共用本仓库的 `mempal-memory` Skill；Claude Code 另通过 adapter 的 `settingsFile` 安装 Stop hook。
+3. sandbox setup/teardown：做二进制/cache 薄探针，并用 NiceEval 的 `restoreCheckpoint` / `createCheckpoint` 按 cohort 恢复和回存 `$HOME/.mempal`。
 
 旧方案“普通模板 + 每 attempt 上传 14 MB 二进制 + 每 attempt 下载模型”已废弃。实测 E2B 上传曾在 `sb.uploadFile` 报 `TypeError: fetch failed`，而模型预热把 setup 放大到数分钟。稳定、体积大且每次相同的依赖应在模板构建时付一次成本；运行时 hook 只处理按实验变化的状态和验证。
 
-E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fromTemplate(...)`) 并复制文件、执行构建命令；本仓库从 NiceEval 的 `v0.6.1` 公共 Agent 模板派生，保证 Claude Code/Codex CLI 版本与其它 provider 的官方基线一致。参考 [E2B Template 定义](https://e2b.dev/docs/template/defining-template) 与 [构建](https://e2b.dev/docs/template/build)。
+E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fromTemplate(...)`) 并复制文件、执行构建命令；本仓库从 NiceEval 导出的 release-pinned 公共 Agent 模板常量派生，保证 Claude Code/Codex CLI 版本与其它 provider 的官方基线一致，同时不在业务仓库复制 NiceEval 的 namespace 或 release。参考 [E2B Template 定义](https://e2b.dev/docs/template/defining-template) 与 [构建](https://e2b.dev/docs/template/build)。
 
 ## 构建模板
 
 ```bash
 # 从 NiceEval 的 release-pinned Claude / Codex 公共模板派生。两样输入都在构建期从官方源
 # 现取,无 host 前置步骤:
-pnpm template:mempal claude   # → memory-evals-claude-mempal-v0-6-1
-pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1
+pnpm template:mempal claude   # → memory-evals-claude-mempal-v0-6-1-0-9-0
+pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1-0-9-0
 ```
 
 **两样输入都在模板构建期从官方源现取,不再 host 预取:**
@@ -40,9 +39,10 @@ pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1
 > 改为构建期从 crates.io / HuggingFace 官方源现取。
 
 模板构建脚本在 `scripts/build-mempal-e2b-template.ts`。模板名由 `mempalTemplate()`
-（`experiments/shared/mempal.ts`）唯一决定,并 pin 到 base 模板的 release tag（`v0-6-1`)——和公共
-模板的 `:v0.6.1` 对齐,base bump 后模板名自动变,不会出现「base 升了、mempal 模板还是旧 base」的
-静默漂移。mempal 版本由 `MEMPAL_VERSION` 常量 pin 死。构建和运行读同一处,没有环境变量覆盖,
+（`experiments/shared/mempal.ts`）唯一决定：它把实际使用的完整 base template ref 做短 hash，
+再附上 mempal 版本（`0-9-0`）。任一输入 bump，模板名都会变化，不会静默复用内容不同的可变别名；
+业务代码不需要另读或同步 NiceEval release。mempal 版本由
+`MEMPAL_VERSION` 常量 pin 死。构建和运行读同一处,没有环境变量覆盖,
 免得构建的模板和实验引用的模板悄悄错位。它不会在 `pnpm install`、typecheck 或普通 eval 中隐式
 发布远端资源。
 
@@ -53,22 +53,19 @@ pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1
 ```text
 E2B 从专用 template provision
   → sandbox.setup
-      → command -v mempal（缺失立即报模板配置错）
-      → 隔离 HOME 中做 init → ingest → search
-      → 启动 MCP 进程并确认可持续运行
+      → command -v mempal + embedding cache 薄探针（缺失立即报模板配置错）
       → 恢复 cohort/experiment 对应状态，或严格初始化空库
-      → Claude: 安装 Stop hook；Codex: 无 sandbox hook
   → agent.setup
-      → adapter 写 MCP 配置
-      → Codex 安装 mempal-memory Skill
+      → adapter 安装 mempal-memory Skill
+      → Claude: adapter 按 settingsFile 安装原生 Stop hook 配置
   → agent run
   → sandbox.teardown
       → 打包状态、原子回存、写 provenance metadata
 ```
 
-预检使用 `/tmp/mempal-preflight-home`，通过软链复用模板的模型 cache，但不接触正式 palace.db；sentinel 在预检结束时删除，不会污染实验状态。安装、恢复、初始化、hook 权限设置都检查 exit code。只有 teardown 回存是 best-effort：它不能把已经完成的模型任务改判，但会输出诊断。
+完整的 init → ingest → search 自检在模板构建阶段只跑一次；attempt 不重复做业务无关的向量化工作。恢复/回存复用 NiceEval checkpoint 原语，provider 的二进制 I/O 重试留在 provider 层。只有 teardown 回存是 best-effort：它不能把已经完成的模型任务改判，但失败会通过 `diagnostic` 持久化到结果。
 
-MCP 是否真正写入 agent 配置属于 adapter 契约；mempal helper 不在 agent.setup 之前猜测 CLI 配置。运行后应从 trace 中核对 `mempal_status`、`mempal_search` 和在确有可复用决策时的 `mempal_ingest`。
+运行后应从 trace 中核对 agent 是否执行 `mempal search`，以及在确有可复用决策时是否执行 `mempal ingest`。
 
 ## 状态身份与可回顾性
 
@@ -97,4 +94,4 @@ metadata 记录 `experimentId`、cohort、字节数、SHA-256 和保存时间，
 - Claude 的跨 run 状态可能包含同题答案，形成污染。
 - Codex 的二进制上传失败属于基建错误，不是模型能力。
 
-新结果至少要同时满足：专用模板预检通过、trace 中 MCP 名称可辨识、状态 metadata 可定位、任务没有从同 cohort 的同题答案获益。任务通过率仍是主要指标；memory 的价值看耗时、token、成本、重复失败命令和 pass rate，不加“为了证明记住了”的额外 gate。
+新结果至少要同时满足：专用模板探针通过、trace 中能看到 CLI search/ingest 行为、状态 metadata 可定位、任务没有从同 cohort 的同题答案获益。任务通过率仍是主要指标；memory 的价值看耗时、token、成本、重复失败命令和 pass rate，不加“为了证明记住了”的额外 gate。

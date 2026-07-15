@@ -1,8 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
-import { STANDARD_EVALS } from "../shared/eval-selection.ts";
-import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
+import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // dev/e2b 组的 mempal 变体:验证 claude-code 侧全链路(mempal CLI + Skill + 沙箱 setup
 // 装的 Stop hook + 记忆态跨 eval 累积)用的便宜配置,正式对比走 compare/ 组。
@@ -16,10 +15,12 @@ export default defineExperiment({
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseUrl: process.env.DEEPSEEK_BASE_URL,
     skills: [mempalSkill],
+    settingsFile: "configs/claude-code/mempal.json",
   }),
+  flags: mempalFlags(),
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
-  evals: STANDARD_EVALS,
+  evals: ["memory"],
   runs: 1,
   earlyExit: true,
   budget: 2,

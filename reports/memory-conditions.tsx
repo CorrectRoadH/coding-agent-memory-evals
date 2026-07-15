@@ -9,25 +9,16 @@ import {
   DeltaTable,
   MetricScatter,
   AttemptList,
-  passRate,
+  flag,
+  endToEndPassRate,
   durationMs,
   tokens,
   costUSD,
   turns,
 } from "niceeval/report";
-import type { AttemptHandle, Dimension } from "niceeval/report";
 
-// compare/ 组的 experiment 文件名后缀就是记忆条件:baseline(无后缀)/ --agents-md / --mempal。
-// 这是「报告怎么摆」的问题,不是「experiment 怎么跑」的问题,所以用报告本地的自定义维度
-// { name, of }(niceeval/report 的 Dimension 类型自带,读 attempt.experimentId 现算),
-// 不给 experiment 文件加 flags —— 见 memory: niceeval-custom-dimension-undocumented。
-function memoryConditionOf(a: AttemptHandle): string {
-  const id = a.experimentId;
-  if (id.endsWith("--mempal")) return "mempal";
-  if (id.endsWith("--agents-md")) return "agents-md";
-  return "baseline";
-}
-const memoryCondition: Dimension = { name: "memory", of: memoryConditionOf };
+// 记忆条件是实验配置事实，由各 experiment 的 flags 显式声明；报告不解析文件名。
+const memoryCondition = flag("memory", { label: "Memory condition" });
 
 // CLAUDE.md 定的口径:记忆条件的价值要在 elapsed time / tokens / cost / repeated failed
 // commands 上体现,不只是 pass rate。前三个是内置指标,重复失败命令内置指标覆盖不到——
@@ -59,12 +50,12 @@ export default defineReport(async ({ selection }) => {
     MetricBars.data(selection, {
       rows: "agent",
       columns: memoryCondition,
-      cell: passRate,
+      cell: endToEndPassRate,
     }),
     AttemptList.data(selection),
   ]);
 
-  // DeltaTable 的 pairs 直接收 experiment id 字符串,内置口径,同样不用碰 experiment 文件。
+  // DeltaTable 的 pair 仍负责声明“哪两个具体实验做 A/B”；分组维度来自 flags。
   // bub 没有 --mempal 变体(bub 自带 tape 记忆,--mempal 组只在 claude / codex 上开),
   // 少一对是如实反映现状,不补空对照。
   const selectedExperiments = new Set(selection.snapshots.map((snapshot) => snapshot.experimentId));
@@ -80,7 +71,7 @@ export default defineReport(async ({ selection }) => {
     pairs.length > 0
       ? DeltaTable.data(selection, {
           pairs,
-          metrics: [passRate, durationMs, turns, tokens, repeatedFailedCmds, costUSD],
+          metrics: [endToEndPassRate, durationMs, turns, tokens, repeatedFailedCmds, costUSD],
         })
       : Promise.resolve(null),
     selectedExperiments.size >= 2
@@ -88,7 +79,7 @@ export default defineReport(async ({ selection }) => {
           points: "experiment",
           series: "agent",
           x: costUSD,
-          y: passRate,
+          y: endToEndPassRate,
         })
       : Promise.resolve(null),
   ]);

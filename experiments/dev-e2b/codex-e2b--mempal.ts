@@ -1,8 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
-import { STANDARD_EVALS } from "../shared/eval-selection.ts";
-import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
+import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // dev/e2b 组的 mempal 变体:验证记忆条件全链路(mempal CLI + Skill + 记忆态跨 eval 累积)
 // 用的便宜配置,正式对比走 compare/ 组。不走 MCP —— mempal 的 MCP 暴露 25 个工具、
@@ -12,9 +11,10 @@ import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../sha
 export default defineExperiment({
   description: "codex · gpt-5.4-mini · E2B · mempal",
   agent: codexAgent({ skills: [mempalSkill] }),
+  flags: mempalFlags(),
   model: "gpt-5.4-mini",
   sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
-  evals: STANDARD_EVALS,
+  evals: ["memory"],
   runs: 1,
   earlyExit: true,
   budget: 2,

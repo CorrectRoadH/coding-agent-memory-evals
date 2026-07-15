@@ -1,8 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
-import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
-import { STANDARD_EVALS } from "../shared/eval-selection.ts";
+import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // claude-dp-v4 的 mempal 变体:同模型同沙箱,只多一层 mempal 记忆条件 ——
 // mempal CLI(agent 用自带 shell 跑 `mempal search` / `mempal ingest`,Skill 教它怎么用)+
@@ -16,13 +15,15 @@ import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
 export default defineExperiment({
-  evals: STANDARD_EVALS,
+  evals: ["memory"],
   description: "claude-code · deepseek-v4-flash · mempal",
   agent: claudeCodeAgent({
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseUrl: process.env.DEEPSEEK_BASE_URL,
     skills: [mempalSkill],
+    settingsFile: "configs/claude-code/mempal.json",
   }),
+  flags: mempalFlags(),
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
   runs: 1,

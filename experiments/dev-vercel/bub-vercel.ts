@@ -8,8 +8,10 @@ import { bubAgent } from "niceeval/adapter";
 export default defineExperiment({
   description: "bub(gpt-5.4-mini)× Vercel Sandbox——dev 冒烟组的 Vercel 后端对照",
   agent: bubAgent(),
+  flags: { memory: "baseline" },
   model: "gpt-5.4-mini",
   sandbox: vercelSandbox(),
+  evals: ["memory"],
   runs: 1,
   earlyExit: true,
   budget: 2,

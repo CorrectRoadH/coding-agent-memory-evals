@@ -1,8 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { e2bSandbox } from "niceeval/sandbox";
 import { codexAgent } from "niceeval/adapter";
-import { mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
-import { STANDARD_EVALS } from "../shared/eval-selection.ts";
+import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // codex-gpt-5.4 的 mempal 变体:agent 用自带 shell 跑 mempal CLI(`search` / `ingest`),
 // Skill 教它先搜索、后写入耐久决策。不走 MCP(见 shared/mempal.ts 文件头注)。
@@ -12,9 +11,10 @@ import { STANDARD_EVALS } from "../shared/eval-selection.ts";
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
 export default defineExperiment({
-  evals: STANDARD_EVALS,
+  evals: ["memory"],
   description: "codex · gpt-5.4 · mempal",
   agent: codexAgent({ skills: [mempalSkill] }),
+  flags: mempalFlags(),
   model: "gpt-5.4",
   sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
   runs: 1,
