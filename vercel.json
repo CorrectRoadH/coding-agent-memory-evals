@@ -1,5 +1,5 @@
 {
   "installCommand": "echo 'skip: 报告构建只读 .niceeval/ 与 reports/,不碰本仓库 node_modules'",
-  "buildCommand": "mkdir -p /tmp/niceeval-build && cd /tmp/niceeval-build && npx -y -p niceeval@latest -p react -p react-dom -c 'niceeval view --results \"$OLDPWD/.niceeval\" --report \"$OLDPWD/reports/memory.tsx\" --out \"$OLDPWD/site\" --allow-sensitive-artifacts'",
+  "buildCommand": "mkdir -p /tmp/niceeval-build && cd /tmp/niceeval-build && npm init -y >/dev/null && npm i --no-audit --no-fund niceeval@latest react react-dom && ln -sfn /tmp/niceeval-build/node_modules \"$OLDPWD/node_modules\" && cd \"$OLDPWD\" && node_modules/.bin/niceeval view --results .niceeval --report reports/memory.tsx --out site --allow-sensitive-artifacts",
   "outputDirectory": "site"
 }
