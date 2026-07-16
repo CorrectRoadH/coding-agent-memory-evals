@@ -1,5 +1,5 @@
 {
   "installCommand": "echo 'skip: 报告构建只读 .niceeval/,不碰本仓库 node_modules'",
-  "buildCommand": "npx -y -p niceeval@latest -p react -p react-dom -c 'niceeval view --out site --allow-sensitive-artifacts'",
+  "buildCommand": "rm -rf ~/.npm/_npx && npx -y -p niceeval@latest -p react -p react-dom -c 'niceeval view --out site --allow-sensitive-artifacts'",
   "outputDirectory": "site"
 }

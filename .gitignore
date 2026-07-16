@@ -12,3 +12,5 @@ site/
 dist/
 # niceeval 运行缓存 + mempal 记忆态存档(.cache/mempal/state/,勿提交)。
 .cache/
+.vercel
+.env*.local
