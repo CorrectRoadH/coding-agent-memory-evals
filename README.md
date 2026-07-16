@@ -115,7 +115,7 @@ pnpm exec niceeval view                # 本地查看结果
 
 ### 发布线上报告(coding-agent-memory-evals.vercel.app)
 
-结果数据 `.niceeval/` 直接提交进仓库(`.gitignore` 只排除单轮可达上百 MB、查看器也不读的 `diff.json`)。Vercel 的 buildCommand(见 `vercel.json`)直接跑 `niceeval view --results .niceeval --report reports/memory.tsx --out site --allow-sensitive-artifacts` 整站导出,没有自定义构建脚本;`site/` 是构建产物,不进仓库。跑完新一轮 eval 后:
+结果数据 `.niceeval/` 直接提交进仓库(`.gitignore` 只排除单轮可达上百 MB、查看器也不读的 `diff.json`)。Vercel 的 buildCommand(见 `vercel.json`)直接跑 `niceeval view --results .niceeval --report reports/memory.tsx --out site` 整站导出,没有自定义构建脚本;`site/` 是构建产物,不进仓库。跑完新一轮 eval 后:
 
 ```sh
 git add -A && git commit -m "eval: <跑了什么>" && git push   # push 即发布,没有本地构建步骤

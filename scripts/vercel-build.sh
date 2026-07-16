@@ -31,5 +31,4 @@ echo "niceeval version: $(node_modules/.bin/niceeval --version)"
 node_modules/.bin/niceeval view \
   --results .niceeval \
   --report reports/memory.tsx \
-  --out site \
-  --allow-sensitive-artifacts
+  --out site
