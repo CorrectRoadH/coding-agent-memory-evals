@@ -88,7 +88,8 @@ Its APIs and conventions may differ from anything you have seen. Read the releva
 guide in `node_modules/niceeval/docs-site/zh/` before writing any eval, experiment,
 adapter, or niceeval config. The bundled docs are Chinese-only — that is the single
 authoritative, always-current version; read it regardless of your working language.
-After a run, drill into failures with `niceeval show <eval id>` (add `--transcript` /
-`--trace` / `--diff` for evidence); the `summary.json` path the CLI prints and the
-artifact files it references are the structured source of truth.
+After a run, drill into failures with `niceeval show <eval id>`, then open an attempt
+via its locator: `niceeval show @<locator>` (add `--source` / `--execution` /
+`--timing` / `--diff` for evidence); the snapshot and per-attempt `result.json` under
+`.niceeval/` are the structured source of truth.
 <!-- END:niceeval-agent-rules -->

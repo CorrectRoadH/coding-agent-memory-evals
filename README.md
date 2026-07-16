@@ -113,13 +113,13 @@ pnpm exec niceeval view                # 本地查看结果
 
 ### 发布线上报告(coding-agent-memory-evals.vercel.app)
 
-结果数据 `.niceeval/` 直接提交进仓库(`.gitignore` 只排除单轮可达上百 MB、查看器也不读的 `diff.json`)。Vercel 在部署时用 `scripts/build-site.ts` 从这份数据现场构建整站:`latestPerExperiment` 给每个实验挑最新一份快照,`copyRun` 瘦身出临时 run 目录,再 `niceeval view --out` 整站导出。`site/` 是构建产物,不进仓库。跑完新一轮 eval 后:
+结果数据 `.niceeval/` 直接提交进仓库(`.gitignore` 只排除单轮可达上百 MB、查看器也不读的 `diff.json`)。Vercel 的 buildCommand(见 `vercel.json`)直接跑 `niceeval view --results .niceeval --report reports/memory.tsx --out site --allow-sensitive-artifacts` 整站导出,没有自定义构建脚本;`site/` 是构建产物,不进仓库。跑完新一轮 eval 后:
 
 ```sh
 git add -A && git commit -m "eval: <跑了什么>" && git push   # push 即发布,没有本地构建步骤
 ```
 
-空报告防线在构建侧:`.niceeval/` 里挑不出任何非空快照时 `build-site.ts` 直接失败,Vercel 保留上一次部署。本地想预览线上会长什么样:`pnpm exec tsx scripts/build-site.ts <输出目录>`,或直接 `pnpm exec niceeval view`。
+空报告防线是 niceeval 自带的:`.niceeval/` 里没有任何可读快照时 `view --out` 非零退出、不产出空站,Vercel 保留上一次部署。本地想预览线上会长什么样:`pnpm exec niceeval view --report reports/memory.tsx`。
 
 ---
 
