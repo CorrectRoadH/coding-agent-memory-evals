@@ -59,6 +59,8 @@
 
 这里的筛选标准是**真实开发任务 + 现成 verifier**。跨会话边界是本套件的运行协议:把同一条真实开发任务切成两个 session,最终仍按原开发任务验证。memory 的作用用完成率、时间、花费、命令轨迹和 pass^k 比较,不另设“记忆测试”。
 
+✅ 两个样例已落地(2026-07-16):`evals/memory/terminal-swe-bench-astropy-{1,2}.eval.ts`。适配要点:E2B 模板没有 python3.9,用 uv 装 CPython 3.9(apt 的 3.11 编不动 astropy-1 pin 死的 cython==0.29.22);checkout 必须放 workdir 根(嵌套子目录会被 diff 分类账记成 gitlink,agent 改动从证据里消失);上游 Dockerfile 的「clone + 抹未来历史」流程原样搬进 eval setup、隐藏 test_patch 在 agent 结束后才落盘。dev-e2b/codex(gpt-5.4-mini)冒烟:astropy-1 通过(9m22s/$1.46),astropy-2 合法失败(修法吞了 AstropyUserWarning,隐藏测试红)——harness 两个方向都验证过。astropy-2 当前仍是单 session 版;切两段 session 的跨会话版待做。
+
 ---
 
 ## 从 `swe-eval/INDEX.md` 二次筛出的新增优先级

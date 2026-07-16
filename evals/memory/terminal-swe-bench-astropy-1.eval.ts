@@ -12,8 +12,12 @@ export default defineEval({
     "terminal-bench swe-bench-astropy-1: fix separability_matrix for nested CompoundModels (real SWE-bench astropy issue)",
   // agent 要从源码构建 astropy(数分钟),测试阶段还要在干净 venv 里再构建一次;600s 全局默认必超。
   timeoutMs: 2_700_000,
-  // 编辑安装会把编译产物(.so / cython 生成的 .c)散在源码树里;修复本身在 .py,排掉归因噪音。
-  diff: { ignore: ["*.so", "*.c", "*.egg-info", ".eggs", ".hypothesis", ".pytest_cache"] },
+  // 编辑安装会把编译产物散在源码树里;修复本身在 .py,排掉归因噪音。
+  // 注意默认排除表里的 __pycache__ 是顶层 pathspec,不带通配符匹配不到嵌套目录,
+  // 所以要自己加 "*.pyc";wcs/include 和 version.py 是构建期生成的。
+  diff: {
+    ignore: ["*.so", "*.c", "*.pyc", "*.egg-info", ".eggs", ".hypothesis", ".pytest_cache", "astropy/wcs/include", "astropy/version.py"],
+  },
   async test(t) {
     await t.sandbox.uploadDirectory("../../workspaces/swe-bench-astropy-1");
 
