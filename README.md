@@ -1,12 +1,14 @@
 # coding-agent-memory-evals
 
+Powered by [NiceEval](https://github.com/CorrectRoadH/NiceEval)
+
 现在 agent memory 实现开始分化：
 
 | 系统 | 机制 |
 |---|---|
 | [Tape](https://tape.systems/) | append-only facts + handoff，把 context 组织成可审计的 lineage |
 | [Nowledge Mem](https://mem.nowledge.co/) | local-first graph-augmented 个人上下文层 |
-| [mem9](https://mem9.ai/) | 跨 session / device / agent 的 persistent memory，keyword + vector hybrid retrieval |
+| [mempal](https://github.com/ZhangHanDong/mempal/) | AI Agent Memory |
 
 这些系统都在解决"agent 会忘"的问题，但目前缺一个可复现的评测面来说清楚它们到底有没有用。
 
