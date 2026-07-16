@@ -20,13 +20,16 @@ import {
   repeatedFailedCommands,
   tokens,
 } from "niceeval/report";
+import { GITHUB_ICON } from "./components/icons.ts";
 
 // 记忆条件是实验配置事实，由各 experiment 的 flags 显式声明；报告不解析文件名。
 const memoryCondition = flag("memory", { label: "Memory condition" });
 
 export default defineReport({
   title: { en: "Coding Agent Memory Evals", "zh-CN": "Coding Agent 记忆能力评测" },
-  links: [{ label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals" }],
+  links: [
+    { label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals", icon: GITHUB_ICON },
+  ],
   footer: { en: "Published on every push via Vercel.", "zh-CN": "每次 push 由 Vercel 自动发布。" },
   pages: [
     {
