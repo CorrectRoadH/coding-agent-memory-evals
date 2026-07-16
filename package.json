@@ -15,7 +15,7 @@
     "@types/react": "^19.2.17",
     "dockerode": "^5.0.1",
     "e2b": "^2.31.0",
-    "niceeval": "^0.6.0",
+    "niceeval": "^0.8.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tsx": "^4.20.0",
