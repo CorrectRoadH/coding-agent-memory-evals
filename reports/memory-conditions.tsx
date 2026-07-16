@@ -64,7 +64,7 @@ export default defineReport({
             </Text>
             <DeltaTable
               by="experiment"
-              pairs={pairsByFlag("memory")}
+              pairs={pairsByFlag("memory", { baseline: "baseline" })}
               metrics={[endToEndPassRate, durationMs, assistantTurns, tokens, repeatedFailedCommands, costUSD]}
             />
           </Section>
