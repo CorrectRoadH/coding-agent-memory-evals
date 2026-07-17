@@ -1,0 +1,261 @@
+{
+  "id": "memory/terminal-swe-bench-astropy-1",
+  "description": "terminal-bench swe-bench-astropy-1: fix separability_matrix for nested CompoundModels (real SWE-bench astropy issue)",
+  "verdict": "passed",
+  "fingerprint": "d15d55b0a1c22d0c2074f675d8696fa3aac804e812cc50589e63ca570dba61e8",
+  "attempt": 0,
+  "durationMs": 428255,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-swe-bench-astropy-1.eval.ts",
+        "line": 88,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 904766,
+    "outputTokens": 5412,
+    "cacheReadTokens": 845440,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 2.554455,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i9h23ordghzqst3vf79c6"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1399
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 323,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1399,
+          "durationMs": 323,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 646,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 1722,
+          "durationMs": 216,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 1938,
+          "durationMs": 224,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mronw8xz_y4u1f'\nmodel = \"gpt-5.4\"\nmodel_provider = \"s2a\"\nmodel_reasoning_effor…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 216,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2368,
+          "durationMs": 216,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 424009,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "{",
+          "startOffsetMs": 2799,
+          "durationMs": 221,
+          "command": {
+            "display": "{ command -v gcc && command -v patch && command -v curl; } >/dev/null 2>&1 || {\n  apt-get update &&\n  apt-get install -y git gcc patch curl ca-certificates ;\n}",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 3021,
+          "durationMs": 2932,
+          "command": {
+            "display": "export PATH=\"$HOME/.local/bin:$PATH\"\ncommand -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh\nuv python install 3.9",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 5954,
+          "durationMs": 16628,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/astropy/astropy.git .astropy-clone\nmv .astropy-clone/.git .git\nrm -rf .astropy-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 22583,
+          "durationMs": 907,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 23490,
+          "durationMs": 289783,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 313278,
+          "durationMs": 256,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 22584,
+          "durationMs": 290951,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 313744,
+          "durationMs": 112849,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 497,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 426594,
+          "durationMs": 497,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 426593,
+              "durationMs": 261,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1164
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 454
+    }
+  ],
+  "locator": "@17gl87ak",
+  "startedAt": "2026-07-17T08:14:15.220Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
