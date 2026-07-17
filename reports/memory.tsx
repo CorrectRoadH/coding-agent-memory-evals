@@ -1,18 +1,11 @@
-import {
-  AttemptList,
-  Col,
-  CopyFixPrompt,
-  ExperimentComparison,
-  Hero,
-  ScopeWarnings,
-  TraceWaterfall,
-  defineReport,
-} from "niceeval/report";
+import { defineReport } from "niceeval/report";
+import { standard } from "niceeval/report/built-in";
 import { GITHUB_ICON } from "./components/icons.ts";
 
-// 内建报告的三页(报告 / Attempts / 追踪)逐页照抄 + 品牌外壳:标题与 GitHub 链接。
-// 内建页是复制不是 import——换 --report 后每页要不要、长什么样由这个文件自己决定。
+// 内建 standard 视图整站(报告 / Attempts / 追踪)+ 品牌外壳:标题与 GitHub 链接。
+// extends 声明「跟随内建」,niceeval 升级带来的页面演进自动生效。
 export default defineReport({
+  extends: standard,
   title: { en: "Evaluation of Memory Systems and Tools", "zh-CN": "评估 Memory 系统与工具" },
   links: [
     { label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals", icon: GITHUB_ICON },
@@ -37,42 +30,6 @@ export default defineReport({
         gtag("js", new Date());
         gtag("config", "G-Q30H5WX93X");
       `,
-    },
-  ],
-  pages: [
-    {
-      id: "report",
-      title: { en: "Report", "zh-CN": "报告" },
-      content: (
-        <Col>
-          <Hero />
-          <ScopeWarnings />
-          <CopyFixPrompt />
-          <ExperimentComparison />
-        </Col>
-      ),
-    },
-    {
-      id: "attempts",
-      title: "Attempts",
-      content: (
-        <Col>
-          <Hero />
-          <ScopeWarnings />
-          <AttemptList filter />
-        </Col>
-      ),
-    },
-    {
-      id: "traces",
-      title: { en: "Traces", "zh-CN": "追踪" },
-      content: (
-        <Col>
-          <Hero />
-          <ScopeWarnings />
-          <TraceWaterfall />
-        </Col>
-      ),
     },
   ],
 });
