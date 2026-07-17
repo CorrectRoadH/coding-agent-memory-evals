@@ -54,6 +54,24 @@ const MISSING_ENV_HINT =
   "[nowledge] 缺 NMEM_URL / NMEM_API_KEY:正规跑法 scripts/exp-nowledge.sh <experiment>(每 exp 新激活、跑完反激活);" +
   "临时调试可 scripts/nowledge-mem.sh up 起 default 实例(quick tunnel URL 每次重启会变)。";
 
+/**
+ * nowledge config 是否该参与本次 `niceeval exp` —— 连接信息(env 或 default 实例文件)可解析才参与。
+ *
+ * 为什么用它 gate `export default`:nowledge 记忆条件属于 compare/ 可对比矩阵(与 baseline/agents-md/
+ * mempal 同组同 eval 才能对比),不能挪出去。但它唯一需要宿主机侧活隧道;`discoverExperiments`
+ * 会扫全组每个 default 导出并开跑,裸 `niceeval exp compare`(没起隧道)就会把它扫进去、在
+ * sandbox.setup 因缺 env 硬挂,污染整批。做法:env 不可解析时让 config `export default undefined`,
+ * discovery 的 `if (!def || !def.agent) continue` 直接跳过——裸跑干净只剩 8 个自足 config。
+ * `scripts/exp-nowledge.sh compare` 会先 `export NMEM_URL/NMEM_API_KEY` 再调 niceeval,发现阶段
+ * env 就绪 → nowledge 正常入选 → 一条命令跑齐全 9 个 config 的完整对比。
+ *
+ * 候选上游 FR:niceeval 缺 config 级 precondition/skip 一等表达(理想 `defineExperiment({ skipWhen })`
+ * 或 `ctx.skip()`,在报告里显示 skipped 而非静默缺席);现在只能靠条件导出 workaround。
+ */
+export function nowledgeConfigured(): boolean {
+  return loadNowledgeEnv() !== undefined;
+}
+
 /** 报告分组用的实验事实。 */
 export function nowledgeFlags(): Record<string, string> {
   return { memory: "nowledge", nowledgeVersion: NOWLEDGE_VERSION };

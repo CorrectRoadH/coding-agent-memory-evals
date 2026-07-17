@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
+import { nowledgeClaudeConfig, nowledgeConfigured, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
 
 // claude-dp-v4 的 Nowledge Mem 变体:同模型同沙箱,只多一层 Nowledge Mem 记忆条件 ——
 // 官方 claude-code 插件(装上即挂 SessionStart 读 / UserPromptSubmit 指引 / Stop 写 的 lifecycle
@@ -16,7 +16,11 @@ import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSetup } from "../shared/no
 // 累积顺序确定(eval N 读得到 eval N-1 写的),与 mempal 条件语义对齐。做干净对照前用全新实例(exp-nowledge.sh
 // 每次 up 即空库),并在报告里注明状态起点。正式对比要 pro license(free tier memory 上限 50);
 // seat 偶发用尽会降级 free,正式跑设 NOWLEDGE_REQUIRE_PRO=1 硬失败以保证条件一致。
-export default defineExperiment({
+// 连接信息(env 或 default 实例文件)不可解析时不参与——见 nowledgeConfigured 注释。
+// 裸 `niceeval exp compare` 因此只跑 8 个自足 config;`scripts/exp-nowledge.sh compare` 先注入
+// NMEM_URL/NMEM_API_KEY 再调 niceeval,发现阶段就绪 → nowledge 入选,一命令跑齐 9 个 config 完整对比。
+export default nowledgeConfigured()
+  ? defineExperiment({
   evals: ["memory"],
   description: "claude-code · deepseek-v4-flash · Nowledge Mem",
   agent: claudeCodeAgent({
@@ -33,4 +37,5 @@ export default defineExperiment({
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--mempal 语义)。
   maxConcurrency: 1,
   timeoutMs: 1200000,
-});
+    })
+  : undefined;

@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
+import { nowledgeClaudeConfig, nowledgeConfigured, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
 
 // dev-e2b 的 Nowledge Mem 记忆条件冒烟(claude-code 侧):与 baseline(claude-e2b.ts)同任务同模型,
 // 只叠加 Nowledge Mem 官方 claude-code 集成。codex 侧那些摩擦这里全不存在——插件官方 hooks.json
@@ -11,7 +11,10 @@ import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSetup } from "../shared/no
 // 远程 MCP 覆盖(插件根无 .mcp.json)。细节见 experiments/shared/nowledge.ts 的 Claude Code 段。
 // 前置:宿主机先 `scripts/nowledge-mem.sh up`(容器 + cloudflared 隧道 + API key);
 // 正规跑法走 `scripts/exp-nowledge.sh dev-e2b/claude-e2b-nowledge <eval>`(每 exp 新激活、跑完反激活)。
-export default defineExperiment({
+// env(或 default 实例文件)不可解析时不参与,避免裸 `niceeval exp dev-e2b` 扫进来硬挂。
+// 见 nowledgeConfigured;正规跑法 scripts/exp-nowledge.sh dev-e2b/claude-e2b-nowledge。
+export default nowledgeConfigured()
+  ? defineExperiment({
   evals: ["memory"],
   description: "claude-code · deepseek-v4-flash + Nowledge Mem(dev-e2b:E2B 上的记忆条件冒烟)",
   agent: claudeCodeAgent({
@@ -27,4 +30,5 @@ export default defineExperiment({
   budget: 5,
   // 与 codex 变体对齐:astropy eval 两阶段都要源码构建,别用全局 600s(冒烟只挑轻 eval 时用不满)
   timeoutMs: 2_700_000,
-});
+    })
+  : undefined;

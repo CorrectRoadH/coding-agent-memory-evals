@@ -73,7 +73,9 @@ export default defineEval({
           "The all-caps expectation should be removed.\n\n" +
           "Environment notes: you do not have root. A Python 3.9 toolchain is available through `uv` (already installed): " +
           "`uv venv --python 3.9 --seed .venv && source .venv/bin/activate`, then `pip install -e .` to build astropy " +
-          "(gcc is available). Fix the library source; do not just add workarounds in test files.",
+          "(gcc is available). This system's gcc is 14, which rejects astropy's older C extensions with " +
+          "`-Wincompatible-pointer-types` errors; export `CFLAGS='-Wno-incompatible-pointer-types'` before building to " +
+          "compile them. Fix the library source; do not just add workarounds in test files.",
       )
       .then((turn) => turn.expectOk());
 
