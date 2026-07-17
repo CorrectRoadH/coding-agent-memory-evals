@@ -5,7 +5,9 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 
 // dev-e2b 组的 codex+mempal 冒烟:配置与 compare/codex-gpt-5.4--mempal 同构,但用最便宜的
 // 文本模型。沙箱直接从预制 Mempal 模板起步(mempal 二进制 + embedding cache 已烘焙),
-// attempt 级 setup 只做探针 + 状态恢复。与 *--mempal-runtime-install 对照可量化预制模板省下的时间。
+// attempt 级 setup 只做探针 + 状态恢复。预制模板 vs 运行时现装的耗时对照已在
+// 2026-07-17 测完(每 attempt 省约 3m45s,全在 sandbox.setup,瓶颈是 cargo 编译),
+// runtime-install 那个一次性基准配置已移除,结论记入 memory。
 export default defineExperiment({
   evals: ["memory"],
   description: "codex · gpt-5.4-mini · mempal(dev-e2b:预制模板)",
