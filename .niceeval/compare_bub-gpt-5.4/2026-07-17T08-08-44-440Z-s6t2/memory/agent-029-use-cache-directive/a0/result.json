@@ -1,0 +1,373 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "passed",
+  "fingerprint": "3685e9ee6d8c2eb9500f77c30c82d37839007a2c1bc27f1e75deaa974e5b0052",
+  "attempt": 0,
+  "durationMs": 196289,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 891264,
+    "outputTokens": 2637,
+    "cacheReadTokens": 726528,
+    "requests": 14,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 2.449347,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iquclw9d4o9y66qucufa5"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2941
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 450,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2941,
+          "durationMs": 450,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1148,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3391,
+          "durationMs": 233,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3624,
+          "durationMs": 240,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4073,
+          "durationMs": 249,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mronnnzf_49nnnu'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 190346,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4787,
+          "durationMs": 20806,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 25594,
+          "durationMs": 238,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 25832,
+          "durationMs": 159748,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is read-heavy an…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 185831,
+          "durationMs": 234,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 25594,
+          "durationMs": 160471,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 186532,
+          "durationMs": 8353,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 469,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 194885,
+          "durationMs": 469,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 194885,
+              "durationMs": 260,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 934
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 418
+    }
+  ],
+  "locator": "@1i1aqnap",
+  "startedAt": "2026-07-17T08:07:32.674Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

@@ -1,0 +1,259 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "3a68e04099da397d4d8dd5487abd6037f109052f229046cc006e0aa0d8f070f7",
+  "attempt": 0,
+  "durationMs": 97145,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 39647,
+    "outputTokens": 914,
+    "cacheReadTokens": 25088,
+    "requests": 7,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1190995,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iqj7lvoemxziknwt0y6az"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3482
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 438,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 3482,
+          "durationMs": 438,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 3706,
+              "durationMs": 214,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 455,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3920,
+          "durationMs": 455,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 874,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 4375,
+          "durationMs": 194,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4569,
+          "durationMs": 198,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 89695,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 5457,
+          "durationMs": 1559,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 7016,
+          "durationMs": 7657,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip python3-venv curl",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 14674,
+          "durationMs": 228,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 14902,
+          "durationMs": 71233,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Create a python package called vectorops, then build this package and set up a pypi server on port 8…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 86354,
+          "durationMs": 498,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 14674,
+          "durationMs": 72178,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 87062,
+          "durationMs": 7880,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 1441,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 774 files",
+          "startOffsetMs": 94944,
+          "durationMs": 1440,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 94944,
+              "durationMs": 464,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 760
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 439
+    }
+  ],
+  "locator": "@1bvr3c0s",
+  "startedAt": "2026-07-17T08:07:32.673Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

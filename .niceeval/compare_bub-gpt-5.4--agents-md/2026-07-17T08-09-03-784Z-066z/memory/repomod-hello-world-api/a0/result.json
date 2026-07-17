@@ -1,0 +1,253 @@
+{
+  "id": "memory/repomod-hello-world-api",
+  "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+  "verdict": "errored",
+  "fingerprint": "651174275437cd61bd610d47dbfaa05d21f988e587d2b023a7055b51e7c32419",
+  "attempt": 0,
+  "durationMs": 90680,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 6527,
+    "outputTokens": 180,
+    "cacheReadTokens": 2560,
+    "requests": 2,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0196575,
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: Concurrency limit exceeded for account, please retry later · output tail: │ ❱ 205 │   │   │   │   │   │   raise APIError(                                │ ⏎ │   206 │   │   │   │   │   │   │   message=message,                           │ ⏎ │   207 │   │   │   │   │   │   │   request=self.response.request,             │ ⏎ │   208 │   │   │   │   │   │   │   body=data[\"error\"],                        │ ⏎ ╰──────────────────────────────────────────────────────────────────────────────╯ ⏎ APIError: Concurrency limit exceeded for account, please retry later",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i8pgh8d1lp4kh3yvwpc0w"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3075
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 429,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 3075,
+          "durationMs": 429,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 3285,
+              "durationMs": 219,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 452,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3504,
+          "durationMs": 452,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1048,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3956,
+          "durationMs": 217,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4173,
+          "durationMs": 234,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 84428,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 5224,
+          "durationMs": 1543,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 6767,
+          "durationMs": 22708,
+          "command": {
+            "display": "apt-get install -y curl openjdk-17-jdk maven procps python3 python3-pip",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 29475,
+          "durationMs": 4679,
+          "command": {
+            "display": "python3 -m pip install --break-system-packages pytest==8.4.1 requests==2.32.4",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 34155,
+          "durationMs": 708,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 34863,
+          "durationMs": 54111,
+          "failed": true,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Translate the Flask API in `src/` into a Java Spring Boot implementation in `dst/`.\n\nThe target must…",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 89188,
+          "durationMs": 243,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 34155,
+          "durationMs": 55276,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 475,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 0 files",
+          "startOffsetMs": 89432,
+          "durationMs": 475,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 89432,
+              "durationMs": 266,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 773
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 429
+    }
+  ],
+  "locator": "@124ic83g",
+  "startedAt": "2026-07-17T08:07:32.672Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

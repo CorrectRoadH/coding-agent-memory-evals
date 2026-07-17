@@ -28,7 +28,11 @@ ln -sfn "$BUILD_DIR/node_modules" "$REPO/node_modules"
 
 cd "$REPO"
 echo "niceeval version: $(node_modules/.bin/niceeval --version)"
+
+# 站点只发布 compare 可比组:--exp 收窄对导出生效,页面与 artifact/ 证据树都只含 compare
+# (niceeval ≥ 0.10:出站的就是收窄到的;dev-e2b 等其它实验不出站)。
 node_modules/.bin/niceeval view \
   --results .niceeval \
+  --exp compare \
   --report reports/memory.tsx \
   --out site

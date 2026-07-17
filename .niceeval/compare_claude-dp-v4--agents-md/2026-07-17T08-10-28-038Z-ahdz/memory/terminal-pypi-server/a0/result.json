@@ -1,0 +1,259 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "66a280cc158add0b75cc14bc11037b32a7e0e2671d23ad295d36529392664c60",
+  "attempt": 0,
+  "durationMs": 80761,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 80889,
+    "outputTokens": 8016,
+    "cacheReadTokens": 965888,
+    "requests": 39,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0162734264,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iqxyaktitkkw4j81u8amw"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2032
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 465,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2033,
+          "durationMs": 465,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 2251,
+              "durationMs": 246,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 326,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2497,
+          "durationMs": 326,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 426,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2823,
+          "durationMs": 219,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 76204,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 3506,
+          "durationMs": 2028,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 5534,
+          "durationMs": 1941,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip python3-venv curl",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 7476,
+          "durationMs": 299,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 7775,
+          "durationMs": 63998,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Create a python package called vectorops, then build this package and set up a pypi ser…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 71773,
+          "durationMs": 286,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 72283,
+          "durationMs": 223,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 7477,
+          "durationMs": 65030,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 72729,
+          "durationMs": 6723,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 534,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 9 files",
+          "startOffsetMs": 79454,
+          "durationMs": 534,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 79453,
+              "durationMs": 326,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 773
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 445
+    }
+  ],
+  "locator": "@1nl1ku5p",
+  "startedAt": "2026-07-17T08:09:06.831Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

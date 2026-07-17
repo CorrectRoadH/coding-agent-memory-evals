@@ -1,0 +1,266 @@
+{
+  "id": "memory/repomod-hello-world-api",
+  "description": "RepoMod-Bench hello-world-api: translate Flask API to Java Spring Boot",
+  "verdict": "passed",
+  "fingerprint": "32551e89e7db3384336997a8b60aae90834a0bc9b110cbfeb30a6546668ed3a4",
+  "attempt": 0,
+  "durationMs": 155752,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/repomod-hello-world-api.eval.ts",
+        "line": 64,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 264507,
+    "outputTokens": 1123,
+    "cacheReadTokens": 17408,
+    "requests": 6,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.6824645,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i99z25pj1we3hlibipe7y"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2957
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 490,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2957,
+          "durationMs": 490,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1126,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3447,
+          "durationMs": 220,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3667,
+          "durationMs": 212,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4078,
+          "durationMs": 280,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mronnnzl_da1kc5'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 149662,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 4851,
+          "durationMs": 2241,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 7092,
+          "durationMs": 33569,
+          "command": {
+            "display": "apt-get install -y curl openjdk-17-jdk maven procps python3 python3-pip",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 40661,
+          "durationMs": 8302,
+          "command": {
+            "display": "python3 -m pip install --break-system-packages pytest==8.4.1 requests==2.32.4",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 48964,
+          "durationMs": 246,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 49210,
+          "durationMs": 90791,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Translate the Flask API in `src/` into a Java Spring Boot implementation in `dst/`.\n\nThe target must…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 140266,
+          "durationMs": 1218,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 48964,
+          "durationMs": 92520,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "chmod",
+          "startOffsetMs": 141705,
+          "durationMs": 231,
+          "command": {
+            "display": "chmod +x tests/run-tests.sh",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 141936,
+          "durationMs": 12299,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 710,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 12 files",
+          "startOffsetMs": 154235,
+          "durationMs": 710,
+          "children": [
+            {
+              "id": "n15",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 154235,
+              "durationMs": 496,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 807
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 417
+    }
+  ],
+  "locator": "@1kv0ago7",
+  "startedAt": "2026-07-17T08:07:32.675Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

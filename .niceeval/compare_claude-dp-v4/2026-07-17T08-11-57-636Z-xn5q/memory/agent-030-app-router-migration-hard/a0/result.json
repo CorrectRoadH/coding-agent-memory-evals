@@ -1,0 +1,810 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "passed",
+  "fingerprint": "d9a49064a1e99f78416611bc54379e0dab944ef481ae543d1afd744f9dc84e5b",
+  "attempt": 0,
+  "durationMs": 165810,
+  "assertions": [
+    {
+      "name": "isTrue(app/layout.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Root layout exists and replaces _app/_document"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/<html.*lang/)",
+      "severity": "gate",
+      "groupPath": [
+        "Root layout exists and replaces _app/_document"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/<body/)",
+      "severity": "gate",
+      "groupPath": [
+        "Root layout exists and replaces _app/_document"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/metadata|Metadata/)",
+      "severity": "gate",
+      "groupPath": [
+        "Root layout exists and replaces _app/_document"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/children.*ReactNode/)",
+      "severity": "gate",
+      "groupPath": [
+        "Root layout exists and replaces _app/_document"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 53,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(app/page.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Home page migrated to Server Component with async data fetching"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 57,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function.*Page/)",
+      "severity": "gate",
+      "groupPath": [
+        "Home page migrated to Server Component with async data fetching"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 58,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/['\"]use client['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Home page migrated to Server Component with async data fetching"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 59,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+fetch|fetch\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Home page migrated to Server Component with async data fetching"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 60,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/getServerSideProps/, stripComments)",
+      "severity": "gate",
+      "groupPath": [
+        "Home page migrated to Server Component with async data fetching"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 61,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(app/blog/page.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Blog index migrated with ISR equivalent"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 65,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+      "severity": "gate",
+      "groupPath": [
+        "Blog index migrated with ISR equivalent"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 66,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidate.*\\d+|next.*revalidate|export.*const.*revalidate.*=.*\\d+/)",
+      "severity": "gate",
+      "groupPath": [
+        "Blog index migrated with ISR equivalent"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 67,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/getStaticProps/, stripComments)",
+      "severity": "gate",
+      "groupPath": [
+        "Blog index migrated with ISR equivalent"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 68,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(dynamic blog route exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Dynamic blog route migrated to generateStaticParams"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 72,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export.*generateStaticParams|generateStaticParams.*export/)",
+      "severity": "gate",
+      "groupPath": [
+        "Dynamic blog route migrated to generateStaticParams"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 74,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+async\\s+function|async\\s+function/)",
+      "severity": "gate",
+      "groupPath": [
+        "Dynamic blog route migrated to generateStaticParams"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 75,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/getStaticPaths|getStaticProps/, stripComments)",
+      "severity": "gate",
+      "groupPath": [
+        "Dynamic blog route migrated to generateStaticParams"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 76,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(posts route handler exists)",
+      "severity": "gate",
+      "groupPath": [
+        "API routes migrated to Route Handlers"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 80,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export.*GET|export.*POST/)",
+      "severity": "gate",
+      "groupPath": [
+        "API routes migrated to Route Handlers"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 82,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/Request|Response|NextRequest|NextResponse/)",
+      "severity": "gate",
+      "groupPath": [
+        "API routes migrated to Route Handlers"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 83,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(dynamic posts route handler exists)",
+      "severity": "gate",
+      "groupPath": [
+        "API routes migrated to Route Handlers"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 85,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export.*GET|export.*PUT|export.*DELETE/)",
+      "severity": "gate",
+      "groupPath": [
+        "API routes migrated to Route Handlers"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 87,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export.*metadata|metadata.*Metadata/)",
+      "severity": "gate",
+      "groupPath": [
+        "Metadata API replaces next/head"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 91,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+      "severity": "gate",
+      "groupPath": [
+        "Metadata API replaces next/head"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 92,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export.*metadata|metadata.*Metadata/)",
+      "severity": "gate",
+      "groupPath": [
+        "Metadata API replaces next/head"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 93,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/import.*Head.*next\\/head|<Head>/)",
+      "severity": "gate",
+      "groupPath": [
+        "Metadata API replaces next/head"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 94,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(app/error.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Error handling migrated to error.js and not-found.js"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 98,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/['\"]use client['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Error handling migrated to error.js and not-found.js"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 100,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/error.*Error|Error.*error/)",
+      "severity": "gate",
+      "groupPath": [
+        "Error handling migrated to error.js and not-found.js"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 101,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(app/not-found.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Error handling migrated to error.js and not-found.js"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 102,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/_app.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 117,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/_document.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 118,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/_error.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 119,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/404.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 120,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/index.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 121,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/blog/index.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 122,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/blog/[id].js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 123,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/api/posts/index.js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 124,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileDeleted(pages/api/posts/[id].js)",
+      "severity": "gate",
+      "groupPath": [
+        "Pages Router directory removed"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 125,
+        "column": 17
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/getServerSideProps|getStaticProps|getStaticPaths/)",
+      "severity": "gate",
+      "groupPath": [
+        "Final source free of legacy Pages APIs and imports"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 130,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bfrom\\s+['\"]next\\/(?:head|router)['\"]|import\\s+['\"]next\\/(?:head|router)['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Final source free of legacy Pages APIs and imports"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 132,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-030-app-router-migration-hard.eval.ts",
+        "line": 135,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 151568,
+    "outputTokens": 55847,
+    "cacheReadTokens": 3097728,
+    "requests": 95,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.045530318400000006,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iqs9se5xlqwxxa4733u8i"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2219
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 384,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2219,
+          "durationMs": 384,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 456,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2603,
+          "durationMs": 248,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 157115,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 3296,
+          "durationMs": 33325,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 36622,
+          "durationMs": 266,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 36888,
+          "durationMs": 110547,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Migrate every route and file from the Pages Router to the Next.js App Router. When fini…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 147435,
+          "durationMs": 275,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 147985,
+          "durationMs": 237,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 36622,
+          "durationMs": 111600,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 151634,
+          "durationMs": 8539,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 488,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 22 files",
+          "startOffsetMs": 160174,
+          "durationMs": 487,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 160174,
+              "durationMs": 278,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 4369
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 779
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 426
+    }
+  ],
+  "locator": "@1erpym92",
+  "startedAt": "2026-07-17T08:10:00.713Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

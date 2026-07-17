@@ -1,0 +1,332 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "passed",
+  "fingerprint": "846457f41ab907f4ac92b54b640522319d8c0470ee0b9fa9644050359de92cd6",
+  "attempt": 0,
+  "durationMs": 145267,
+  "assertions": [
+    {
+      "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action imports updateTag from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/['\"]use server['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action uses 'use server' directive"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a Server Action calls updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls updateTag() for cache invalidation"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(a Server Action invalidates via updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 45,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 46,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(Server Action has post creation logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has post creation logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 57,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 101314,
+    "outputTokens": 1870,
+    "cacheReadTokens": 74240,
+    "requests": 10,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.299895,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i7v12v7kpxgvs8xj8jb4a"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2955
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 476,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2955,
+          "durationMs": 476,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 3170,
+              "durationMs": 261,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 497,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3431,
+          "durationMs": 497,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1047,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3929,
+          "durationMs": 251,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4180,
+          "durationMs": 195,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 139002,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5200,
+          "durationMs": 17549,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 22749,
+          "durationMs": 264,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 23013,
+          "durationMs": 111900,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Create a Server Action that creates a new post. The posts list uses cache tags for caching.\n\nAfter c…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 135130,
+          "durationMs": 262,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 22749,
+          "durationMs": 112643,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 135890,
+          "durationMs": 8086,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 502,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 4 files",
+          "startOffsetMs": 143977,
+          "durationMs": 502,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 143977,
+              "durationMs": 288,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 2
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 786
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 417
+    }
+  ],
+  "locator": "@1y0mffha",
+  "startedAt": "2026-07-17T08:07:32.672Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

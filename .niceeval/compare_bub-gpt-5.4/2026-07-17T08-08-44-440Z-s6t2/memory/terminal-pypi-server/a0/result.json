@@ -1,0 +1,244 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "1ef2499ccb1dcc716a32d15dbaf2f9a1420c802d95b2f03c1c111ec9d616d905",
+  "attempt": 0,
+  "durationMs": 146161,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 129102,
+    "outputTokens": 2365,
+    "cacheReadTokens": 96768,
+    "requests": 13,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.382422,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i7musgzon3b6m8vdl3ans"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3179
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 477,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3179,
+          "durationMs": 477,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1322,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3656,
+          "durationMs": 234,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3890,
+          "durationMs": 243,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4374,
+          "durationMs": 251,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mronno7t_z6zrc'\nYou are a coding agent working in a Next.j…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 139911,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 5183,
+          "durationMs": 1579,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 6762,
+          "durationMs": 7684,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip python3-venv curl",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 14454,
+          "durationMs": 241,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 14696,
+          "durationMs": 122356,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Create a python package called vectorops, then build this package and set up a pypi server on port 8…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 137298,
+          "durationMs": 240,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 14454,
+          "durationMs": 123084,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 137760,
+          "durationMs": 7127,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 496,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 16 files",
+          "startOffsetMs": 144889,
+          "durationMs": 495,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 144889,
+              "durationMs": 271,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 776
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 415
+    }
+  ],
+  "locator": "@1kb3b65x",
+  "startedAt": "2026-07-17T08:07:32.675Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

@@ -1,0 +1,221 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "errored",
+  "fingerprint": "207ec043a0fbbc81347163698971784fec50a42abe82d793ec4103e97d2dbd4b",
+  "attempt": 0,
+  "durationMs": 52061,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: exceeded retry limit, last status: 429 Too Many Requests, request id: 0a88196e-eb6c-4113-887b-8fc45ed3109e · output tail: Reading additional input from stdin...",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ipy9dn3xnjxltldhaczn5"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1727
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 407,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1728,
+          "durationMs": 407,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 664,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2135,
+          "durationMs": 228,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2364,
+          "durationMs": 232,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mronv5dy_fc31yn'\nmodel = \"gpt-5.4\"\nmodel_provider = \"s2a\"\nmodel_reasoning_effo…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 227,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2799,
+          "durationMs": 227,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 47211,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 3274,
+          "durationMs": 21197,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 24471,
+          "durationMs": 231,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 24702,
+          "durationMs": 25307,
+          "failed": true,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Migrate every route and file from the Pages…",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 50019,
+          "durationMs": 218,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 24471,
+          "durationMs": 25766,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 492,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 0 files",
+          "startOffsetMs": 50237,
+          "durationMs": 492,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 50237,
+              "durationMs": 256,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1331
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 440
+    }
+  ],
+  "locator": "@1xifzs4f",
+  "startedAt": "2026-07-17T08:13:23.531Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

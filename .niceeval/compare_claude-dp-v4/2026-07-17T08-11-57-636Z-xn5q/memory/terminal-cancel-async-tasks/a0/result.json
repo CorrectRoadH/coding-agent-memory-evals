@@ -1,0 +1,222 @@
+{
+  "id": "memory/terminal-cancel-async-tasks",
+  "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+  "verdict": "passed",
+  "fingerprint": "d6eb421115ef5470a26438942956f332d052bc57c71576318176086fd24f33d0",
+  "attempt": 0,
+  "durationMs": 163448,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-cancel-async-tasks.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 103633,
+    "outputTokens": 31631,
+    "cacheReadTokens": 817536,
+    "requests": 31,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.025654400800000005,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ipq4eh0focd9jnqlb99pg"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1978
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 320,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1978,
+          "durationMs": 320,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 449,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2298,
+          "durationMs": 234,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 158909,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 2956,
+          "durationMs": 6725,
+          "command": {
+            "display": "python3 -c 'import pytest' 2>/dev/null || {\n  apt-get update &&\n  apt-get install -y python3 python3-pip &&\n  python3 -m pip install --break-system-packages py…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 9681,
+          "durationMs": 248,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 9929,
+          "durationMs": 136363,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Implement `run_tasks` in `run.py`.\n\nIt must accept a list of async zero-argument callab…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 146292,
+          "durationMs": 275,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 146794,
+          "durationMs": 233,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 9681,
+          "durationMs": 137346,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 147239,
+          "durationMs": 14416,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 1028,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 161656,
+          "durationMs": 1028,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 161656,
+              "durationMs": 805,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 764
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 420
+    }
+  ],
+  "locator": "@109i18jy",
+  "startedAt": "2026-07-17T08:10:08.874Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
