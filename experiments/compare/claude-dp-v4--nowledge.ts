@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeClaudeConfig, nowledgeConfigured, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
+import { nowledgeClaudeConfig, nowledgeExperimentSetup, nowledgeFlags, nowledgeSetup } from "../shared/nowledge.ts";
 
 // claude-dp-v4 的 Nowledge Mem 变体:同模型同沙箱,只多一层 Nowledge Mem 记忆条件 ——
 // 官方 claude-code 插件(装上即挂 SessionStart 读 / UserPromptSubmit 指引 / Stop 写 的 lifecycle
@@ -10,17 +10,15 @@ import { nowledgeClaudeConfig, nowledgeConfigured, nowledgeFlags, nowledgeSetup 
 // 对照 claude-dp-v4.ts 看 pass 率与效率(时间/token/重复失败命令)的差异。dev-e2b/claude-e2b-nowledge
 // 已冒烟跑通(probe 实锤 Stop hook 落 thread 到服务端)。
 //
-// 前提:先起中心化 mem 服务端 + 隧道,经 NMEM_URL/NMEM_API_KEY 注入 ——
-//   scripts/exp-nowledge.sh compare/claude-dp-v4--nowledge   (up 时间戳实例 → 跑 → trap 必 down)
+// 中心化 mem 服务端 + 隧道由实验级 setup 管理:niceeval 在本实验第一个 attempt 前激活一个
+// 全新实例(空记忆库,状态起点干净),全部 attempt 收尾后 probe + down 反激活——
+// `pnpm exec niceeval exp compare` 一条命令跑齐 9 个 config,无需 wrapper 脚本;激活失败只让
+// 本实验记 errored,不污染同批其它实验。
 // 隔离:中心化 server 下并行 attempt 共享同一记忆库,故 maxConcurrency:1 串行 —— 让跨 eval 的记忆
-// 累积顺序确定(eval N 读得到 eval N-1 写的),与 mempal 条件语义对齐。做干净对照前用全新实例(exp-nowledge.sh
-// 每次 up 即空库),并在报告里注明状态起点。正式对比要 pro license(free tier memory 上限 50);
-// seat 偶发用尽会降级 free,正式跑设 NOWLEDGE_REQUIRE_PRO=1 硬失败以保证条件一致。
-// 连接信息(env 或 default 实例文件)不可解析时不参与——见 nowledgeConfigured 注释。
-// 裸 `niceeval exp compare` 因此只跑 8 个自足 config;`scripts/exp-nowledge.sh compare` 先注入
-// NMEM_URL/NMEM_API_KEY 再调 niceeval,发现阶段就绪 → nowledge 入选,一命令跑齐 9 个 config 完整对比。
-export default nowledgeConfigured()
-  ? defineExperiment({
+// 累积顺序确定(eval N 读得到 eval N-1 写的),与 mempal 条件语义对齐。正式对比要 pro license
+// (free tier memory 上限 50);seat 偶发用尽会降级 free,正式跑设 NOWLEDGE_REQUIRE_PRO=1 硬失败
+// 以保证条件一致。
+export default defineExperiment({
   evals: ["memory"],
   description: "claude-code · deepseek-v4-flash · Nowledge Mem",
   agent: claudeCodeAgent({
@@ -31,11 +29,11 @@ export default nowledgeConfigured()
   flags: nowledgeFlags(),
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE }).setup(nowledgeSetup()),
+  setup: nowledgeExperimentSetup(),
   runs: 1,
   earlyExit: true,
   budget: 2,
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--mempal 语义)。
   maxConcurrency: 1,
   timeoutMs: 1200000,
-    })
-  : undefined;
+});

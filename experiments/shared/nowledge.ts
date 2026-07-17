@@ -1,24 +1,33 @@
+import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
+import type { ExperimentHookContext } from "niceeval";
 import { shared } from "niceeval/adapter";
 import type { ClaudeCodeConfig, ClaudeCodePluginSpec, CodexConfig, CodexPluginSpec, McpServer } from "niceeval/adapter";
 import type { Sandbox, SandboxHook, SandboxHookContext } from "niceeval/sandbox";
 
 /**
- * Nowledge Mem 记忆条件(先只接 codex)。
+ * Nowledge Mem 记忆条件。
  *
  * 拓扑:宿主机 docker 跑 mem 服务端,cloudflared 隧道暴露公网;沙箱经隧道连——
- * 读路径走远程 HTTP MCP(factory `mcpServers` url 形态),写路径走插件 lifecycle hooks
- * shell out 到 nmem CLI(读 `nmem config client` 里的 url/api-key)。
- * 先跑 `scripts/nowledge-mem.sh up`,连接信息落 .cache/nowledge-mem/env。
+ * 写路径走插件 lifecycle hooks shell out 到 nmem CLI(读 `nmem config client` 里的 url/api-key);
+ * codex 侧读路径另走远程 HTTP MCP(factory `mcpServers` url 形态)。
+ *
+ * claude 侧实验用 `nowledgeExperimentSetup()`(ExperimentDef.setup):niceeval 在该实验第一个
+ * attempt 前激活一个全新 mem 实例(容器+隧道,经 scripts/nowledge-mem.sh up),全部 attempt
+ * 收尾后 probe + down 反激活——`pnpm exec niceeval exp compare` 一条命令跑齐,无需 wrapper。
  *
  * 与 mempal 不同,记忆态在中心化 server 上跨 attempt 天然共享:没有 checkpoint 存取,
- * 但并行 attempt 会读写同一个库。正式对比需按实验隔离(每实验一个容器或 nmem spaces);
- * dev 冒烟(runs: 1)可接受。
+ * 但并行 attempt 会读写同一个库。实验声明 maxConcurrency: 1 串行,让累积顺序确定。
  */
 
-// default 实例的 env;每 exp 一实例的正规跑法走 scripts/exp-nowledge.sh(经环境变量注入,优先级更高)
+// default 实例的 env(手动 `scripts/nowledge-mem.sh up` 的调试流);experiment setup 起的
+// 实例经模块态 activeEnv 注入,优先级最高,其次进程 env,最后这个文件。
 const ENV_FILE = fileURLToPath(new URL("../../.cache/nowledge-mem/default/env", import.meta.url));
+
+const CTL = fileURLToPath(new URL("../../scripts/nowledge-mem.sh", import.meta.url));
+const execFileAsync = promisify(execFile);
 
 /** 与 scripts/nowledge-mem.sh 的镜像 tag 及沙箱内 nmem-cli 版本对齐。 */
 export const NOWLEDGE_VERSION = "0.10.29";
@@ -28,12 +37,17 @@ interface NowledgeEnv {
   apiKey: string;
 }
 
+/** nowledgeExperimentSetup 激活的实例连接信息:模块态注入,同进程内所有 nowledge 钩子最优先读它。 */
+let activeEnv: NowledgeEnv | undefined;
+
 /**
- * 连接信息:进程 env 优先,否则读 nowledge-mem.sh 写的 env 文件。
- * 拿不到时返回 undefined 而不是抛错——实验文件在 `niceeval exp` 发现阶段就会被 import,
- * 这里抛错会连累无关实验;真正的硬失败放在 attempt 的 sandbox.setup 里。
+ * 连接信息:experiment setup 注入的 activeEnv 最优先,其次进程 env,最后读 nowledge-mem.sh
+ * 写的 default 实例 env 文件(手动调试流)。拿不到时返回 undefined 而不是抛错——实验文件在
+ * `niceeval exp` 发现阶段就会被 import,这里抛错会连累无关实验;真正的硬失败放在
+ * experiment setup / attempt 的 sandbox.setup 里。
  */
 function loadNowledgeEnv(): NowledgeEnv | undefined {
+  if (activeEnv) return activeEnv;
   let url = process.env.NMEM_URL?.trim();
   let apiKey = process.env.NMEM_API_KEY?.trim();
   if (!url || !apiKey) {
@@ -51,25 +65,55 @@ function loadNowledgeEnv(): NowledgeEnv | undefined {
 }
 
 const MISSING_ENV_HINT =
-  "[nowledge] 缺 NMEM_URL / NMEM_API_KEY:正规跑法 scripts/exp-nowledge.sh <experiment>(每 exp 新激活、跑完反激活);" +
-  "临时调试可 scripts/nowledge-mem.sh up 起 default 实例(quick tunnel URL 每次重启会变)。";
+  "[nowledge] 缺 NMEM_URL / NMEM_API_KEY:claude 侧实验挂 nowledgeExperimentSetup()(niceeval 自动激活/反激活实例);" +
+  "手动调试可 scripts/nowledge-mem.sh up 起 default 实例(quick tunnel URL 每次重启会变)。";
+
+/** nowledge-mem.sh 的一个子命令;stderr 原样透传成 setup 进度不可行(niceeval 只收结构化
+ *  progress),失败时截尾部进错误消息。 */
+async function nowledgeCtl(command: string, instance: string): Promise<void> {
+  try {
+    await execFileAsync("bash", [CTL, command, instance], { timeout: 600_000 });
+  } catch (e) {
+    const err = e as { stderr?: string; stdout?: string; message?: string };
+    const tail = (err.stderr || err.stdout || err.message || "no output").trim().slice(-800);
+    throw new Error(`[nowledge] nowledge-mem.sh ${command} ${instance} failed: ${tail}`);
+  }
+}
+
+function readInstanceEnv(instance: string): NowledgeEnv {
+  const envFile = fileURLToPath(new URL(`../../.cache/nowledge-mem/${instance}/env`, import.meta.url));
+  let url: string | undefined;
+  let apiKey: string | undefined;
+  for (const line of readFileSync(envFile, "utf8").split("\n")) {
+    const match = line.match(/^export (NMEM_URL|NMEM_API_KEY)=(.+)$/);
+    if (match?.[1] === "NMEM_URL") url = match[2].trim();
+    if (match?.[1] === "NMEM_API_KEY") apiKey = match[2].trim();
+  }
+  if (!url || !apiKey) throw new Error(`[nowledge] 实例 ${instance} 的 env 文件缺 NMEM_URL/NMEM_API_KEY`);
+  return { url: url.replace(/\/+$/, ""), apiKey };
+}
 
 /**
- * nowledge config 是否该参与本次 `niceeval exp` —— 连接信息(env 或 default 实例文件)可解析才参与。
- *
- * 为什么用它 gate `export default`:nowledge 记忆条件属于 compare/ 可对比矩阵(与 baseline/agents-md/
- * mempal 同组同 eval 才能对比),不能挪出去。但它唯一需要宿主机侧活隧道;`discoverExperiments`
- * 会扫全组每个 default 导出并开跑,裸 `niceeval exp compare`(没起隧道)就会把它扫进去、在
- * sandbox.setup 因缺 env 硬挂,污染整批。做法:env 不可解析时让 config `export default undefined`,
- * discovery 的 `if (!def || !def.agent) continue` 直接跳过——裸跑干净只剩 8 个自足 config。
- * `scripts/exp-nowledge.sh compare` 会先 `export NMEM_URL/NMEM_API_KEY` 再调 niceeval,发现阶段
- * env 就绪 → nowledge 正常入选 → 一条命令跑齐全 9 个 config 的完整对比。
- *
- * 候选上游 FR:niceeval 缺 config 级 precondition/skip 一等表达(理想 `defineExperiment({ skipWhen })`
- * 或 `ctx.skip()`,在报告里显示 skipped 而非静默缺席);现在只能靠条件导出 workaround。
+ * 实验级生命周期(ExperimentDef.setup):激活一个全新 mem 实例(容器+隧道,全新记忆库),
+ * 连接信息注入模块态 activeEnv 供同文件的 sandbox.setup / MCP 工厂读取;返回的 teardown
+ * 在该实验全部 attempt 收尾后先 probe(写路径落库验证,拆前不查就没了)再 down 反激活。
+ * 激活失败时 niceeval 把本实验全部 attempt 记 errored(experiment-setup-failed),不污染同批。
  */
-export function nowledgeConfigured(): boolean {
-  return loadNowledgeEnv() !== undefined;
+export function nowledgeExperimentSetup() {
+  return async (ctx: ExperimentHookContext) => {
+    // 实例名带实验 id 与时间戳:并发跑多个实验互不干扰,残留也可辨认
+    const instance = `exp-${ctx.experimentId.replace(/[^A-Za-z0-9]+/g, "-")}-${Date.now()}`;
+    ctx.progress({ message: `[nowledge] activating mem instance ${instance}` });
+    await nowledgeCtl("up", instance);
+    activeEnv = readInstanceEnv(instance);
+    ctx.progress({ message: `[nowledge] mem ready → ${activeEnv.url}` });
+    return async () => {
+      activeEnv = undefined;
+      // probe 是观测,不该拦 down;失败只损失一条验证信息
+      await nowledgeCtl("probe", instance).catch(() => {});
+      await nowledgeCtl("down", instance);
+    };
+  };
 }
 
 /** 报告分组用的实验事实。 */
@@ -122,14 +166,21 @@ export function nowledgeSetup(): SandboxHook {
   };
 }
 
-/** 远程 HTTP MCP(读路径)。env 缺失时给占位值——sandbox.setup 会先一步报错,不会跑到这。 */
+/**
+ * 远程 HTTP MCP(读路径)。url/headers 用 getter 惰性求值:实验文件在发现阶段就 import 本模块,
+ * 而实例要到实验级 setup 才激活——adapter 在 agent.setup(每 attempt,晚于实验 setup)才读这些
+ * 字段,getter 保证读到的是激活后的连接信息。env 缺失时给占位值——sandbox.setup 会先一步报错。
+ */
 export function nowledgeMcpServer(): McpServer {
-  const env = loadNowledgeEnv();
   return {
     name: "nowledge-mem",
-    url: `${env?.url ?? "https://nowledge-env-missing.invalid"}/mcp/`,
+    get url() {
+      return `${loadNowledgeEnv()?.url ?? "https://nowledge-env-missing.invalid"}/mcp/`;
+    },
     // APP 头对齐插件自带 .mcp.json;Authorization 是隧道公网侧的硬要求(非 loopback 一律 401)
-    headers: { Authorization: `Bearer ${env?.apiKey ?? ""}`, APP: "Codex" },
+    get headers() {
+      return { Authorization: `Bearer ${loadNowledgeEnv()?.apiKey ?? ""}`, APP: "Codex" };
+    },
   };
 }
 

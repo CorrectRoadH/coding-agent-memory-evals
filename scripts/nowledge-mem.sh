@@ -2,7 +2,8 @@
 # 临时 Nowledge Mem 实例管理:宿主机 docker 起服务端 + cloudflared quick tunnel 暴露给 E2B 沙箱。
 #
 # 每个实例(默认名 default)独立:容器、端口、隧道、数据目录、env 文件。
-# 「每次 exp 新激活、跑完反激活」用法见 scripts/exp-nowledge.sh:
+# 「每次 exp 新激活、跑完反激活」由 experiments/shared/nowledge.ts 的 nowledgeExperimentSetup()
+# (niceeval 实验级 setup 钩子)程序化调用本脚本完成;手动调试才直接敲:
 #   up <name>   → 全新记忆库(embedding 模型走共享缓存,秒级就绪)
 #   down <name> → 拆容器+隧道并【删除该实例数据】;共享模型缓存保留
 #
