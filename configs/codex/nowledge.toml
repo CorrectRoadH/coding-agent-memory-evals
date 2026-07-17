@@ -1,0 +1,7 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+# Nowledge Mem 集成所需的 feature 门:plugins 必须在 codex plugin add 前生效;
+# hooks 由插件的 install_hooks.py 二次确保,这里显式写上省一次条件分支。
+# MCP 段不在这里——mcp_servers 是 adapter 保留键,远程端点走 factory 的 mcpServers url 形态。
+[features]
+plugins = true
+hooks = true

@@ -8,7 +8,16 @@ export default defineReport({
     { label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals", icon: GITHUB_ICON },
   ],
   // GA4:官方 snippet 直译成 head 声明(niceeval ≥0.8 的结构化 head 通道)。
+  // react-grab 只在本地 `niceeval view` 时注入,线上构建由 vercel-build.sh 设置 VERCEL=1 挡掉。
   head: [
+    ...(process.env.VERCEL
+      ? []
+      : [
+          {
+            tag: "script" as const,
+            attrs: { src: "https://unpkg.com/react-grab/dist/index.global.js", crossorigin: "anonymous" },
+          },
+        ]),
     { tag: "script", attrs: { async: true, src: "https://www.googletagmanager.com/gtag/js?id=G-Q30H5WX93X" } },
     {
       tag: "script",
