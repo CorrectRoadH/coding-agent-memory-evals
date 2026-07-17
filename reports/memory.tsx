@@ -1,7 +1,17 @@
-import { ExperimentComparison, defineReport } from "niceeval/report";
+import {
+  AttemptList,
+  Col,
+  CopyFixPrompt,
+  ExperimentComparison,
+  Hero,
+  ScopeWarnings,
+  TraceWaterfall,
+  defineReport,
+} from "niceeval/report";
 import { GITHUB_ICON } from "./components/icons.ts";
 
-// 内建报告的内容 + 品牌外壳:标题与 GitHub 链接,报告本体就是官方 ExperimentComparison。
+// 内建报告的三页(报告 / Attempts / 追踪)逐页照抄 + 品牌外壳:标题与 GitHub 链接。
+// 内建页是复制不是 import——换 --report 后每页要不要、长什么样由这个文件自己决定。
 export default defineReport({
   title: { en: "Evaluation of Memory Systems and Tools", "zh-CN": "评估 Memory 系统与工具" },
   links: [
@@ -29,5 +39,40 @@ export default defineReport({
       `,
     },
   ],
-  content: <ExperimentComparison />,
+  pages: [
+    {
+      id: "report",
+      title: { en: "Report", "zh-CN": "报告" },
+      content: (
+        <Col>
+          <Hero />
+          <ScopeWarnings />
+          <CopyFixPrompt />
+          <ExperimentComparison />
+        </Col>
+      ),
+    },
+    {
+      id: "attempts",
+      title: "Attempts",
+      content: (
+        <Col>
+          <Hero />
+          <ScopeWarnings />
+          <AttemptList filter />
+        </Col>
+      ),
+    },
+    {
+      id: "traces",
+      title: { en: "Traces", "zh-CN": "追踪" },
+      content: (
+        <Col>
+          <Hero />
+          <ScopeWarnings />
+          <TraceWaterfall />
+        </Col>
+      ),
+    },
+  ],
 });

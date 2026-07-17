@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { shared } from "niceeval/adapter";
-import type { CodexConfig, CodexPluginSpec, McpServer } from "niceeval/adapter";
+import type { ClaudeCodeConfig, ClaudeCodePluginSpec, CodexConfig, CodexPluginSpec, McpServer } from "niceeval/adapter";
 import type { Sandbox, SandboxHook, SandboxHookContext } from "niceeval/sandbox";
 
 /**
@@ -173,4 +173,30 @@ export function nowledgeCodexConfig(): Pick<CodexConfig, "mcpServers" | "plugins
     configFile: "configs/codex/nowledge.toml",
     postSetup: [nowledgePostSetup()],
   };
+}
+
+// ── Claude Code 侧 ──────────────────────────────────────────────────────────
+// codex 集成的所有摩擦(远程 HTTP MCP 表达不了、无 post-agent-setup hook 跑 install_hooks.py、
+// hooks 需 --dangerously-bypass-hook-trust)在 claude-code 这里全不存在:
+//   · 插件官方 hooks.json 已声明 SessionStart(读)/UserPromptSubmit(读指引)/Stop(写),
+//     `claude plugin install` 装上即生效,不需要独立 install 脚本;
+//   · 读写两条路径都 shell out 到 nmem CLI(SessionStart→nmem-hook-read.sh、Stop→nmem-hook-save.py),
+//     CLI 读 `nmem config client` 的 url/api-key —— 正好是 nowledgeSetup() 已指向隧道的那份配置;
+//   · 插件根无 .mcp.json,没有 localhost MCP 要覆盖,所以核心记忆环不叠远程 MCP。
+//     (MCP 只服务可选的 skills 匹配 find_skills / report_skill_outcome,记忆本身用不到。)
+// 因此 claude 变体 = nowledgeSetup()(装 nmem CLI + 设 client 指向隧道)+ 装官方插件,句号。
+
+/**
+ * Claude Code 原生插件。marketplace name 必须是 `nowledge-community`(仓库 marketplace manifest
+ * 注册的名字,adapter 会回读 `claude plugin marketplace list` 校验),对应官方安装命令
+ * `claude plugin install nowledge-mem@nowledge-community`。ref 不钉,与 codex 变体一致取默认分支。
+ */
+export const nowledgeClaudePlugin: ClaudeCodePluginSpec = {
+  marketplace: { name: "nowledge-community", source: "nowledge-co/community" },
+  name: "nowledge-mem",
+};
+
+/** claudeCodeAgent(...) 的 Nowledge Mem 配置增量;apiKey/baseUrl 等由实验文件自带,这里只叠插件。 */
+export function nowledgeClaudeConfig(): Pick<ClaudeCodeConfig, "plugins"> {
+  return { plugins: [nowledgeClaudePlugin] };
 }

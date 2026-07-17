@@ -49,8 +49,10 @@ tunnel_pid() {
 }
 
 tunnel_url() {
-  # quick tunnel 的 URL 只出现在启动日志里
-  grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | head -1
+  # quick tunnel 的 URL 只出现在启动日志里。排除 cloudflared 自己引用的 api.trycloudflare.com
+  # (控制面端点,常先于真正的 quick-tunnel URL 打印,head -1 会误取)。
+  grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null \
+    | grep -vxE 'https://api\.trycloudflare\.com' | head -1
 }
 
 wait_for() {
@@ -116,10 +118,28 @@ license_activate() {
     return 0
   fi
   log "激活 license …"
-  # 0.10.29 服务端要 license_code + email(官方 nmemctl 还在发 license_id,已过时)
-  license_api activate "{\"license_code\":\"$id\",\"email\":\"$email\"}" >/dev/null || die "license 激活失败"
-  printf '%s' "$(license_status)" | grep -qE '"is_device_activated"[[:space:]]*:[[:space:]]*true' \
-    || die "激活请求成功但 is_device_activated 仍为 false"
+  # 0.10.29 服务端要 license_code + email(官方 nmemctl 还在发 license_id,已过时)。
+  # 注意:activate 对语义错误(seat 用尽、license 无效)也回 HTTP 200 + {"status":"error","message":…},
+  # curl -fsS 抓不到——必须解析 body 的 message,否则失败只剩「is_device_activated 仍 false」这种无解报错。
+  local activate_resp
+  activate_resp=$(license_api activate "{\"license_code\":\"$id\",\"email\":\"$email\"}") || die "license 激活请求失败(HTTP 层)"
+  if ! printf '%s' "$(license_status)" | grep -qE '"is_device_activated"[[:space:]]*:[[:space:]]*true'; then
+    local msg
+    msg=$(printf '%s' "$activate_resp" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("message",""))' 2>/dev/null)
+    [ -n "$msg" ] || msg="activate 返回体无 message,is_device_activated 仍 false"
+    # 激活失败是否致命,取决于本次跑对 pro 的依赖:
+    #  · free tier 已开放全部 feature(remote_ai_models / advanced_search / knowledge_graph / thread_import),
+    #    只有 memory 上限 50 —— dev-e2b 冒烟(单 eval 写几条)完全够用,不该被 seat 用尽硬挡。
+    #  · compare/ 正式跑要 >50 条 + 一致的 pro 条件,必须硬失败:设 NOWLEDGE_REQUIRE_PRO=1。
+    # 「device limit reached」的根因:每个临时实例是全新 device,seat 无自助释放端点(devices/reset/release 全 404),
+    #  只能去 nowledge 账号后台(mem.nowledge.co)释放旧设备,或改用持久 device 复用(见 down 注释)。
+    if [ "${NOWLEDGE_REQUIRE_PRO:-0}" = "1" ]; then
+      die "license 激活失败:$msg(NOWLEDGE_REQUIRE_PRO=1,拒绝降级)"
+    fi
+    log "WARN: license 激活失败:$msg"
+    log "WARN: 降级到 free tier 继续(memory 上限 50,全 feature 可用)。正式对比请清 seat 或设 NOWLEDGE_REQUIRE_PRO=1 硬失败。"
+    return 0
+  fi
   log "license 已激活($(license_status | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("tier"), "memory_limit:", d.get("memory_limit"))' 2>/dev/null))"
 }
 
@@ -243,6 +263,36 @@ down() {
   fi
 }
 
+# 写路径探针:跑完 exp、拆实例前查服务端到底落了多少 thread / memory。
+# 目的:agent 的插件 lifecycle hook(Stop 存线程、m add 存记忆)若静默失败,基础设施会全绿
+# 但服务端零记录——只有在拆实例前查服务端才抓得到(拆完数据就没了,这是 DX 痛点的正解)。
+# 走两条独立通道:① loopback license status 的 memory_count(免鉴权、字段确定,最可靠);
+# ② 经隧道 + API key 跑 nmem threads list(与沙箱 hook 同一条路径,顺带验证隧道仍通)。
+probe() {
+  local mem_count
+  mem_count=$(docker exec "$CONTAINER" curl -fsS "http://127.0.0.1:14242/api/license/status" 2>/dev/null \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin).get("memory_count","?"))' 2>/dev/null || echo "?")
+  log "server probe(拆实例前):memory_count=$mem_count"
+  [ -f "$ENV_FILE" ] || { log "  (无 env 文件,跳过隧道侧 nmem 查询)"; return 0; }
+  local url key
+  url=$(grep -E '^export NMEM_URL=' "$ENV_FILE" | head -1 | cut -d= -f2-)
+  key=$(grep -E '^export NMEM_API_KEY=' "$ENV_FILE" | head -1 | cut -d= -f2-)
+  [ -n "$url" ] && [ -n "$key" ] || { log "  (env 文件缺 URL/KEY,跳过)"; return 0; }
+  local threads
+  threads=$(NMEM_API_KEY="$key" uvx --from nmem-cli nmem --api-url "$url" --json threads list 2>/dev/null || echo '')
+  printf '%s' "$threads" | python3 -c '
+import json,sys
+raw=sys.stdin.read().strip()
+if not raw: print("  threads: <查询失败>"); sys.exit()
+try:
+    d=json.loads(raw)
+    items=d if isinstance(d,list) else d.get("threads",d.get("items",d.get("data",[])))
+    print(f"  threads: {len(items)}")
+except Exception:
+    print("  threads: <解析失败> "+raw[:200])
+' >&2
+}
+
 status() {
   if container_running; then
     log "容器: 运行中($(docker inspect -f '{{.Config.Image}}' "$CONTAINER"),端口 $(instance_port))"
@@ -263,6 +313,7 @@ case "${1:-}" in
   up) up ;;
   down) down ;;
   status) status ;;
+  probe) probe ;;
   env) cat "$ENV_FILE" 2>/dev/null || die "还没 up" ;;
-  *) die "用法: $0 up|down|status|env [instance-name(默认 default)]" ;;
+  *) die "用法: $0 up|down|status|probe|env [instance-name(默认 default)]" ;;
 esac

@@ -24,4 +24,13 @@ trap cleanup EXIT
 source "$(dirname "$CTL")/../.cache/nowledge-mem/$INSTANCE/env"
 export NMEM_URL NMEM_API_KEY
 
+# niceeval verdict=failed 会以非零退出;别让它跳过写路径探针,也别吞掉真正的退出码
+set +e
 pnpm exec niceeval exp "$@"
+rc=$?
+set -e
+
+# 拆实例前查服务端:验证 agent 的记忆 hook 写路径真的落了 thread/memory(见 nowledge-mem.sh probe)
+"$CTL" probe "$INSTANCE" || true
+
+exit $rc
