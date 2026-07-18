@@ -1,0 +1,36 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/claude-dp-v4--nowledge",
+  "experiment": {
+    "description": "claude-code · deepseek-v4-flash · Nowledge Mem",
+    "flags": {
+      "memory": "nowledge",
+      "nowledgeVersion": "0.10.29"
+    },
+    "runs": 1,
+    "earlyExit": true,
+    "timeoutMs": 1200000,
+    "budget": 2,
+    "maxConcurrency": 1,
+    "selectedEvalIds": [
+      "memory/agent-029-use-cache-directive"
+    ],
+    "evalFilterFingerprint": "d534ad87a0994b6f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-claude-code:v0.6.1"
+      },
+      "fingerprint": "3bdd54e725a3a7e1"
+    }
+  },
+  "agent": "claude-code",
+  "model": "deepseek-v4-flash",
+  "startedAt": "2026-07-17T09:59:16.286Z",
+  "completedAt": "2026-07-17T10:04:02.774Z"
+}

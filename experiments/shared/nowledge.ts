@@ -274,6 +274,68 @@ export function nowledgeCodexConfig(
   };
 }
 
+// ── CLI-only 变体(诊断用)────────────────────────────────────────────────
+// 背景:compare/codex-gpt-5.4--nowledge 实测 8 个 attempt 里只有 1 个真的调用了
+// nowledge-mem MCP 工具,其余全零——但 MCP 调用本身是模型工具调用流里可见的事件,
+// 唯一不可观测的是 hook(SessionStart/Stop)shell out 到 nmem CLI 那部分。这个变体反过来:
+// 彻底不给 MCP,逼 agent 只能自己在 Bash 里敲 `nmem` 命令——如果它敲了,niceeval 的
+// events.json 里就能直接搜到 `nmem`,不再需要拆实例前 probe 服务端才能实锤。
+// 用于诊断"低利用率是不是任务本身不像 continuation work",不是要否定官方 MCP 优先的推荐
+// (mem.nowledge.co/zh/docs/integrations/codex-cli 明确说 MCP 更顺手、CLI 只是宿主级兜底)。
+
+const MCP_MANAGED_BEGIN = "# BEGIN Nowledge Mem MCP (managed by nowledge-mem-codex-plugin)";
+const MCP_MANAGED_END = "# END Nowledge Mem MCP";
+
+/** 覆盖 AGENTS.md 里"优先用 MCP"的默认引导;因为这个变体从没给 MCP,原文档的优先级判断会误导 agent。 */
+const CLI_ONLY_OVERRIDE = `## CLI-Only Override (this benchmark environment)
+
+Nowledge Mem MCP tools are NOT installed in this session — \`memory_search\`, \`memory_add\`,
+\`thread_search\`, \`thread_fetch_messages\`, \`read_context_bundle\`, \`mem_fs\`, and
+\`find_skills\`/\`report_skill_outcome\` do not exist here and will fail if called.
+
+For every memory operation described above in this document, use the \`nmem\` CLI directly via
+the shell instead of the MCP tool it names:
+
+- Startup context: \`nmem --json context --source-app codex\` (or \`nmem --json wm read\` for just
+  Working Memory)
+- Search durable knowledge: \`nmem --json m search "query"\`
+- Search prior threads: \`nmem --json t search "query" --limit 5\`
+- Save a durable memory: \`nmem --json m add "content" -t "Title" --unit-type decision -l "label" -s codex -i 0.8\`
+- Update an existing one: \`nmem --json m update <memory_id> -c "updated content"\`
+
+Everything else in this document about *when* to search or save still applies — only the
+mechanism changes from an MCP tool call to an \`nmem\` shell command.
+`;
+
+/**
+ * install_hooks.py 装完托管 MCP 段之后,把它删掉,逼 codex 只剩 CLI 一条路。
+ * `nmem config mcp show --host codex` 在 nmem client 已指向隧道时总会成功,所以
+ * install_hooks.py 总会写这个块——不能靠"不给 endpoint"跳过,只能装完之后再删。
+ * 删除后验证 config.toml 里确实没有残留,再把 override 追加进 AGENTS.md。
+ */
+export function nowledgeCliOnlyPostSetup(): SandboxHook {
+  return async (sb, ctx) => {
+    const configFile = '"${CODEX_HOME:-$HOME/.codex}/config.toml"';
+    await requireCommand(
+      sb,
+      "strip managed MCP block",
+      `sed -i '/^${MCP_MANAGED_BEGIN}$/,/^${MCP_MANAGED_END}$/d' ${configFile}`,
+    );
+    await requireCommand(sb, "MCP block gone from config.toml", `! grep -q "mcp_servers.nowledge-mem" ${configFile}`);
+    await shared.appendProjectInstruction(sb, CLI_ONLY_OVERRIDE);
+    hookLog(ctx, "[nowledge] MCP block stripped — CLI-only mode, AGENTS.md override appended");
+  };
+}
+
+/** codexAgent(...) 的 CLI-only 变体:装插件 + hooks,但不注册 MCP,读写全走 `nmem` CLI。 */
+export function nowledgeCodexCliOnlyConfig(): Pick<CodexConfig, "plugins" | "configFile" | "postSetup"> {
+  return {
+    plugins: [nowledgePlugin],
+    configFile: "configs/codex/nowledge.toml",
+    postSetup: [nowledgePostSetup(), nowledgeCliOnlyPostSetup()],
+  };
+}
+
 // ── Claude Code 侧 ──────────────────────────────────────────────────────────
 // codex 集成的所有摩擦(远程 HTTP MCP 表达不了、无 post-agent-setup hook 跑 install_hooks.py、
 // hooks 需 --dangerously-bypass-hook-trust)在 claude-code 这里全不存在:

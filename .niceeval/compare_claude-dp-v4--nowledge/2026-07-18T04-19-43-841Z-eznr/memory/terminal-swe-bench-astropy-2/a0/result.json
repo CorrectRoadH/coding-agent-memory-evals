@@ -1,0 +1,373 @@
+{
+  "id": "memory/terminal-swe-bench-astropy-2",
+  "description": "terminal-bench swe-bench-astropy-2: make ascii.qdp reader accept lower-case QDP commands (real SWE-bench astropy issue)",
+  "verdict": "failed",
+  "fingerprint": "57aad53709fd717c6e03b5c68e797ed644c5bb3e88ed816b238d71cb8c507b5e",
+  "attempt": 0,
+  "durationMs": 398607,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-swe-bench-astropy-2.eval.ts",
+        "line": 89,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…nvironment with seed packages at: tests-venv + packaging==26.2 + pip==26.0.1 + setuptools==82.0.1 + wheel==0.47.0 Activate with: source tests-venv/bin/activate\"\noutput tail:\n    \u001b[33m    ! WT -- hardness ratio\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    !MJD            Err (pos)       Err(neg)        Rate            Error\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    53000.123456 2.37847222222222e-05    -2.37847222222222e-05   -0.292553       -0.374935\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    55045.099887 1.14467592592593e-05    -1.14467592592593e-05   0.000000        NO\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    ! Add command, just to raise the warning.\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    READ TERR 1\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    ! WT -- whatever\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    !MJD            Err (pos)       Err(neg)        Rate            Error\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    53000.123456 2.37847222222222e-05    -2.37847222222222e-05   -0.292553       -0.374935\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    NO 1.14467592592593e-05    -1.14467592592593e-05   0.000000        NO\u001b[39;49;00m\u001b[33m\u001b[39;49;00m\n    \u001b[33m    \u001b[39;49;00m\u001b[33m\"\"\"\u001b[39;49;00m\u001b[90m\u001b[39;49;00m\n        \u001b[94mif\u001b[39;49;00m lowercase:\u001b[90m\u001b[39;49;00m\n            example_qdp = lowercase_header(example_qdp)\u001b[90m\u001b[39;49;00m\n    \u001b[90m\u001b[39;49;00m\n        path = \u001b[96mstr\u001b[39;49;00m(tmp_path / \u001b[33m\"\u001b[39;49;00m\u001b[33mtest.qdp\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n        path2 = \u001b[96mstr\u001b[39;49;00m(tmp_path / \u001b[33m\"\u001b[39;49;00m\u001b[33mtest2.qdp\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n    \u001b[90m\u001b[39;49;00m\n        \u001b[94mwith\u001b[39;49;00m \u001b[96mopen\u001b[39;49;00m(path, \u001b[33m\"\u001b[39;49;00m\u001b[33mw\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m) \u001b[94mas\u001b[39;49;00m fp:\u001b[90m\u001b[39;49;00m\n            \u001b[96mprint\u001b[39;49;00m(example_qdp, file=fp)\u001b[90m\u001b[39;49;00m\n        \u001b[94mwith\u001b[39;49;00m pytest.warns(AstropyUserWarning) \u001b[94mas\u001b[39;49;00m record:\u001b[90m\u001b[39;49;00m\n>           table = _read_table_qdp(path, names=[\u001b[33m\"\u001b[39;49;00m\u001b[33mMJD\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m, \u001b[33m\"\u001b[39;49;00m\u001b[33mRate\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m], table_id=\u001b[94m0\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n\u001b[1m\u001b[31mE           Failed: DID NOT WARN. No warnings of type (<class 'astropy.utils.exceptions.AstropyUserWarning'>,) were emitted.\u001b[0m\n\u001b[1m\u001b[31mE            Emitted warnings: [].\u001b[0m\n\n\u001b[1m\u001b[31mastropy/io/ascii/tests/test_qdp.py\u001b[0m:93: Failed\n==================================== PASSES ====================================\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_get_tables_from_qdp_file\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip[False]\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_example\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip_example\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip_example_comma\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_write_simple\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_write_simple_specify_name\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_get_lines_from_qdp\u001b[0m\n\u001b[31mFAILED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip[True]\u001b[0m - Failed: DID NOT WARN. No warnings of type (<class 'astropy.utils.exceptions...\n\u001b[31m========================= \u001b[31m\u001b[1m1 failed\u001b[0m, \u001b[32m8 passed\u001b[0m\u001b[31m in 0.17s\u001b[0m\u001b[31m ==========================\u001b[0m\n\nUsing CPython 3.9.25\nCreating virtual environment with seed packages at: tests-venv\n + packaging==26.2\n + pip==26.0.1\n + setuptools==82.0.1\n + wheel==0.47.0\nActivate with: source tests-venv/bin/activate",
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 108049,
+    "outputTokens": 24820,
+    "cacheReadTokens": 2866816,
+    "requests": 71,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0301035448,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i9wn0pn9gqf0p6ze9jdzz"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1755
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 3466,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1756,
+          "durationMs": 3465,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1756,
+              "durationMs": 271,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2031,
+              "durationMs": 1338,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 3369,
+              "durationMs": 266,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 3635,
+              "durationMs": 275,
+              "command": {
+                "display": "nmem config client set url 'https://barrier-holders-four-approve.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 3910,
+              "durationMs": 275,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_BVOymGaKgmWpVH-sMOr67U9j1mzy_LXfTvj5w1Nwwfhhf2FScYSK2bsWrHnUBVnn'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4185,
+              "durationMs": 1035,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 351,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5221,
+          "durationMs": 350,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 9576,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 5572,
+          "durationMs": 279,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 5851,
+          "durationMs": 5309,
+          "command": {
+            "display": "claude plugin marketplace add 'nowledge-co/community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 11160,
+          "durationMs": 737,
+          "command": {
+            "display": "claude plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 11897,
+          "durationMs": 2020,
+          "command": {
+            "display": "claude plugin install 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 13917,
+          "durationMs": 689,
+          "command": {
+            "display": "claude plugin list --json",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 382022,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "{",
+          "startOffsetMs": 15459,
+          "durationMs": 287,
+          "command": {
+            "display": "{ command -v gcc && command -v patch && command -v curl; } >/dev/null 2>&1 || {\n  apt-get update &&\n  apt-get install -y git gcc patch curl ca-certificates ;\n}",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 15746,
+          "durationMs": 1559,
+          "command": {
+            "display": "export PATH=\"$HOME/.local/bin:$PATH\"\ncommand -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh\nuv python install 3.9",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 17305,
+          "durationMs": 16064,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/astropy/astropy.git .astropy-clone\nmv .astropy-clone/.git .git\nrm -rf .astropy-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 33370,
+          "durationMs": 896,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 34266,
+          "durationMs": 273339,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Your working directory is a checkout of the real astropy repository at the commit where…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 307605,
+          "durationMs": 300,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 308228,
+          "durationMs": 304,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 33370,
+          "durationMs": 275162,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 308806,
+          "durationMs": 88362,
+          "failed": true,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 577,
+      "children": [
+        {
+          "id": "n23",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 397170,
+          "durationMs": 577,
+          "children": [
+            {
+              "id": "n24",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 397170,
+              "durationMs": 299,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 859
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 518
+    }
+  ],
+  "locator": "@19avvq3a",
+  "startedAt": "2026-07-17T10:33:33.672Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4--nowledge/2026-07-17T10-33-33-665Z-e0s3/memory/terminal-swe-bench-astropy-2/a0"
+}

@@ -1,0 +1,216 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "errored",
+  "fingerprint": "7e4eb5393994db1068fb40da6f4ed71beec3b739400ae1da52cd7b1d359bfd07",
+  "attempt": 0,
+  "durationMs": 141584,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 31227,
+    "outputTokens": 4123,
+    "cacheReadTokens": 14336,
+    "requests": 5,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1434965,
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: Error code: 503 - {'error': {'message': 'Service temporarily unavailable', 'type': 'api_error'}} · output tail: │   1717 │   │   │                                                             │ ⏎ │   1718 │   │   │   break                                                     │ ⏎ │   1719                                                                       │ ⏎ ╰──────────────────────────────────────────────────────────────────────────────╯ ⏎ InternalServerError: Error code: 503 - {'error': {'message': 'Service  ⏎ temporarily unavailable', 'type': 'api_error'}}",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "inqrgkkoke0mvxmhl1qi6"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2880
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 538,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2880,
+          "durationMs": 538,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1847,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3418,
+          "durationMs": 267,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3686,
+          "durationMs": 788,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4718,
+          "durationMs": 297,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mroruzaa_bfkyyp'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 134820,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5532,
+          "durationMs": 19564,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 25096,
+          "durationMs": 275,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 25371,
+          "durationMs": 114158,
+          "failed": true,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Migrate every route and file from the Pages Router to the Next.js App Router. When finished, remove …",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 139809,
+          "durationMs": 274,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 25097,
+          "durationMs": 114987,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 594,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 12 files",
+          "startOffsetMs": 140086,
+          "durationMs": 594,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 140085,
+              "durationMs": 290,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 904
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 505
+    }
+  ],
+  "locator": "@1pjwbg6u",
+  "startedAt": "2026-07-17T10:05:11.731Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

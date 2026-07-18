@@ -1,0 +1,358 @@
+{
+  "id": "memory/terminal-pypi-server",
+  "description": "terminal-bench pypi-server: build a package, run a local PyPI index on :8080, make pip install work against it",
+  "verdict": "passed",
+  "fingerprint": "88b769e065dddc56f41e4d02a85ed820f10d81b4e68aaaa3375361168e97e08b",
+  "attempt": 0,
+  "durationMs": 105124,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-pypi-server.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 136419,
+    "outputTokens": 11833,
+    "cacheReadTokens": 1626880,
+    "requests": 62,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.026967164000000005,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "isxygtygbmp7l5wqgps56"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2042
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 3521,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2042,
+          "durationMs": 3521,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2042,
+              "durationMs": 261,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2303,
+              "durationMs": 1618,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 3921,
+              "durationMs": 323,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4244,
+              "durationMs": 310,
+              "command": {
+                "display": "nmem config client set url 'https://expense-crm-next-interest.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4554,
+              "durationMs": 267,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_i347JwBnhT3DIkbyPXtMC3X_JC1V5_gPIDN8NBJQVZ6HSnBauDvCoU0M1JnhE357'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4821,
+              "durationMs": 742,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 334,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5563,
+          "durationMs": 334,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 9105,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 5897,
+          "durationMs": 262,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 6159,
+          "durationMs": 5254,
+          "command": {
+            "display": "claude plugin marketplace add 'nowledge-co/community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 11413,
+          "durationMs": 665,
+          "command": {
+            "display": "claude plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 12079,
+          "durationMs": 1693,
+          "command": {
+            "display": "claude plugin install 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 13772,
+          "durationMs": 713,
+          "command": {
+            "display": "claude plugin list --json",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 88715,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 15271,
+          "durationMs": 1772,
+          "command": {
+            "display": "apt-get update",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "apt-get",
+          "startOffsetMs": 17043,
+          "durationMs": 1356,
+          "command": {
+            "display": "apt-get install -y python3 python3-pip python3-venv curl",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 18400,
+          "durationMs": 274,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 18674,
+          "durationMs": 78653,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Create a python package called vectorops, then build this package and set up a pypi ser…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 97327,
+          "durationMs": 309,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 97905,
+          "durationMs": 265,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 18400,
+          "durationMs": 79770,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 98424,
+          "durationMs": 5293,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 567,
+      "children": [
+        {
+          "id": "n22",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 9 files",
+          "startOffsetMs": 103718,
+          "durationMs": 566,
+          "children": [
+            {
+              "id": "n23",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 103718,
+              "durationMs": 309,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 839
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 531
+    }
+  ],
+  "locator": "@1pqnssna",
+  "startedAt": "2026-07-17T10:19:42.242Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
