@@ -1,0 +1,533 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "168ab3359fa5b09bcdc431c6eacc649c23bb31e9d4326ff4345e54cd4c45d906",
+  "attempt": 0,
+  "durationMs": 150533,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// lib/products.js\nimport { unstable_cache } from 'next/cache';\n\nimport { getAllProducts } from './db.js';\n\n// Keep the catalog cache in one shared accessor so every catalog view can use\n// the same invalidation tag.\nexport const getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['products'],\n  { tags: ['products'] }\n);\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\n\nimport { getCachedProducts } from '../lib/products.js';\n\nexport default async function Page() {\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag('products', 'max');\n  }\n\n  const products = await getCachedProducts();\n\n  return (\n    <main>\n      <header>\n        <div>\n          <p>Operations / Catalog</p>\n          <h1>Product catalog</h1>\n          <p>Browse current pricing, inventory, and availability.</p>\n        </div>\n        <form action={syncLatestCatalog}>\n          <button type=\"submit\">Sync latest catalog</button>\n        </form>\n      </header>\n\n      <section aria-labelledby=\"products-heading\">\n        <div>\n          <h2 id=\"products-heading\">Products</h2>\n          <p>{products.length} products</p>\n        </div>\n        <table>\n          <thead>\n            <tr>\n              <th scope=\"col\">Product</th>\n              <th scope=\"col\">Price</th>\n            </tr>\n          </thead>\n          <tbody>\n            {products.map(product => (\n              <tr key={product.id}>\n                <td>{product.name}</td>\n                <td>${product.price.toFixed(2)}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </section>\n    </main>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Product catalog',\n  description: 'Admin product catalog'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// lib/products.js\nimport { unstable_cache } from 'next/cache';\n\nimport { getAllProducts } from './db.js';\n\n// Keep the catalog cache in one shared accessor so every catalog view can use\n// the same invalidation tag.\nexport const getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['products'],\n  { tags: ['products'] }\n);\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\n\nimport { getCachedProducts } from '../lib/products.js';\n\nexport default async function Page() {\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag('products', 'max');\n  }\n\n  const products = await getCachedProducts();\n\n  return (\n    <main>\n      <header>\n        <div>\n          <p>Operations / Catalog</p>\n          <h1>Product catalog</h1>\n          <p>Browse current pricing, inventory, and availability.</p>\n        </div>\n        <form action={syncLatestCatalog}>\n          <button type=\"submit\">Sync latest catalog</button>\n        </form>\n      </header>\n\n      <section aria-labelledby=\"products-heading\">\n        <div>\n          <h2 id=\"products-heading\">Products</h2>\n          <p>{products.length} products</p>\n        </div>\n        <table>\n          <thead>\n            <tr>\n              <th scope=\"col\">Product</th>\n              <th scope=\"col\">Price</th>\n            </tr>\n          </thead>\n          <tbody>\n            {products.map(product => (\n              <tr key={product.id}>\n                <td>{product.name}</td>\n                <td>${product.price.toFixed(2)}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </section>\n    </main>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Product catalog',\n  description: 'Admin product catalog'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*getAllProducts.*lib\\/db|from.*lib\\/db/",
+      "received": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n  \n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\n// lib/products.js\nimport { unstable_cache } from 'next/cache';\n\nimport { getAllProducts } from './db.js';\n\n// Keep the catalog cache in one shared accessor so every catalog view can use\n// the same invalidation tag.\nexport const getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['products'],\n  { tags: ['products'] }\n);\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\n\nimport { getCachedProducts } from '../lib/products.js';\n\nexport default async function Page() {\n  async function syncLatestCatalog() {\n    'use server';\n\n    revalidateTag('products', 'max');\n  }\n\n  const products = await getCachedProducts();\n\n  return (\n    <main>\n      <header>\n        <div>\n          <p>Operations / Catalog</p>\n          <h1>Product catalog</h1>\n          <p>Browse current pricing, inventory, and availability.</p>\n        </div>\n        <form action={syncLatestCatalog}>\n          <button type=\"submit\">Sync latest catalog</button>\n        </form>\n      </header>\n\n      <section aria-labelledby=\"products-heading\">\n        <div>\n          <h2 id=\"products-heading\">Products</h2>\n          <p>{products.length} products</p>\n        </div>\n        <table>\n          <thead>\n            <tr>\n              <th scope=\"col\">Product</th>\n              <th scope=\"col\">Price</th>\n            </tr>\n          </thead>\n          <tbody>\n            {products.map(product => (\n              <tr key={product.id}>\n                <td>{product.name}</td>\n                <td>${product.price.toFixed(2)}</td>\n              </tr>\n            ))}\n          </tbody>\n        </table>\n      </section>\n    </main>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Product catalog',\n  description: 'Admin product catalog'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n"
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 199639,
+    "outputTokens": 3213,
+    "cacheReadTokens": 171776,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.23609460000000002,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ighoknc0g2t9stl8iyge3"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3017
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 1178,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 3017,
+          "durationMs": 1178,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 3019,
+              "durationMs": 240,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 3259,
+              "durationMs": 242,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "mempal",
+              "startOffsetMs": 3501,
+              "durationMs": 455,
+              "command": {
+                "display": "mempal init .",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 3956,
+              "durationMs": 239,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 351,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 4195,
+          "durationMs": 351,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 2001,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 4546,
+          "durationMs": 240,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4786,
+          "durationMs": 237,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq17qj6_95trr8'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 5244,
+          "durationMs": 231,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 5692,
+          "durationMs": 194,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_8czw9o'\n\n## Skills\n\nSkill files are installed in `.agents/skills/`:\n\n- mempal-memory: .agents/skills/mempal-memory/SKILL.md\n…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 5887,
+          "durationMs": 205,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 210,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 6547,
+          "durationMs": 210,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 141834,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 6988,
+          "durationMs": 16705,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 23695,
+          "durationMs": 229,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 23925,
+          "durationMs": 117282,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'You are building an admin product catalog p…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 141208,
+          "durationMs": 534,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 23695,
+          "durationMs": 118047,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 142228,
+          "durationMs": 6362,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 524,
+      "children": [
+        {
+          "id": "n19",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 148591,
+          "durationMs": 523,
+          "children": [
+            {
+              "id": "n20",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 148591,
+              "durationMs": 296,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 2
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1416
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1748,
+      "children": [
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 150534,
+          "durationMs": 242,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 150776,
+          "durationMs": 767,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 151544,
+          "durationMs": 258,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_71cebb86-e986-4258-b618-d8e5a38b1d9f.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 152032,
+          "durationMs": 244,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_71cebb86-e986-4258-b618-d8e5a38b1d9f.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 464
+    }
+  ],
+  "locator": "@1czntzel",
+  "startedAt": "2026-07-18T07:14:49.568Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

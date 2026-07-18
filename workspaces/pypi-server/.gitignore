@@ -1,9 +1,0 @@
-# agent 自建的工具链/构建产物不进 diff 捕获,不然一次 venv 就是几千个文件的噪音
-*venv*/
-.venv/
-__pycache__/
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-*.log

@@ -1,0 +1,504 @@
+{
+  "id": "memory/terminal-swe-bench-astropy-2",
+  "description": "terminal-bench swe-bench-astropy-2: make ascii.qdp reader accept lower-case QDP commands (real SWE-bench astropy issue)",
+  "verdict": "failed",
+  "fingerprint": "1fc7fc4f48d54fcd8e12827b7821ab9e2d89dd8c7a60e7fb3a08f08473f5e5b0",
+  "attempt": 0,
+  "durationMs": 485865,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/terminal-swe-bench-astropy-2.eval.ts",
+        "line": 89,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…able! 10.1.0 -> 12.0.1 npm notice Changelog: <https://github.com/npm/cli/releases/tag/v12.0.1> npm notice Run `npm install -g npm@12.0.1` to update! npm notice\"\noutput tail:\n    \u001b[90m    \u001b[39;49;00m\u001b[33m\"\"\"Read a table from a QDP file.\u001b[39;49;00m\n    \u001b[33m\u001b[39;49;00m\n    \u001b[33m    Parameters\u001b[39;49;00m\n    \u001b[33m    ----------\u001b[39;49;00m\n    \u001b[33m    qdp_file : str\u001b[39;49;00m\n    \u001b[33m        Input QDP file name\u001b[39;49;00m\n    \u001b[33m\u001b[39;49;00m\n    \u001b[33m    Other Parameters\u001b[39;49;00m\n    \u001b[33m    ----------------\u001b[39;49;00m\n    \u001b[33m    names : list of str\u001b[39;49;00m\n    \u001b[33m        Name of data columns (defaults to ['col1', 'col2', ...]), _not_\u001b[39;49;00m\n    \u001b[33m        including error columns.\u001b[39;49;00m\n    \u001b[33m\u001b[39;49;00m\n    \u001b[33m    table_id : int, default 0\u001b[39;49;00m\n    \u001b[33m        Number of the table to be read from the QDP file. This is useful\u001b[39;49;00m\n    \u001b[33m        when multiple tables present in the file. By default, the first is read.\u001b[39;49;00m\n    \u001b[33m\u001b[39;49;00m\n    \u001b[33m    delimiter : str\u001b[39;49;00m\n    \u001b[33m        Any delimiter accepted by the `sep` argument of str.split()\u001b[39;49;00m\n    \u001b[33m\u001b[39;49;00m\n    \u001b[33m    Returns\u001b[39;49;00m\n    \u001b[33m    -------\u001b[39;49;00m\n    \u001b[33m    tables : list of `~astropy.table.Table`\u001b[39;49;00m\n    \u001b[33m        List containing all the tables present inside the QDP file\u001b[39;49;00m\n    \u001b[33m    \"\"\"\u001b[39;49;00m\u001b[90m\u001b[39;49;00m\n        \u001b[94mif\u001b[39;49;00m table_id \u001b[95mis\u001b[39;49;00m \u001b[94mNone\u001b[39;49;00m:\u001b[90m\u001b[39;49;00m\n>           warnings.warn(\u001b[90m\u001b[39;49;00m\n                \u001b[33m\"\u001b[39;49;00m\u001b[33mtable_id not specified. Reading the first available table\u001b[39;49;00m\u001b[33m\"\u001b[39;49;00m,\u001b[90m\u001b[39;49;00m\n                AstropyUserWarning,\u001b[90m\u001b[39;49;00m\n            )\u001b[90m\u001b[39;49;00m\n\u001b[1m\u001b[31mE           astropy.utils.exceptions.AstropyUserWarning: table_id not specified. Reading the first available table\u001b[0m\n\n\u001b[1m\u001b[31mastropy/io/ascii/qdp.py\u001b[0m:414: AstropyUserWarning\n==================================== PASSES ====================================\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_get_tables_from_qdp_file\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip[False]\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_example\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip_example\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip_example_comma\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_write_simple\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_write_simple_specify_name\u001b[0m\n\u001b[32mPASSED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_get_lines_from_qdp\u001b[0m\n\u001b[31mFAILED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_roundtrip[True]\u001b[0m - Failed: DID NOT WARN. No warnings of type (<class 'astropy.utils.exceptions...\n\u001b[31mFAILED\u001b[0m astropy/io/ascii/tests/test_qdp.py::\u001b[1mtest_read_lowercase_commands\u001b[0m - astropy.utils.exceptions.AstropyUserWarning: table_id not specified. Readin...\n\u001b[31m========================= \u001b[31m\u001b[1m2 failed\u001b[0m, \u001b[32m8 passed\u001b[0m\u001b[31m in 0.18s\u001b[0m\u001b[31m ==========================\u001b[0m\n\nUsing CPython 3.9.25\nCreating virtual environment with seed packages at: tests-venv\n + packaging==26.2\n + pip==26.0.1\n + setuptools==82.0.1\n + wheel==0.47.0\nActivate with: source tests-venv/bin/activate\nnpm notice \nnpm notice New major version of npm available! 10.1.0 -> 12.0.1\nnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v12.0.1>\nnpm notice Run `npm install -g npm@12.0.1` to update!\nnpm notice",
+      "evidence": "npm run test"
+    }
+  ],
+  "usage": {
+    "inputTokens": 1193492,
+    "outputTokens": 6624,
+    "cacheReadTokens": 1134848,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 1.3467208,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i57ufm8il937g8gedk38x"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1465
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 4951,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1466,
+          "durationMs": 4951,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1465,
+              "durationMs": 243,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1708,
+              "durationMs": 2527,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 4235,
+              "durationMs": 242,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4478,
+              "durationMs": 244,
+              "command": {
+                "display": "nmem config client set url 'https://males-dylan-communication-highway.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4722,
+              "durationMs": 250,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_kD-trVt_Jlcu3f6TW8pGaRlemxvQkSCbewrgJ0BwRPJHShk3AVYnKTP_5dXMlVqw'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4972,
+              "durationMs": 1444,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 356,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6416,
+          "durationMs": 353,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 6445,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 6772,
+          "durationMs": 242,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 7019,
+          "durationMs": 253,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq26tyt_d5eel8'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 7503,
+          "durationMs": 243,
+          "command": {
+            "display": "printf '\\n' >> ~/.codex/config.toml && cat /tmp/niceeval-native-config-mrq26u5u-bss0au >> ~/.codex/config.toml && printf '\\n' >> ~/.codex/config.toml && rm -f …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7746,
+          "durationMs": 240,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'NICEEVAL_PROVIDER_EOF'\n\n[model_providers.s2a]\nname = \"s2a\"\nbase_url = \"https://s2a.niceeval.com/v1\"\nenv_key = \"CODEX_API_KEY\"\nwi…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7987,
+          "durationMs": 243,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'MCPEOF'\n\n[mcp_servers.nowledge-mem]\nurl = \"https://males-dylan-communication-highway.trycloudflare.com/mcp/\"\n[mcp_servers.nowled…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 8231,
+          "durationMs": 1539,
+          "command": {
+            "display": "codex plugin marketplace add 'nowledge-co/community' --sparse '.agents' --sparse 'nowledge-mem-codex-plugin'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 9770,
+          "durationMs": 312,
+          "command": {
+            "display": "codex plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 10083,
+          "durationMs": 300,
+          "command": {
+            "display": "codex plugin add 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 10384,
+          "durationMs": 288,
+          "command": {
+            "display": "codex plugin list --json --marketplace 'nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "find",
+          "startOffsetMs": 10904,
+          "durationMs": 248,
+          "command": {
+            "display": "find \"${CODEX_HOME:-$HOME/.codex}\" -type f -name install_hooks.py -path \"*nowledge-mem*\" 2>/dev/null | head -1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 11152,
+          "durationMs": 351,
+          "command": {
+            "display": "python3 '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 11503,
+          "durationMs": 255,
+          "command": {
+            "display": "cat \"$(dirname \"$(dirname '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py')\")/AGENTS.md\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 11987,
+          "durationMs": 254,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_h9dywm'\n# Nowledge Mem for Codex\n\nYou have access to the user's knowledge through the installed plugin skills, the `nmem` CL…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 12241,
+          "durationMs": 245,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 12486,
+          "durationMs": 240,
+          "command": {
+            "display": "test -f \"${CODEX_HOME:-$HOME/.codex}/hooks.json\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "grep",
+          "startOffsetMs": 12726,
+          "durationMs": 245,
+          "command": {
+            "display": "grep -q \"mcp_servers.nowledge-mem\" \"${CODEX_HOME:-$HOME/.codex}/config.toml\"",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 251,
+      "children": [
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 13217,
+          "durationMs": 251,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 470049,
+      "children": [
+        {
+          "id": "n26",
+          "kind": "command",
+          "label": "{",
+          "startOffsetMs": 13706,
+          "durationMs": 247,
+          "command": {
+            "display": "{ command -v gcc && command -v patch && command -v curl; } >/dev/null 2>&1 || {\n  apt-get update &&\n  apt-get install -y git gcc patch curl ca-certificates ;\n}",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n27",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 13953,
+          "durationMs": 2511,
+          "command": {
+            "display": "export PATH=\"$HOME/.local/bin:$PATH\"\ncommand -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh\nuv python install 3.9",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n28",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 16464,
+          "durationMs": 16167,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/astropy/astropy.git .astropy-clone\nmv .astropy-clone/.git .git\nrm -rf .astropy-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n29",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 32632,
+          "durationMs": 926,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n30",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 33559,
+          "durationMs": 378315,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n31",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 411876,
+          "durationMs": 303,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n32",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 32633,
+          "durationMs": 379547,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n33",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 412931,
+          "durationMs": 70584,
+          "failed": true,
+          "command": {
+            "display": "npm run test",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 523,
+      "children": [
+        {
+          "id": "n34",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 483518,
+          "durationMs": 522,
+          "children": [
+            {
+              "id": "n35",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 483517,
+              "durationMs": 288,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1823
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 470
+    }
+  ],
+  "locator": "@1qddqlxc",
+  "startedAt": "2026-07-18T07:42:04.745Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

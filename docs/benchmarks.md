@@ -94,7 +94,7 @@
 
 ### P1 · 第二批加
 
-**P1.1 — `terminal-bench/original-tasks/pypi-server`** ✅ 已落地:`evals/memory/terminal-pypi-server.eval.ts`(沿用上游 `test_outputs.py`;run-tests 从 uv venv 改成 stdlib venv 适配非 root sandbox;要求 agent 留一个持久后台 server 进程供测试阶段检查)
+**P1.1 — `terminal-bench/original-tasks/pypi-server`** ⛔ 已退役(2026-07-18):曾落地为 `evals/memory/terminal-pypi-server.eval.ts`,但 compare 矩阵实测 103/109 通过、接近饱和,对记忆条件无区分度,连同 workspace/fixture 一并移除(同批退役的还有 RepoMod hello-world-api,106/106 全过)。历史结果仍在 `.niceeval/` 快照里。
 - **类型**:跨 session 工具链经验复用。
 - **记忆考点**:本地 PyPI simple index、包名/version/root `__init__.py` 导出、8080 server 生命周期。会话 A 调通 build/server/install 路径,会话 B 做小版本或 API 续作时应直接复用打包/发布方式。
 - **验收**:沿用原任务测试,能从本地 index 安装并调用包即可。

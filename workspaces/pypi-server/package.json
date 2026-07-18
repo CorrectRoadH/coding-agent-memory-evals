@@ -1,6 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "test": "bash tests/run-tests.sh"
-  }
-}
