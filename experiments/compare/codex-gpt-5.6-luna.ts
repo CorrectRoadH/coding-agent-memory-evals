@@ -8,6 +8,7 @@ import { NICEEVAL_CODEX_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
 export default defineExperiment({
   evals: ["memory"],
   description: "codex · gpt-5.6-luna",
+  labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(),
   flags: { memory: "baseline" },
   model: "gpt-5.6-luna", // → ctx.model → niceeval codex adapter 写进 config.toml 的 model 行

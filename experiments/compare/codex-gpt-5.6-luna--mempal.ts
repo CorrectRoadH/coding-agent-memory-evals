@@ -13,6 +13,7 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 export default defineExperiment({
   evals: ["memory"],
   description: "codex · gpt-5.6-luna · mempal",
+  labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent({ skills: [mempalSkill] }),
   flags: mempalFlags(),
   model: "gpt-5.6-luna",

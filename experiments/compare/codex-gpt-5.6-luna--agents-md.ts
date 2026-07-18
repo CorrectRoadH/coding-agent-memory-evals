@@ -12,6 +12,7 @@ import { withAgentsMd } from "../shared/agents-md.ts";
 export default defineExperiment({
   evals: ["memory"],
   description: "codex · gpt-5.6-luna · AGENTS.md",
+  labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(),
   flags: { memory: "agents-md" },
   model: "gpt-5.6-luna", // → ctx.model → niceeval codex adapter 写进 config.toml 的 model 行

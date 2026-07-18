@@ -8,6 +8,7 @@ import { NICEEVAL_BUB_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
 // 文件名 = <agent>-<model>。bub 默认 tape 开,所以这一个文件就够了(不再要 tape-off 对照)。
 export default defineExperiment({
   description: "bub · gpt-5.6-luna(tape on)",
+  labels: { line: "bub" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: bubAgent(),
   flags: { memory: "baseline" },
   model: "gpt-5.6-luna", // 两边钉同一个模型,差异才归因到 agent / 记忆机制

@@ -21,6 +21,7 @@ const nowledge = nowledgeLifecycle();
 export default defineExperiment({
   evals: ["memory"],
   description: "codex · gpt-5.6-luna · Nowledge Mem",
+  labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(nowledgeCodexConfig(nowledge.endpoint)),
   flags: nowledgeFlags(),
   model: "gpt-5.6-luna",

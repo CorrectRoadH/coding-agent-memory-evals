@@ -13,6 +13,7 @@ import { withAgentsMd } from "../shared/agents-md.ts";
 export default defineExperiment({
   evals: ["memory"],
   description: "bub · gpt-5.6-luna(tape on) · AGENTS.md",
+  labels: { line: "bub" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: bubAgent(),
   flags: { memory: "agents-md" },
   model: "gpt-5.6-luna", // 两边钉同一个模型,差异才归因到 agent / 记忆机制
