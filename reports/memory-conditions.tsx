@@ -20,6 +20,7 @@ import {
   repeatedFailedCommands,
   tokens,
 } from "niceeval/report";
+import { standardAttemptPage } from "niceeval/report/built-in";
 import { GITHUB_ICON } from "./components/icons.ts";
 
 // 记忆条件是实验配置事实，由各 experiment 的 flags 显式声明；报告不解析文件名。
@@ -79,5 +80,6 @@ export default defineReport({
       title: { en: "Failures", "zh-CN": "待处理失败" },
       content: <FailureList limit={30} />,
     },
+    standardAttemptPage,
   ],
 });
