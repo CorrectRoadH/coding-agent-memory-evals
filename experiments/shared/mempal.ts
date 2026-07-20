@@ -25,7 +25,8 @@ export function mempalBaseTemplate(tool: "claude" | "codex"): string {
 export function mempalTemplate(tool: "claude" | "codex"): string {
   const base = createHash("sha256").update(mempalBaseTemplate(tool)).digest("hex").slice(0, 12);
   const mempal = MEMPAL_VERSION.replace(/[^a-z0-9]+/gi, "-");
-  return `memory-evals-${tool}-mempal-${base}-${mempal}`;
+  // E2B 静默把模板名小写化（服务端存的就是 memorybench-...），源码里跟着写小写以免依赖未文档化的大小写不敏感匹配。
+  return `memorybench-${tool}-mempal-${base}-${mempal}`;
 }
 
 /** 报告分组与状态 provenance 共用的实验事实。正式比较应显式设置 MEMPAL_COHORT。 */

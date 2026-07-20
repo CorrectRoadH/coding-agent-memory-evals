@@ -17,8 +17,8 @@ E2B 当前官方 SDK 支持从公共 namespaced template 派生 (`Template().fro
 ```bash
 # 从 NiceEval 的 release-pinned Claude / Codex 公共模板派生。两样输入都在构建期从官方源
 # 现取,无 host 前置步骤:
-pnpm template:mempal claude   # → memory-evals-claude-mempal-v0-6-1-0-9-0
-pnpm template:mempal codex    # → memory-evals-codex-mempal-v0-6-1-0-9-0
+pnpm template:mempal claude   # → memorybench-claude-mempal-<base-sha12>-0-9-0
+pnpm template:mempal codex    # → memorybench-codex-mempal-<base-sha12>-0-9-0
 ```
 
 **两样输入都在模板构建期从官方源现取,不再 host 预取:**
