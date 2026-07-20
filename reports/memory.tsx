@@ -6,9 +6,9 @@ import { GITHUB_ICON } from "./components/icons.ts";
 // extends 声明「跟随内建」,niceeval 升级带来的页面演进自动生效。
 export default defineReport({
   extends: standard,
-  title: { en: "Evaluation of Memory Systems and Tools", "zh-CN": "评估 Memory 系统与工具" },
+  title: { en: "MemoryBench", "zh-CN": "MemoryBench" },
   links: [
-    { label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals", icon: GITHUB_ICON },
+    { label: "GitHub", href: "https://github.com/CorrectRoadH/memorybench", icon: GITHUB_ICON },
   ],
   // GA4:官方 snippet 直译成 head 声明(niceeval ≥0.8 的结构化 head 通道)。
   // react-grab 只在本地 `niceeval view` 时注入,线上构建由 vercel-build.sh 设置 VERCEL=1 挡掉。

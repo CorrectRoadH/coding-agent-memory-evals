@@ -1,0 +1,294 @@
+{
+  "id": "memory/agent-038-refresh-settings",
+  "description": "next-evals agent-038: refresh the current page from a Server Action via refresh() from next/cache, not redirect or router.refresh",
+  "verdict": "passed",
+  "fingerprint": "cc4b910857347ab54d7136190fd13fbf1ae42b1a2fc8796cc37fb8dd6817a050",
+  "attempt": 0,
+  "durationMs": 159621,
+  "assertions": [
+    {
+      "name": "includes(/import.*refresh.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Imports refresh from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a Server Action calls refresh())",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(Server Action has toggle logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has notification toggle logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 34,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 40,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 75379,
+    "outputTokens": 2194,
+    "cacheReadTokens": 48640,
+    "requests": 11,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.093407,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "is79en56rad3o5g99acid"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2090
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 294,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2090,
+          "durationMs": 294,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1094,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 2384,
+          "durationMs": 213,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 2597,
+          "durationMs": 212,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3019,
+          "durationMs": 246,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrq6hxzj_aakybn'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 154897,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 3797,
+          "durationMs": 17713,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 21510,
+          "durationMs": 261,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 21771,
+          "durationMs": 128495,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Create a Server Action that toggles a user'\\''s notification preference (on/off). After toggling, th…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 150502,
+          "durationMs": 219,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 21510,
+          "durationMs": 129212,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 151175,
+          "durationMs": 7200,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 460,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 4 files",
+          "startOffsetMs": 158375,
+          "durationMs": 460,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 158375,
+              "durationMs": 248,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 785
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 395
+    }
+  ],
+  "locator": "@1tbqbupc",
+  "startedAt": "2026-07-18T09:42:45.636Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_bub-gpt-5.6-luna/2026-07-18T09-44-12-306Z-ulqn/memory/agent-038-refresh-settings/a0"
+}

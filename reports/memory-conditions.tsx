@@ -27,9 +27,9 @@ import { GITHUB_ICON } from "./components/icons.ts";
 const memoryCondition = flag("memory", { label: "Memory condition" });
 
 export default defineReport({
-  title: { en: "Coding Agent Memory Evals", "zh-CN": "Coding Agent 记忆能力评测" },
+  title: { en: "MemoryBench", "zh-CN": "MemoryBench" },
   links: [
-    { label: "GitHub", href: "https://github.com/CorrectRoadH/coding-agent-memory-evals", icon: GITHUB_ICON },
+    { label: "GitHub", href: "https://github.com/CorrectRoadH/memorybench", icon: GITHUB_ICON },
   ],
   footer: { en: "Published on every push via Vercel.", "zh-CN": "每次 push 由 Vercel 自动发布。" },
   pages: [
