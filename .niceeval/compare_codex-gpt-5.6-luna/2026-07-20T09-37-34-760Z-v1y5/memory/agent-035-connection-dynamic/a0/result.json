@@ -1,0 +1,314 @@
+{
+  "id": "memory/agent-035-connection-dynamic",
+  "description": "next-evals agent-035: opt out of prerendering via connection() from next/server, not unstable_noStore or force-dynamic",
+  "verdict": "passed",
+  "fingerprint": "8d650f17e2e4401c6eb2147751040008048cb548214138c6e1179c7084ef2e12",
+  "attempt": 0,
+  "durationMs": 149044,
+  "assertions": [
+    {
+      "name": "includes(/import.*connection.*from\\s+['\"]next\\/server['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component awaits connection() from next/server"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+connection\\s*\\(\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component awaits connection() from next/server"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 24,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/async\\s+function|export\\s+default\\s+async/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component is async and renders a timestamp"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/new\\s+Date\\s*\\(|Date\\.now\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component is async and renders a timestamp"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/unstable_noStore/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use deprecated unstable_noStore"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 35,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 38,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 106008,
+    "outputTokens": 1834,
+    "cacheReadTokens": 96256,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.12663760000000002,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ieh1zgq7q9py26jcsvebo"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6007
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 7630,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6007,
+          "durationMs": 7630,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 5175,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 13637,
+          "durationMs": 1383,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 15020,
+          "durationMs": 3581,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq6thuu_gd6atr'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 2895,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 18812,
+          "durationMs": 2895,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 114274,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 21935,
+          "durationMs": 18288,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 40223,
+          "durationMs": 6126,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 46349,
+          "durationMs": 71308,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Create a server component that displays the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 117660,
+          "durationMs": 6668,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 40224,
+          "durationMs": 84105,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 125978,
+          "durationMs": 10002,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 8217,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 135982,
+          "durationMs": 8217,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 135981,
+              "durationMs": 7996,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 4845
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 4194
+    }
+  ],
+  "locator": "@1z6pwxtu",
+  "startedAt": "2026-07-18T09:51:32.601Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna/2026-07-18T09-53-57-130Z-ubs6/memory/agent-035-connection-dynamic/a0"
+}

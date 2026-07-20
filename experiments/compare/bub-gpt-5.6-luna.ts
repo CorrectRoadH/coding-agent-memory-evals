@@ -12,7 +12,7 @@ export default defineExperiment({
   agent: bubAgent(),
   flags: { memory: "baseline" },
   model: "gpt-5.6-luna", // 两边钉同一个模型,差异才归因到 agent / 记忆机制
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   sandbox: e2bSandbox({ template: NICEEVAL_BUB_E2B_TEMPLATE }),
   // 注:workspace(starter repo)上传 + 装依赖不在这儿 —— 那属于「eval 在什么上面干活」,
   // 写在各 eval 的 test(t) 里(t.sandbox.uploadDirectory + runCommand)。experiment 只管怎么跑。

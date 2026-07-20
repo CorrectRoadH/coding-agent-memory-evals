@@ -28,7 +28,7 @@ import { nowledgeCodexConfig, nowledgeFlags, nowledgeLifecycle } from "../shared
 const nowledge = nowledgeLifecycle();
 
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "codex · gpt-5.6-luna · Nowledge Mem + AGENTS.md",
   labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(nowledgeCodexConfig(nowledge.endpoint)),

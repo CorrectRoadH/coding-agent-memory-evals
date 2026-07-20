@@ -1,0 +1,193 @@
+{
+  "id": "react-tooltip/pr-1269",
+  "description": "react-tooltip pr-1269: keep a clickable tooltip open while the pointer moves from the anchor onto the tooltip body itself (real react-tooltip issue)",
+  "verdict": "errored",
+  "fingerprint": "19c796d96220b9ff5dfeb2888018c5438888ac740c8cfb1c76b3a18a5d6b5000",
+  "attempt": 0,
+  "durationMs": 30191,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 0
+  },
+  "error": {
+    "code": "unexpected-error",
+    "message": "yarn install failed: npm notice \nnpm notice New major version of npm available! 10.1.0 -> 12.0.1\nnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v12.0.1>\nnpm notice Run `npm install -g npm@12.0.1` to update!\nnpm notice \nerror eslint-visitor-keys@5.0.1: The engine \"node\" is incompatible with this module. Expected version \"^20.19.0 || ^22.13.0 || >=24\". Got \"20.9.0\"\nerror Found incompatible module.",
+    "phase": "eval.run",
+    "stack": "Error: yarn install failed: npm notice \nnpm notice New major version of npm available! 10.1.0 -> 12.0.1\nnpm notice Changelog: <https://github.com/npm/cli/releases/tag/v12.0.1>\nnpm notice Run `npm install -g npm@12.0.1` to update!\nnpm notice \nerror eslint-visitor-keys@5.0.1: The engine \"node\" is incompatible with this module. Expected version \"^20.19.0 || ^22.13.0 || >=24\". Got \"20.9.0\"\nerror Found incompatible module.\n    at Object.test (/Users/ctrdh/Code/coding-agent-memory-evals/evals/react-tooltip/pr-1269.eval.ts:73:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:706:7)"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "icv1lmvky0yqt7j5i4ve9"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1793
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 289,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1794,
+          "durationMs": 288,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 669,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2082,
+          "durationMs": 209,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2292,
+          "durationMs": 211,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt4jooi_5her4l'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 211,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2752,
+          "durationMs": 210,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 25937,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 2963,
+          "durationMs": 1583,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/ReactTooltip/react-tooltip.git .rt-clone\nmv .rt-clone/.git .git\nrm -rf .rt-clone\ngi…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4546,
+          "durationMs": 24351,
+          "failed": true,
+          "command": {
+            "display": "npm install -g yarn@1.22.22 && yarn install --ignore-scripts",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 529,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "operation",
+          "label": "export workspace diff · 0 windows · 0 files",
+          "startOffsetMs": 28899,
+          "durationMs": 529,
+          "children": [
+            {
+              "id": "n8",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 28899,
+              "durationMs": 217,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 763
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 568
+    }
+  ],
+  "locator": "@1fspo2e7",
+  "startedAt": "2026-07-20T11:11:26.910Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

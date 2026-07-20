@@ -15,7 +15,7 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 // 叠 withAgentsMd:理由同 codex-gpt-5.6-luna--nowledge.ts / claude-dp-v4--mempal.ts。mempal 只靠
 // Skill 教 agent 用 CLI,不碰 AGENTS.md,叠上去零冲突。
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "codex · gpt-5.6-luna · mempal + AGENTS.md",
   labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent({ skills: [mempalSkill] }),

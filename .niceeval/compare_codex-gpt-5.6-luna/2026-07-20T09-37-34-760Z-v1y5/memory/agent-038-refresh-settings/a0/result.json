@@ -1,0 +1,304 @@
+{
+  "id": "memory/agent-038-refresh-settings",
+  "description": "next-evals agent-038: refresh the current page from a Server Action via refresh() from next/cache, not redirect or router.refresh",
+  "verdict": "failed",
+  "fingerprint": "e68c2488c56fb10a7518186a6e429b6bda7afdb343371e7a4805450284c61068",
+  "attempt": 0,
+  "durationMs": 130472,
+  "assertions": [
+    {
+      "name": "includes(/import.*refresh.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Imports refresh from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*refresh.*from\\s+['\"]next\\/cache['\"]/",
+      "received": "\n// app/page.tsx\nimport { cookies } from 'next/headers'\nimport { toggleNotificationPreference } from './actions'\n\nexport default async function Home() {\n  const cookieStore = await cookies()\n  const notificationsEnabled =\n    cookieStore.get('notifications-enabled')?.value !== 'false'\n\n  return (\n    <main>\n      <h1>Settings</h1>\n      <p>Manage your notification preference.</p>\n      <form action={toggleNotificationPreference}>\n        <p>\n          Notifications are currently{' '}\n          <strong>{notificationsEnabled ? 'on' : 'off'}</strong>.\n        </p>\n        <button type=\"submit\">\n          Turn notifications {notificationsEnabled ? 'off' : 'on'}\n        </button>\n      </form>\n    </main>\n  )\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next'\n\nexport const metadata: Metadata = {\n  title: 'Settings',\n  description: 'User notification settings',\n}\n\nexport default function RootLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  )\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// app/actions.ts\n'use server'\n\nimport { cookies } from 'next/headers'\nimport { revalidatePath } from 'next/cache'\n\nconst NOTIFICATIONS_COOKIE = 'notifications-enabled'\n\nexport async function toggleNotificationPreference() {\n  const cookieStore = await cookies()\n  const enabled = cookieStore.get(NOTIFICATIONS_COOKIE)?.value !== 'false'\n\n  cookieStore.set(NOTIFICATIONS_COOKIE, String(!enabled), {\n    httpOnly: true,\n    sameSite: 'lax',\n    path: '/',\n  })\n\n  revalidatePath('/')\n}\n"
+    },
+    {
+      "name": "isDefined(a Server Action calls refresh())",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "defined",
+      "received": "undefined"
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(Server Action has toggle logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has notification toggle logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 34,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 40,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 144497,
+    "outputTokens": 2679,
+    "cacheReadTokens": 120320,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.172603,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iu7aunw7ien940ei1y0dd"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6014
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 9450,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6014,
+          "durationMs": 9450,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 5982,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 15464,
+          "durationMs": 1986,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 17450,
+          "durationMs": 3784,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq6txc0_9v7c3h'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 203,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 21447,
+          "durationMs": 202,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 106731,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 21874,
+          "durationMs": 16265,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 38140,
+          "durationMs": 205,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 38346,
+          "durationMs": 81681,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Create a Server Action that toggles a user'…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 120027,
+          "durationMs": 212,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 38140,
+          "durationMs": 82099,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 120719,
+          "durationMs": 7660,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 562,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 128380,
+          "durationMs": 562,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 128380,
+              "durationMs": 255,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1530
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 556
+    }
+  ],
+  "locator": "@1dkhvub6",
+  "startedAt": "2026-07-18T09:51:50.230Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna/2026-07-18T09-53-57-130Z-ubs6/memory/agent-038-refresh-settings/a0"
+}

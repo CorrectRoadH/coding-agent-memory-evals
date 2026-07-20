@@ -10,7 +10,7 @@ import { withAgentsMd } from "../shared/agents-md.ts";
 // --agents-md 变体只改变沙箱环境里的静态说明文件，不包装官方 adapter，也不运行时安装依赖。
 
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "claude-code · deepseek-v4-flash · E2B sandbox · AGENTS.md",
   labels: { line: "claude" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: claudeCodeAgent({

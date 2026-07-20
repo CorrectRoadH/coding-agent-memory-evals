@@ -20,7 +20,7 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 // 那条线唯一多出的是 NEXT_DOCS_RULES 静态提示,mempal 本身只靠 Skill 教 agent 用 CLI,从不碰
 // AGENTS.md/CLAUDE.md,叠上去零冲突,把「有没有 docs 提示」从「有没有记忆系统」里拆出来。
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "claude-code · deepseek-v4-flash · mempal + AGENTS.md",
   labels: { line: "claude" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: claudeCodeAgent({

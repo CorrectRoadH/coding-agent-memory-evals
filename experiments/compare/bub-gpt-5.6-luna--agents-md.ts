@@ -11,7 +11,7 @@ import { withAgentsMd } from "../shared/agents-md.ts";
 // --agents-md 变体只改变沙箱环境里的静态说明文件，不包装官方 adapter，也不运行时安装依赖。
 
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "bub · gpt-5.6-luna(tape on) · AGENTS.md",
   labels: { line: "bub" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: bubAgent(),

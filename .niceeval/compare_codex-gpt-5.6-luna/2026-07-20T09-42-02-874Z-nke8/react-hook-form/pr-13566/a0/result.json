@@ -1,0 +1,193 @@
+{
+  "id": "react-hook-form/pr-13566",
+  "description": "react-hook-form pr-13566: preserve Date values as leaf nodes in the flatten() utility (real react-hook-form issue)",
+  "verdict": "errored",
+  "fingerprint": "e01652a6ba17353e0953212300826256dd2470fe505d4500b67f96bd5eb3bc08",
+  "attempt": 0,
+  "durationMs": 9461,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 0
+  },
+  "error": {
+    "code": "unexpected-error",
+    "message": "pnpm install failed: b/node_modules/pnpm/dist/pnpm.mjs:140126\nimport { styleText } from \"node:util\";\n         ^^^^^^^^^\nSyntaxError: The requested module 'node:util' does not provide an export named 'styleText'\n    at ModuleJob._instantiate (node:internal/modules/esm/module_job:131:21)\n    at async ModuleJob.run (node:internal/modules/esm/module_job:213:5)\n    at async ModuleLoader.import (node:internal/modules/esm/loader:316:24)\n    at async file:///usr/local/lib/node_modules/pnpm/bin/pnpm.mjs:33:1\n\nNode.js v20.9.0",
+    "phase": "eval.run",
+    "stack": "Error: pnpm install failed: b/node_modules/pnpm/dist/pnpm.mjs:140126\nimport { styleText } from \"node:util\";\n         ^^^^^^^^^\nSyntaxError: The requested module 'node:util' does not provide an export named 'styleText'\n    at ModuleJob._instantiate (node:internal/modules/esm/module_job:131:21)\n    at async ModuleJob.run (node:internal/modules/esm/module_job:213:5)\n    at async ModuleLoader.import (node:internal/modules/esm/loader:316:24)\n    at async file:///usr/local/lib/node_modules/pnpm/bin/pnpm.mjs:33:1\n\nNode.js v20.9.0\n    at Object.test (/Users/ctrdh/Code/coding-agent-memory-evals/evals/react-hook-form/pr-13566.eval.ts:52:13)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:706:7)"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i1p6vpychpu0nhm8jmgg2"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2081
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 332,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2083,
+          "durationMs": 331,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 669,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2414,
+          "durationMs": 230,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2646,
+          "durationMs": 229,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt1cifj_41kk3t'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 200,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3083,
+          "durationMs": 200,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 5038,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3284,
+          "durationMs": 2670,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5954,
+          "durationMs": 2364,
+          "failed": true,
+          "command": {
+            "display": "npm install -g pnpm@11.15.1 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 422,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "operation",
+          "label": "export workspace diff · 0 windows · 0 files",
+          "startOffsetMs": 8321,
+          "durationMs": 422,
+          "children": [
+            {
+              "id": "n8",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 8321,
+              "durationMs": 201,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 718
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 389
+    }
+  ],
+  "locator": "@1h3j4a8m",
+  "startedAt": "2026-07-20T09:41:53.017Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

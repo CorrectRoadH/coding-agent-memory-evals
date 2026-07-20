@@ -6,7 +6,7 @@ import { NICEEVAL_CODEX_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
 // compare 组的另一半:同模型(gpt-5.6-luna)下的 codex,作为「没有 tape 那套记忆机制」的对照。
 // bub(tape)在记忆题上若稳定高于 codex,就是 tape 价值的证据。
 export default defineExperiment({
-  evals: ["memory"],
+  evals: ["memory/", "react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
   description: "codex · gpt-5.6-luna",
   labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(),
