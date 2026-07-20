@@ -1,0 +1,377 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "b0f1c98cbf4b726b1e210dd5e7b46ac0a1702032ead8ca593bd7884ee42c4b77",
+  "attempt": 0,
+  "durationMs": 189585,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport Link from 'next/link';\n\nexport default function HomePage() {\n  return (\n    <main style={{ maxWidth: 640, margin: '4rem auto', padding: '0 1.5rem', fontFamily: 'system-ui, sans-serif' }}>\n      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>E-Commerce Admin</h1>\n      <p style={{ color: '#555', marginBottom: '2rem' }}>\n        Internal tools for managing products, orders, and catalog data.\n      </p>\n      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>\n        <li>\n          <Link\n            href=\"/admin/catalog\"\n            style={{\n              display: 'block',\n              padding: '0.75rem 1rem',\n              background: '#f8fafc',\n              border: '1px solid #e2e8f0',\n              borderRadius: 8,\n              textDecoration: 'none',\n              color: '#1a1a2e',\n              fontWeight: 600,\n            }}\n          >\n            Product Catalog &rarr;\n          </Link>\n        </li>\n      </ul>\n    </main>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/products.ts\nimport { unstable_cache } from 'next/cache';\nimport { getAllProducts } from './db';\n\nexport type Product = {\n  id: number;\n  sku: string;\n  name: string;\n  category: string;\n  price: number;\n  inventory: number;\n  status: 'active' | 'discontinued';\n  lastUpdated: string;\n};\n\n/**\n * Cached catalog fetch.\n *\n * Uses the cache tag \"products\" so that `revalidateTag(\"products\")`\n * invalidates this entry across all consuming views.\n *\n * Stale-while-revalidate semantics — reads never block on a full\n * recomputation unless the cache is cold.\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => {\n    const products = await getAllProducts();\n    return products as Product[];\n  },\n  ['products-catalog-list'],\n  {\n    tags: ['products'],\n    /** Never auto-revalidate — only manual sync or deployment resets the cache. */\n    revalidate: false,\n  }\n);\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Admin - Product Catalog',\n    template: '%s | Admin',\n  },\n  description: 'Admin product catalog management for the e-commerce platform.',\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    {\n      id: 1,\n      sku: 'TECH-LAP-001',\n      name: 'Laptop Pro 15\"',\n      category: 'Laptops',\n      price: 1299.99,\n      inventory: 42,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 2,\n      sku: 'TECH-PHN-002',\n      name: 'SmartPhone X',\n      category: 'Phones',\n      price: 899.99,\n      inventory: 156,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 3,\n      sku: 'TECH-TAB-003',\n      name: 'Tab Ultra',\n      category: 'Tablets',\n      price: 649.99,\n      inventory: 23,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 4,\n      sku: 'TECH-AUD-004',\n      name: 'Wireless Headphones ANC',\n      category: 'Audio',\n      price: 249.99,\n      inventory: 88,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 5,\n      sku: 'TECH-WTH-005',\n      name: 'SmartWatch Series 3',\n      category: 'Wearables',\n      price: 349.99,\n      inventory: 61,\n      status: 'active',\n      lastUpda…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport Link from 'next/link';\n\nexport default function HomePage() {\n  return (\n    <main style={{ maxWidth: 640, margin: '4rem auto', padding: '0 1.5rem', fontFamily: 'system-ui, sans-serif' }}>\n      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>E-Commerce Admin</h1>\n      <p style={{ color: '#555', marginBottom: '2rem' }}>\n        Internal tools for managing products, orders, and catalog data.\n      </p>\n      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>\n        <li>\n          <Link\n            href=\"/admin/catalog\"\n            style={{\n              display: 'block',\n              padding: '0.75rem 1rem',\n              background: '#f8fafc',\n              border: '1px solid #e2e8f0',\n              borderRadius: 8,\n              textDecoration: 'none',\n              color: '#1a1a2e',\n              fontWeight: 600,\n            }}\n          >\n            Product Catalog &rarr;\n          </Link>\n        </li>\n      </ul>\n    </main>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/products.ts\nimport { unstable_cache } from 'next/cache';\nimport { getAllProducts } from './db';\n\nexport type Product = {\n  id: number;\n  sku: string;\n  name: string;\n  category: string;\n  price: number;\n  inventory: number;\n  status: 'active' | 'discontinued';\n  lastUpdated: string;\n};\n\n/**\n * Cached catalog fetch.\n *\n * Uses the cache tag \"products\" so that `revalidateTag(\"products\")`\n * invalidates this entry across all consuming views.\n *\n * Stale-while-revalidate semantics — reads never block on a full\n * recomputation unless the cache is cold.\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => {\n    const products = await getAllProducts();\n    return products as Product[];\n  },\n  ['products-catalog-list'],\n  {\n    tags: ['products'],\n    /** Never auto-revalidate — only manual sync or deployment resets the cache. */\n    revalidate: false,\n  }\n);\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Admin - Product Catalog',\n    template: '%s | Admin',\n  },\n  description: 'Admin product catalog management for the e-commerce platform.',\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    {\n      id: 1,\n      sku: 'TECH-LAP-001',\n      name: 'Laptop Pro 15\"',\n      category: 'Laptops',\n      price: 1299.99,\n      inventory: 42,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 2,\n      sku: 'TECH-PHN-002',\n      name: 'SmartPhone X',\n      category: 'Phones',\n      price: 899.99,\n      inventory: 156,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 3,\n      sku: 'TECH-TAB-003',\n      name: 'Tab Ultra',\n      category: 'Tablets',\n      price: 649.99,\n      inventory: 23,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 4,\n      sku: 'TECH-AUD-004',\n      name: 'Wireless Headphones ANC',\n      category: 'Audio',\n      price: 249.99,\n      inventory: 88,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 5,\n      sku: 'TECH-WTH-005',\n      name: 'SmartWatch Series 3',\n      category: 'Wearables',\n      price: 349.99,\n      inventory: 61,\n      status: 'active',\n      lastUpda…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*getAllProducts.*lib\\/db|from.*lib\\/db/",
+      "received": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport Link from 'next/link';\n\nexport default function HomePage() {\n  return (\n    <main style={{ maxWidth: 640, margin: '4rem auto', padding: '0 1.5rem', fontFamily: 'system-ui, sans-serif' }}>\n      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>E-Commerce Admin</h1>\n      <p style={{ color: '#555', marginBottom: '2rem' }}>\n        Internal tools for managing products, orders, and catalog data.\n      </p>\n      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>\n        <li>\n          <Link\n            href=\"/admin/catalog\"\n            style={{\n              display: 'block',\n              padding: '0.75rem 1rem',\n              background: '#f8fafc',\n              border: '1px solid #e2e8f0',\n              borderRadius: 8,\n              textDecoration: 'none',\n              color: '#1a1a2e',\n              fontWeight: 600,\n            }}\n          >\n            Product Catalog &rarr;\n          </Link>\n        </li>\n      </ul>\n    </main>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/products.ts\nimport { unstable_cache } from 'next/cache';\nimport { getAllProducts } from './db';\n\nexport type Product = {\n  id: number;\n  sku: string;\n  name: string;\n  category: string;\n  price: number;\n  inventory: number;\n  status: 'active' | 'discontinued';\n  lastUpdated: string;\n};\n\n/**\n * Cached catalog fetch.\n *\n * Uses the cache tag \"products\" so that `revalidateTag(\"products\")`\n * invalidates this entry across all consuming views.\n *\n * Stale-while-revalidate semantics — reads never block on a full\n * recomputation unless the cache is cold.\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => {\n    const products = await getAllProducts();\n    return products as Product[];\n  },\n  ['products-catalog-list'],\n  {\n    tags: ['products'],\n    /** Never auto-revalidate — only manual sync or deployment resets the cache. */\n    revalidate: false,\n  }\n);\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Admin - Product Catalog',\n    template: '%s | Admin',\n  },\n  description: 'Admin product catalog management for the e-commerce platform.',\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nexport async function getAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    {\n      id: 1,\n      sku: 'TECH-LAP-001',\n      name: 'Laptop Pro 15\"',\n      category: 'Laptops',\n      price: 1299.99,\n      inventory: 42,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 2,\n      sku: 'TECH-PHN-002',\n      name: 'SmartPhone X',\n      category: 'Phones',\n      price: 899.99,\n      inventory: 156,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 3,\n      sku: 'TECH-TAB-003',\n      name: 'Tab Ultra',\n      category: 'Tablets',\n      price: 649.99,\n      inventory: 23,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 4,\n      sku: 'TECH-AUD-004',\n      name: 'Wireless Headphones ANC',\n      category: 'Audio',\n      price: 249.99,\n      inventory: 88,\n      status: 'active',\n      lastUpdated: '2026-07-17T10:30:00Z'\n    },\n    {\n      id: 5,\n      sku: 'TECH-WTH-005',\n      name: 'SmartWatch Series 3',\n      category: 'Wearables',\n      price: 349.99,\n      inventory: 61,\n      status: 'active',\n      lastUpda…"
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/",
+      "received": "import { unstable_cache } from 'next/cache';\nimport { getAllProducts } from './db';\n\nexport type Product = {\n  id: number;\n  sku: string;\n  name: string;\n  category: string;\n  price: number;\n  inventory: number;\n  status: 'active' | 'discontinued';\n  lastUpdated: string;\n};\n\n/**\n * Cached catalog fetch.\n *\n * Uses the cache tag \"products\" so that `revalidateTag(\"products\")`\n * invalidates this entry across all consuming views.\n *\n * Stale-while-revalidate semantics — reads never block on a full\n * recomputation unless the cache is cold.\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => {\n    const products = await getAllProducts();\n    return products as Product[];\n  },\n  ['products-catalog-list'],\n  {\n    tags: ['products'],\n    /** Never auto-revalidate — only manual sync or deployment resets the cache. */\n    revalidate: false,\n  }\n);\n"
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/",
+      "received": "import { unstable_cache } from 'next/cache';\nimport { getAllProducts } from './db';\n\nexport type Product = {\n  id: number;\n  sku: string;\n  name: string;\n  category: string;\n  price: number;\n  inventory: number;\n  status: 'active' | 'discontinued';\n  lastUpdated: string;\n};\n\n/**\n * Cached catalog fetch.\n *\n * Uses the cache tag \"products\" so that `revalidateTag(\"products\")`\n * invalidates this entry across all consuming views.\n *\n * Stale-while-revalidate semantics — reads never block on a full\n * recomputation unless the cache is cold.\n */\nexport const getCachedProducts = unstable_cache(\n  async (): Promise<Product[]> => {\n    const products = await getAllProducts();\n    return products as Product[];\n  },\n  ['products-catalog-list'],\n  {\n    tags: ['products'],\n    /** Never auto-revalidate — only manual sync or deployment resets the cache. */\n    revalidate: false,\n  }\n);\n"
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 81224,
+    "outputTokens": 31042,
+    "cacheReadTokens": 2059136,
+    "requests": 67,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.025828700800000003,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i2yj06gnoqa6ygn8tj4d7"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1552
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 297,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1554,
+          "durationMs": 296,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 479,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 1850,
+          "durationMs": 269,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 185963,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 2543,
+          "durationMs": 34821,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 37364,
+          "durationMs": 246,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 37610,
+          "durationMs": 141044,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 178654,
+          "durationMs": 258,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 179167,
+          "durationMs": 245,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 37364,
+          "durationMs": 142048,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 179918,
+          "durationMs": 8370,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 526,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 8 files",
+          "startOffsetMs": 188292,
+          "durationMs": 526,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 188292,
+              "durationMs": 290,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 766
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 427
+    }
+  ],
+  "locator": "@15u3osis",
+  "startedAt": "2026-07-18T09:47:07.262Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4/2026-07-18T09-48-52-188Z-1437/memory/agent-029-use-cache-directive/a0"
+}

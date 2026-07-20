@@ -1,0 +1,307 @@
+{
+  "id": "memory/agent-035-connection-dynamic",
+  "description": "next-evals agent-035: opt out of prerendering via connection() from next/server, not unstable_noStore or force-dynamic",
+  "verdict": "passed",
+  "fingerprint": "c837a2d26bfaf97735a84080ac0729a45efa1a6b4f3cfaba6e115b9adee7b4a3",
+  "attempt": 0,
+  "durationMs": 86230,
+  "assertions": [
+    {
+      "name": "includes(/import.*connection.*from\\s+['\"]next\\/server['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component awaits connection() from next/server"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+connection\\s*\\(\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component awaits connection() from next/server"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 24,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/async\\s+function|export\\s+default\\s+async/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component is async and renders a timestamp"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/new\\s+Date\\s*\\(|Date\\.now\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Component is async and renders a timestamp"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/unstable_noStore/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use deprecated unstable_noStore"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 35,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-035-connection-dynamic.eval.ts",
+        "line": 38,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 146590,
+    "outputTokens": 922,
+    "cacheReadTokens": 107520,
+    "requests": 7,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.162874,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ig66rxm6g7s97cw42nt64"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6522
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 299,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6522,
+          "durationMs": 298,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1144,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 6821,
+          "durationMs": 240,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 7061,
+          "durationMs": 242,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 7511,
+          "durationMs": 246,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrq6i1gb_9f9cig'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 76847,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 8191,
+          "durationMs": 19178,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 27370,
+          "durationMs": 781,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 28152,
+          "durationMs": 48490,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Create a server component that displays the current server timestamp on each request. The timestamp …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 77000,
+          "durationMs": 329,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 27370,
+          "durationMs": 49960,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 77807,
+          "durationMs": 7005,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 477,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 3 files",
+          "startOffsetMs": 84812,
+          "durationMs": 477,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 84812,
+              "durationMs": 263,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 940
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 428
+    }
+  ],
+  "locator": "@1zla2k1r",
+  "startedAt": "2026-07-18T09:42:45.636Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

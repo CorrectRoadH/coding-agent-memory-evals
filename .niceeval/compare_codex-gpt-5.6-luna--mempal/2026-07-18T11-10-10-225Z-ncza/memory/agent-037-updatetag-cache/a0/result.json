@@ -1,0 +1,483 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "passed",
+  "fingerprint": "3d56396b4f1db25f6d3d3e71c868609dd26a5ed623d42d00ceef206acb99399e",
+  "attempt": 0,
+  "durationMs": 123270,
+  "assertions": [
+    {
+      "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action imports updateTag from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/['\"]use server['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action uses 'use server' directive"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a Server Action calls updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls updateTag() for cache invalidation"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(a Server Action invalidates via updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 45,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 46,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(Server Action has post creation logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has post creation logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 57,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 135782,
+    "outputTokens": 3007,
+    "cacheReadTokens": 122624,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1660864,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ibe1kjgxjtmhvx0n6u4lm"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1735
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 1374,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1735,
+          "durationMs": 1374,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1735,
+              "durationMs": 216,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 1951,
+              "durationMs": 218,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 2439,
+              "durationMs": 233,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_03a60fd8-4c8c-4125-8090-96a5882ae8ad.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 2672,
+              "durationMs": 215,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_03a60fd8-4c8c-4125-8090-96a5882ae8ad.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 2887,
+              "durationMs": 222,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 323,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3109,
+          "durationMs": 322,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1984,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 3432,
+          "durationMs": 215,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3648,
+          "durationMs": 218,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq7aacv_8xelos'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4095,
+          "durationMs": 218,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 4524,
+          "durationMs": 221,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_l1uf1s'\n\n## Skills\n\nSkill files are installed in `.agents/skills/`:\n\n- mempal-memory: .agents/skills/mempal-memory/SKILL.md\n…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4745,
+          "durationMs": 216,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 215,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 5417,
+          "durationMs": 214,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 116030,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5855,
+          "durationMs": 15396,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 21252,
+          "durationMs": 231,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 21484,
+          "durationMs": 93902,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Create a Server Action that creates a new p…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 115387,
+          "durationMs": 227,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 21252,
+          "durationMs": 94362,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 116102,
+          "durationMs": 5558,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 468,
+      "children": [
+        {
+          "id": "n20",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 121661,
+          "durationMs": 468,
+          "children": [
+            {
+              "id": "n21",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 121661,
+              "durationMs": 251,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1141
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1112,
+      "children": [
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 123271,
+          "durationMs": 215,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 123486,
+          "durationMs": 219,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 123705,
+          "durationMs": 230,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_2f47fc34-9479-4918-8c38-12d69e12dc4e.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 124150,
+          "durationMs": 215,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_2f47fc34-9479-4918-8c38-12d69e12dc4e.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 478
+    }
+  ],
+  "locator": "@18ft0eu4",
+  "startedAt": "2026-07-18T10:04:47.408Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna--mempal/2026-07-18T09-47-30-591Z-uhzy/memory/agent-037-updatetag-cache/a0"
+}

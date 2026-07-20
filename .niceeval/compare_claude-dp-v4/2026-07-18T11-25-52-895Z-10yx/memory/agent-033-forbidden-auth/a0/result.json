@@ -1,0 +1,372 @@
+{
+  "id": "memory/agent-033-forbidden-auth",
+  "description": "next-evals agent-033: 403 admin gate via forbidden() from next/navigation with authInterrupts and a forbidden.tsx boundary",
+  "verdict": "failed",
+  "fingerprint": "76e48b10d6b0f1a69fcc9ca7a970f45aee65f3b8f2230e6397e11753fe0e8736",
+  "attempt": 0,
+  "durationMs": 99234,
+  "assertions": [
+    {
+      "name": "isDefined(next.config.ts readable)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/authInterrupts\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 24,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /authInterrupts\\s*:\\s*true/",
+      "received": "import type { NextConfig } from 'next'\n\nconst nextConfig: NextConfig = {}\n\nexport default nextConfig\n"
+    },
+    {
+      "name": "isDefined(app/admin/page.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*forbidden.*from\\s+['\"]next\\/navigation['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/forbidden\\s*\\(\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 31,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/admin|role/i)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(forbidden.tsx boundary exists)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 36,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+function/)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 38,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/403|Forbidden|unauthorized|access/i)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 39,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(\\s*['\"]\\/(login|unauthorized)['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT redirect for authorization failures"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"… digest: '2163762661@E488' } Export encountered an error on /admin/page: /admin, exiting the build. ⨯ Next.js build worker exited with code: 1 and signal: null\"\noutput tail:\n> build\n> next build\n\nAttention: Next.js now collects completely anonymous telemetry regarding usage.\nThis information is used to shape Next.js' roadmap and prioritize features.\nYou can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:\nhttps://nextjs.org/telemetry\n\n▲ Next.js 16.2.0-canary.41 (Turbopack)\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 2.9s\n  Running TypeScript ...\n\n  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.\n  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n\n  \t- include was updated to add '.next/dev/types/**/*.ts'\n\n  Finished TypeScript in 2.2s ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/4) ...\n\nError occurred prerendering page \"/admin\". Read more: https://nextjs.org/docs/messages/prerender-error\nError: `forbidden()` is experimental and only allowed to be enabled when `experimental.authInterrupts` is enabled.\n    at d (.next/server/chunks/ssr/_36118eee._.js:1:5304)\n    at e (.next/server/chunks/ssr/_36118eee._.js:4:4734) {\n  digest: '2163762661@E488'\n}\nExport encountered an error on /admin/page: /admin, exiting the build.\n⨯ Next.js build worker exited with code: 1 and signal: null",
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 65220,
+    "outputTokens": 10559,
+    "cacheReadTokens": 487296,
+    "requests": 20,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.013451748800000001,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ibfrrztbydn6y4ytkc3h9"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1844
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 286,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1844,
+          "durationMs": 286,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 421,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2130,
+          "durationMs": 212,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 95511,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 2768,
+          "durationMs": 23922,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 26690,
+          "durationMs": 228,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 26919,
+          "durationMs": 63304,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Create an admin page at /admin that checks if the user has an \"admin\" role in their ses…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 90223,
+          "durationMs": 249,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 90704,
+          "durationMs": 229,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 26690,
+          "durationMs": 64243,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 91389,
+          "durationMs": 6673,
+          "failed": true,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 443,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 98062,
+          "durationMs": 443,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 98062,
+              "durationMs": 231,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 728
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 388
+    }
+  ],
+  "locator": "@1in7i1ki",
+  "startedAt": "2026-07-18T09:47:35.809Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4/2026-07-18T09-48-52-188Z-1437/memory/agent-033-forbidden-auth/a0"
+}

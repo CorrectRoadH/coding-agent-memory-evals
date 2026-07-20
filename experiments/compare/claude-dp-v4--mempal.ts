@@ -1,6 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
+import { withAgentsMd } from "../shared/agents-md.ts";
 import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // claude-dp-v4 的 mempal 变体:同模型同沙箱,只多一层 mempal 记忆条件 ——
@@ -14,9 +15,13 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/claude-dp-v4--mempal`)跨 eval /
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
+//
+// 叠 withAgentsMd:同 nowledge 变体的理由(见 claude-dp-v4--nowledge.ts 头部注释)——agents-md
+// 那条线唯一多出的是 NEXT_DOCS_RULES 静态提示,mempal 本身只靠 Skill 教 agent 用 CLI,从不碰
+// AGENTS.md/CLAUDE.md,叠上去零冲突,把「有没有 docs 提示」从「有没有记忆系统」里拆出来。
 export default defineExperiment({
   evals: ["memory"],
-  description: "claude-code · deepseek-v4-flash · mempal",
+  description: "claude-code · deepseek-v4-flash · mempal + AGENTS.md",
   labels: { line: "claude" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: claudeCodeAgent({
     apiKey: process.env.DEEPSEEK_API_KEY,
@@ -24,9 +29,11 @@ export default defineExperiment({
     skills: [mempalSkill],
     settingsFile: "configs/claude-code/mempal.json",
   }),
-  flags: mempalFlags(),
+  flags: { ...mempalFlags(), agentsMdHint: true },
   model: "deepseek-v4-flash",
-  sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
+  sandbox: withAgentsMd(
+    e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
+  ),
   runs: 1,
   earlyExit: true,
   budget: 2,

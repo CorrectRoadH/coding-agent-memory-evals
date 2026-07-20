@@ -1,0 +1,279 @@
+{
+  "id": "memory/agent-042-enable-ppr",
+  "description": "next-evals agent-042: enable PPR via cacheComponents: true (Next.js 16), not the old experimental.ppr flag",
+  "verdict": "passed",
+  "fingerprint": "27dcf761afca70cef7b616433c1051d71872cb032804e3e499b7ae5c346e760b",
+  "attempt": 0,
+  "durationMs": 97230,
+  "assertions": [
+    {
+      "name": "isDefined(next.config.ts readable)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config.ts enables PPR via cacheComponents"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 19,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/cacheComponents\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config.ts enables PPR via cacheComponents"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 20,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/ppr\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use the old experimental.ppr flag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 31,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 790785,
+    "outputTokens": 1107,
+    "cacheReadTokens": 654336,
+    "requests": 9,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.8628606,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "il30prt835ope0gcwmozq"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2606
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 493,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2606,
+          "durationMs": 493,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1124,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3099,
+          "durationMs": 218,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3317,
+          "durationMs": 224,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3749,
+          "durationMs": 269,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrq87ewc_3flk9i'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 91015,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4437,
+          "durationMs": 17879,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 22317,
+          "durationMs": 254,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 22572,
+          "durationMs": 58477,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Enable partial pre-rendering for this app.' --session-id fe-il30prt835ope0gcwmozq-42a6a8ec",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 83475,
+          "durationMs": 251,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 22317,
+          "durationMs": 61409,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 87282,
+          "durationMs": 7955,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 485,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 3 files",
+          "startOffsetMs": 95238,
+          "durationMs": 485,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 95238,
+              "durationMs": 277,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1506
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 2437
+    }
+  ],
+  "locator": "@1kvn5fd5",
+  "startedAt": "2026-07-18T10:30:32.839Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

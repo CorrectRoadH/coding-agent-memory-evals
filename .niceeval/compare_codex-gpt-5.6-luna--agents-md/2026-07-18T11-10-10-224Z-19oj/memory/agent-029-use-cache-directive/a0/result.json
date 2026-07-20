@@ -1,0 +1,414 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "f6c4dde3ead5cc372833de211228561d6e6aca9a0d7e63012a30647c33113f3f",
+  "attempt": 0,
+  "durationMs": 257905,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts } from '@/lib/db';\n\nconst currency = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: 'USD'\n});\n\nexport default async function Page() {\n  async function syncCatalog() {\n    'use server';\n\n    // Mark every catalog view stale. The next visit refreshes it in the background.\n    revalidateTag('products', 'max');\n  }\n\n  const products = await getAllProducts();\n\n  return (\n    <main className=\"catalog-shell\">\n      <header className=\"page-header\">\n        <div>\n          <p className=\"eyebrow\">Commerce operations</p>\n          <h1>Product catalog</h1>\n          <p className=\"subtitle\">Browse pricing, inventory, and availability across your store.</p>\n        </div>\n        <form action={syncCatalog}>\n          <button className=\"sync-button\" type=\"submit\">\n            <span aria-hidden=\"true\">&#8635;</span>\n            Sync latest catalog\n          </button>\n        </form>\n      </header>\n\n      <section className=\"catalog-toolbar\" aria-label=\"Catalog summary\">\n        <div>\n          <span className=\"status-dot\" aria-hidden=\"true\" />\n          <strong>Catalog ready</strong>\n          <span className=\"muted\">Changes refresh in the background</span>\n        </div>\n        <span className=\"count\">{products.length} products</span>\n      </section>\n\n      <section className=\"table-panel\" aria-labelledby=\"products-heading\">\n        <div className=\"section-heading\">\n          <div>\n            <h2 id=\"products-heading\">All products</h2>\n            <p>Current catalog records</p>\n          </div>\n          <button className=\"filter-button\" type=\"button\" aria-label=\"Filter products\">Filter</button>\n        </div>\n        <div className=\"table-wrap\">\n          <table>\n            <thead>\n              <tr>\n                <th scope=\"col\">Product</th>\n                <th scope=\"col\">SKU</th>\n                <th scope=\"col\">Price</th>\n                <th scope=\"col\">Availability</th>\n                <th scope=\"col\">Updated</th>\n              </tr>\n            </thead>\n            <tbody>\n              {products.map(product => (\n                <tr key={product.id}>\n                  <td className=\"product-name\">{product.name}</td>\n                  <td className=\"muted\">SKU-{String(product.id).padStart(4, '0')}</td>\n                  <td>{currency.format(product.price)}</td>\n                  <td><span className=\"availability\"><span aria-hidden=\"true\" /> In stock</span></td>\n                  <td className=\"muted\">Just now</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </section>\n    </main>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Product catalog | Commerce operations',\n  description: 'Admin product catalog'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nasync function readAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\nconst getCachedProducts = unstable_cache(readAllProducts, ['products'], {\n  tags: ['products'],\n  revalidate: 3…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/page.tsx\nimport { revalidateTag } from 'next/cache';\nimport { getAllProducts } from '@/lib/db';\n\nconst currency = new Intl.NumberFormat('en-US', {\n  style: 'currency',\n  currency: 'USD'\n});\n\nexport default async function Page() {\n  async function syncCatalog() {\n    'use server';\n\n    // Mark every catalog view stale. The next visit refreshes it in the background.\n    revalidateTag('products', 'max');\n  }\n\n  const products = await getAllProducts();\n\n  return (\n    <main className=\"catalog-shell\">\n      <header className=\"page-header\">\n        <div>\n          <p className=\"eyebrow\">Commerce operations</p>\n          <h1>Product catalog</h1>\n          <p className=\"subtitle\">Browse pricing, inventory, and availability across your store.</p>\n        </div>\n        <form action={syncCatalog}>\n          <button className=\"sync-button\" type=\"submit\">\n            <span aria-hidden=\"true\">&#8635;</span>\n            Sync latest catalog\n          </button>\n        </form>\n      </header>\n\n      <section className=\"catalog-toolbar\" aria-label=\"Catalog summary\">\n        <div>\n          <span className=\"status-dot\" aria-hidden=\"true\" />\n          <strong>Catalog ready</strong>\n          <span className=\"muted\">Changes refresh in the background</span>\n        </div>\n        <span className=\"count\">{products.length} products</span>\n      </section>\n\n      <section className=\"table-panel\" aria-labelledby=\"products-heading\">\n        <div className=\"section-heading\">\n          <div>\n            <h2 id=\"products-heading\">All products</h2>\n            <p>Current catalog records</p>\n          </div>\n          <button className=\"filter-button\" type=\"button\" aria-label=\"Filter products\">Filter</button>\n        </div>\n        <div className=\"table-wrap\">\n          <table>\n            <thead>\n              <tr>\n                <th scope=\"col\">Product</th>\n                <th scope=\"col\">SKU</th>\n                <th scope=\"col\">Price</th>\n                <th scope=\"col\">Availability</th>\n                <th scope=\"col\">Updated</th>\n              </tr>\n            </thead>\n            <tbody>\n              {products.map(product => (\n                <tr key={product.id}>\n                  <td className=\"product-name\">{product.name}</td>\n                  <td className=\"muted\">SKU-{String(product.id).padStart(4, '0')}</td>\n                  <td>{currency.format(product.price)}</td>\n                  <td><span className=\"availability\"><span aria-hidden=\"true\" /> In stock</span></td>\n                  <td className=\"muted\">Just now</td>\n                </tr>\n              ))}\n            </tbody>\n          </table>\n        </div>\n      </section>\n    </main>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Product catalog | Commerce operations',\n  description: 'Admin product catalog'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// lib/db.js\nimport { unstable_cache } from 'next/cache';\n\nasync function readAllProducts() {\n  // Simulate database delay\n  await new Promise(resolve => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 }\n  ];\n}\n\nconst getCachedProducts = unstable_cache(readAllProducts, ['products'], {\n  tags: ['products'],\n  revalidate: 3…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 443620,
+    "outputTokens": 8043,
+    "cacheReadTokens": 399104,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.5317884,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ig2bcgjpi4lk1mojzadru"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1965
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 469,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1965,
+          "durationMs": 469,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 2174,
+              "durationMs": 260,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 450,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2434,
+          "durationMs": 450,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 713,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2884,
+          "durationMs": 248,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3132,
+          "durationMs": 256,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq6psx5_1ulnq4'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 219,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3598,
+          "durationMs": 218,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 252290,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4044,
+          "durationMs": 19187,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 23231,
+          "durationMs": 265,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 23497,
+          "durationMs": 224259,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'You are building an admin product catalog p…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 247757,
+          "durationMs": 264,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 23231,
+          "durationMs": 224790,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 248556,
+          "durationMs": 7549,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 533,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 256106,
+          "durationMs": 532,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 256106,
+              "durationMs": 303,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1265
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 521
+    }
+  ],
+  "locator": "@1csayr61",
+  "startedAt": "2026-07-18T09:48:52.205Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna--agents-md/2026-07-18T09-51-08-413Z-asa9/memory/agent-029-use-cache-directive/a0"
+}

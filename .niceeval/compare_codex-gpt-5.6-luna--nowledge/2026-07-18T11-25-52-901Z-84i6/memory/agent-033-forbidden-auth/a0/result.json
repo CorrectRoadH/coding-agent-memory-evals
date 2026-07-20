@@ -1,0 +1,620 @@
+{
+  "id": "memory/agent-033-forbidden-auth",
+  "description": "next-evals agent-033: 403 admin gate via forbidden() from next/navigation with authInterrupts and a forbidden.tsx boundary",
+  "verdict": "passed",
+  "fingerprint": "6f398c24dad053dd5e45ca37dd2560f88f8f7d45149d99dc227e8cbb26fef0ef",
+  "attempt": 0,
+  "durationMs": 134085,
+  "assertions": [
+    {
+      "name": "isDefined(next.config.ts readable)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/authInterrupts\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 24,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(app/admin/page.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*forbidden.*from\\s+['\"]next\\/navigation['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/forbidden\\s*\\(\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 31,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/admin|role/i)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(forbidden.tsx boundary exists)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 36,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+function/)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 38,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/403|Forbidden|unauthorized|access/i)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 39,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(\\s*['\"]\\/(login|unauthorized)['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT redirect for authorization failures"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 344917,
+    "outputTokens": 2903,
+    "cacheReadTokens": 309504,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.3932854,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i77i329yhwdrxkb39ngis"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1584
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 4025,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1585,
+          "durationMs": 4025,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1585,
+              "durationMs": 219,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1804,
+              "durationMs": 2496,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 4300,
+              "durationMs": 221,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4521,
+              "durationMs": 234,
+              "command": {
+                "display": "nmem config client set url 'https://academic-barcelona-randy-derby.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4755,
+              "durationMs": 218,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_69l-oSUO4R_nKJpRVvP9T9KiJ6CdCT1iojbxZaYfjFvOihYMWDqbDbIK2JQ_rSSL'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4973,
+              "durationMs": 637,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 296,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5611,
+          "durationMs": 295,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 6782,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 5906,
+          "durationMs": 221,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 6130,
+          "durationMs": 222,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq8iwd0_7rtigx'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 6578,
+          "durationMs": 222,
+          "command": {
+            "display": "printf '\\n' >> ~/.codex/config.toml && cat /tmp/niceeval-native-config-mrq8iwj6-40kxpe >> ~/.codex/config.toml && printf '\\n' >> ~/.codex/config.toml && rm -f …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 6800,
+          "durationMs": 216,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'NICEEVAL_PROVIDER_EOF'\n\n[model_providers.s2a]\nname = \"s2a\"\nbase_url = \"https://s2a.niceeval.com/v1\"\nenv_key = \"CODEX_API_KEY\"\nwi…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7016,
+          "durationMs": 221,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'MCPEOF'\n\n[mcp_servers.nowledge-mem]\nurl = \"https://academic-barcelona-randy-derby.trycloudflare.com/mcp/\"\n[mcp_servers.nowledge-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 7237,
+          "durationMs": 2261,
+          "command": {
+            "display": "codex plugin marketplace add 'nowledge-co/community' --sparse '.agents' --sparse 'nowledge-mem-codex-plugin'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 9498,
+          "durationMs": 292,
+          "command": {
+            "display": "codex plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 9791,
+          "durationMs": 265,
+          "command": {
+            "display": "codex plugin add 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 10056,
+          "durationMs": 263,
+          "command": {
+            "display": "codex plugin list --json --marketplace 'nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "find",
+          "startOffsetMs": 10544,
+          "durationMs": 239,
+          "command": {
+            "display": "find \"${CODEX_HOME:-$HOME/.codex}\" -type f -name install_hooks.py -path \"*nowledge-mem*\" 2>/dev/null | head -1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 10783,
+          "durationMs": 322,
+          "command": {
+            "display": "python3 '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 11105,
+          "durationMs": 227,
+          "command": {
+            "display": "cat \"$(dirname \"$(dirname '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py')\")/AGENTS.md\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 11555,
+          "durationMs": 218,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_brlksy'\n# Nowledge Mem for Codex\n\nYou have access to the user's knowledge through the installed plugin skills, the `nmem` CL…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 11773,
+          "durationMs": 217,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 11990,
+          "durationMs": 227,
+          "command": {
+            "display": "test -f \"${CODEX_HOME:-$HOME/.codex}/hooks.json\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "grep",
+          "startOffsetMs": 12217,
+          "durationMs": 220,
+          "command": {
+            "display": "grep -q \"mcp_servers.nowledge-mem\" \"${CODEX_HOME:-$HOME/.codex}/config.toml\"",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 214,
+      "children": [
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 12688,
+          "durationMs": 214,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 119048,
+      "children": [
+        {
+          "id": "n26",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 13176,
+          "durationMs": 16565,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n27",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 29743,
+          "durationMs": 235,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n28",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 29982,
+          "durationMs": 93109,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Create an admin page at /admin that checks …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n29",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 123102,
+          "durationMs": 228,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n30",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 29743,
+          "durationMs": 93588,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n31",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 124288,
+          "durationMs": 7660,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 491,
+      "children": [
+        {
+          "id": "n32",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 131950,
+          "durationMs": 491,
+          "children": [
+            {
+              "id": "n33",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 131950,
+              "durationMs": 264,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1643
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 543
+    }
+  ],
+  "locator": "@10m1f358",
+  "startedAt": "2026-07-18T10:39:26.306Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna--nowledge/2026-07-18T10-35-38-349Z-he5d/memory/agent-033-forbidden-auth/a0"
+}

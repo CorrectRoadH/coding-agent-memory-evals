@@ -1,0 +1,398 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "b3b4e07c06fbb5f004aa945c9e1d838c3267942c83ff456c4185c0433c34d73b",
+  "attempt": 0,
+  "durationMs": 252570,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// app/page.tsx\nimport Link from 'next/link';\n\nexport default function Page() {\n  return (\n    <div style={{ maxWidth: 640, margin: '0 auto', padding: '2rem 1rem' }}>\n      <h1>Admin Dashboard</h1>\n      <nav>\n        <ul>\n          <li>\n            <Link href=\"/admin/catalog\">Product Catalog</Link>\n          </li>\n        </ul>\n      </nav>\n    </div>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Admin Dashboard',\n    template: '%s — Admin',\n  },\n  description: 'E-Commerce Admin Dashboard',\n};\n\nexport default function RootLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body style={{ margin: 0, fontFamily: 'system-ui, sans-serif' }}>\n        {children}\n      </body>\n    </html>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache, revalidateTag } from 'next/cache';\n\n/**\n * Module-level sync state.\n * In a production deployment this would live in a shared store (Redis, DB, etc.)\n * so all instances see the same state.\n */\n\nlet syncInProgress = false;\nlet lastSyncCompleted = null;\n\n/**\n * Internal — fetches products from the data source (simulated DB / ERP).\n * Not cached; callers should go through getAllProducts instead.\n */\nasync function fetchProducts() {\n  // Simulate database / ERP query latency\n  await new Promise((resolve) => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 },\n  ];\n}\n\n/**\n * Returns the cached product catalog tagged with \"products\".\n *\n * - First call per cache-life fetches from the simulated source.\n * - Subsequent calls serve the cached entry until the \"products\" tag\n *   is revalidated (via revalidateTag('products')).\n */\nexport const getAllProducts = unstable_cache(fetchProducts, ['products-list'], {\n  tags: ['products'],\n});\n\n/**\n * Triggers a background catalog sync from the upstream ERP/PIM source.\n *\n * Returns immediately so the admin can continue working. The product list\n * remains stale until the background job finishes and revalidates the\n * \"products\" cache tag.\n *\n * This is the **eventual consistency** pattern: the admin gets a responsive\n * UI while the system converges to fresh data across every view that uses\n * the same \"products\" tag.\n */\nexport function triggerCatalogSync() {\n  if (syncInProgress) {\n    return { success: false, message: 'Sync already in progress.' };\n  }\n\n  syncInProgress = true;\n\n  // Fire-and-forget — the admin does NOT wait for this to finish.\n  runBackgroundSync().catch(() => {\n    syncInProgress = false;\n  });\n\n  return { success: true, message: 'Catalog sync started.' };\n}\n\n/**\n * Background job that simulates an ERP/PIM data pull (slow — touches\n * thousands of SKUs in production). Once it completes it invalidates\n * the \"products\" cache tag so downstream views pick up fresh data.\n */\nasync function runBackgroundSync() {\n  try {\n    // Simulate the latency of a real ERP/PIM data pull\n    await new Promise((resolve) => setTimeout(resolve, 5000));\n\n    // Invalidate every cache entry tagged \"products\".\n    // All views (catalog page, search, detail pages) that tag their\n    // fetches with \"products\" will serve fresh data on the next request.\n    revalidateTag('products');\n\n    lastSyncCompleted = Date.now();\n  } finally {\n    syncInProgress = false;\n  }\n}\n\n/**\n * Returns the current sync status for display in the admin UI.\n */\nexport function ge…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// app/page.tsx\nimport Link from 'next/link';\n\nexport default function Page() {\n  return (\n    <div style={{ maxWidth: 640, margin: '0 auto', padding: '2rem 1rem' }}>\n      <h1>Admin Dashboard</h1>\n      <nav>\n        <ul>\n          <li>\n            <Link href=\"/admin/catalog\">Product Catalog</Link>\n          </li>\n        </ul>\n      </nav>\n    </div>\n  );\n}\n\n\n// next-env.d.ts\n/// <reference types=\"next\" />\n/// <reference types=\"next/image-types/global\" />\nimport \"./.next/types/routes.d.ts\";\n\n// NOTE: This file should not be edited\n// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: {\n    default: 'Admin Dashboard',\n    template: '%s — Admin',\n  },\n  description: 'E-Commerce Admin Dashboard',\n};\n\nexport default function RootLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body style={{ margin: 0, fontFamily: 'system-ui, sans-serif' }}>\n        {children}\n      </body>\n    </html>\n  );\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// lib/db.js\nimport { unstable_cache, revalidateTag } from 'next/cache';\n\n/**\n * Module-level sync state.\n * In a production deployment this would live in a shared store (Redis, DB, etc.)\n * so all instances see the same state.\n */\n\nlet syncInProgress = false;\nlet lastSyncCompleted = null;\n\n/**\n * Internal — fetches products from the data source (simulated DB / ERP).\n * Not cached; callers should go through getAllProducts instead.\n */\nasync function fetchProducts() {\n  // Simulate database / ERP query latency\n  await new Promise((resolve) => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 },\n  ];\n}\n\n/**\n * Returns the cached product catalog tagged with \"products\".\n *\n * - First call per cache-life fetches from the simulated source.\n * - Subsequent calls serve the cached entry until the \"products\" tag\n *   is revalidated (via revalidateTag('products')).\n */\nexport const getAllProducts = unstable_cache(fetchProducts, ['products-list'], {\n  tags: ['products'],\n});\n\n/**\n * Triggers a background catalog sync from the upstream ERP/PIM source.\n *\n * Returns immediately so the admin can continue working. The product list\n * remains stale until the background job finishes and revalidates the\n * \"products\" cache tag.\n *\n * This is the **eventual consistency** pattern: the admin gets a responsive\n * UI while the system converges to fresh data across every view that uses\n * the same \"products\" tag.\n */\nexport function triggerCatalogSync() {\n  if (syncInProgress) {\n    return { success: false, message: 'Sync already in progress.' };\n  }\n\n  syncInProgress = true;\n\n  // Fire-and-forget — the admin does NOT wait for this to finish.\n  runBackgroundSync().catch(() => {\n    syncInProgress = false;\n  });\n\n  return { success: true, message: 'Catalog sync started.' };\n}\n\n/**\n * Background job that simulates an ERP/PIM data pull (slow — touches\n * thousands of SKUs in production). Once it completes it invalidates\n * the \"products\" cache tag so downstream views pick up fresh data.\n */\nasync function runBackgroundSync() {\n  try {\n    // Simulate the latency of a real ERP/PIM data pull\n    await new Promise((resolve) => setTimeout(resolve, 5000));\n\n    // Invalidate every cache entry tagged \"products\".\n    // All views (catalog page, search, detail pages) that tag their\n    // fetches with \"products\" will serve fresh data on the next request.\n    revalidateTag('products');\n\n    lastSyncCompleted = Date.now();\n  } finally {\n    syncInProgress = false;\n  }\n}\n\n/**\n * Returns the current sync status for display in the admin UI.\n */\nexport function ge…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/",
+      "received": "import { unstable_cache, revalidateTag } from 'next/cache';\n\n/**\n * Module-level sync state.\n * In a production deployment this would live in a shared store (Redis, DB, etc.)\n * so all instances see the same state.\n */\n\nlet syncInProgress = false;\nlet lastSyncCompleted = null;\n\n/**\n * Internal — fetches products from the data source (simulated DB / ERP).\n * Not cached; callers should go through getAllProducts instead.\n */\nasync function fetchProducts() {\n  // Simulate database / ERP query latency\n  await new Promise((resolve) => setTimeout(resolve, 100));\n\n  return [\n    { id: 1, name: 'Laptop', price: 999 },\n    { id: 2, name: 'Phone', price: 699 },\n    { id: 3, name: 'Tablet', price: 499 },\n    { id: 4, name: 'Headphones', price: 199 },\n    { id: 5, name: 'Watch', price: 299 },\n  ];\n}\n\n/**\n * Returns the cached product catalog tagged with \"products\".\n *\n * - First call per cache-life fetches from the simulated source.\n * - Subsequent calls serve the cached entry until the \"products\" tag\n *   is revalidated (via revalidateTag('products')).\n */\nexport const getAllProducts = unstable_cache(fetchProducts, ['products-list'], {\n  tags: ['products'],\n});\n\n/**\n * Triggers a background catalog sync from the upstream ERP/PIM source.\n *\n * Returns immediately so the admin can continue working. The product list\n * remains stale until the background job finishes and revalidates the\n * \"products\" cache tag.\n *\n * This is the **eventual consistency** pattern: the admin gets a responsive\n * UI while the system converges to fresh data across every view that uses\n * the same \"products\" tag.\n */\nexport function triggerCatalogSync() {\n  if (syncInProgress) {\n    return { success: false, message: 'Sync already in progress.' };\n  }\n\n  syncInProgress = true;\n\n  // Fire-and-forget — the admin does NOT wait for this to finish.\n  runBackgroundSync().catch(() => {\n    syncInProgress = false;\n  });\n\n  return { success: true, message: 'Catalog sync started.' };\n}\n\n/**\n * Background job that simulates an ERP/PIM data pull (slow — touches\n * thousands of SKUs in production). Once it completes it invalidates\n * the \"products\" cache tag so downstream views pick up fresh data.\n */\nasync function runBackgroundSync() {\n  try {\n    // Simulate the latency of a real ERP/PIM data pull\n    await new Promise((resolve) => setTimeout(resolve, 5000));\n\n    // Invalidate every cache entry tagged \"products\".\n    // All views (catalog page, search, detail pages) that tag their\n    // fetches with \"products\" will serve fresh data on the next request.\n    revalidateTag('products');\n\n    lastSyncCompleted = Date.now();\n  } finally {\n    syncInProgress = false;\n  }\n}\n\n/**\n * Returns the current sync status for display in the admin UI.\n */\nexport function getSyncStatus() {\n  return {\n    inProgress: syncInProgress,\n    lastSyncCompleted,\n  };\n}\n"
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 178668,
+    "outputTokens": 66352,
+    "cacheReadTokens": 2843776,
+    "requests": 65,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0515546528,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i3knzz5moyc6sogb7u5gp"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2068
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 432,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2069,
+          "durationMs": 432,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 2281,
+              "durationMs": 220,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 293,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2501,
+          "durationMs": 293,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 432,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2794,
+          "durationMs": 217,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 248123,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 3451,
+          "durationMs": 34970,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 38421,
+          "durationMs": 237,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 38658,
+          "durationMs": 203234,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 241892,
+          "durationMs": 244,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 242400,
+          "durationMs": 240,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 38421,
+          "durationMs": 204219,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 243118,
+          "durationMs": 8231,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 470,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 251350,
+          "durationMs": 469,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 251350,
+              "durationMs": 251,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 750
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 880
+    }
+  ],
+  "locator": "@1zbfcmlg",
+  "startedAt": "2026-07-18T09:45:19.980Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

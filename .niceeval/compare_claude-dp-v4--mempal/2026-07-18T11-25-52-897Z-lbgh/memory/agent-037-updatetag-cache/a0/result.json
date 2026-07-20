@@ -1,0 +1,465 @@
+{
+  "id": "memory/agent-037-updatetag-cache",
+  "description": "next-evals agent-037: use updateTag in a Server Action for read-your-own-writes cache invalidation",
+  "verdict": "failed",
+  "fingerprint": "60ed7acdace3c2d9e3b35509ace07758eab8483059da793360998b940dba5810",
+  "attempt": 0,
+  "durationMs": 300783,
+  "assertions": [
+    {
+      "name": "includes(/import.*updateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action imports updateTag from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*updateTag.*from\\s+['\"]next\\/cache['\"]/",
+      "received": "\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Posts',\n  description: 'Create and view posts'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n\n// app/page.tsx\nimport { createPost } from './actions';\n\ninterface Post {\n  id: string;\n  title: string;\n  content: string;\n  createdAt: string;\n}\n\nasync function fetchPosts(): Promise<Post[]> {\n  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';\n  const host = process.env.VERCEL_URL || 'localhost:3000';\n  const res = await fetch(`${protocol}://${host}/api/posts`, {\n    next: { tags: ['posts'] },\n  });\n  if (!res.ok) {\n    throw new Error('Failed to fetch posts');\n  }\n  return res.json();\n}\n\nexport default async function Home() {\n  const posts = await fetchPosts();\n\n  return (\n    <main>\n      <h1>Posts</h1>\n\n      <form action={createPost}>\n        <div>\n          <label htmlFor=\"title\">Title</label>\n          <input type=\"text\" id=\"title\" name=\"title\" required />\n        </div>\n        <div>\n          <label htmlFor=\"content\">Content</label>\n          <textarea id=\"content\" name=\"content\" required />\n        </div>\n        <button type=\"submit\">Create Post</button>\n      </form>\n\n      <ul>\n        {posts.map((post) => (\n          <li key={post.id}>\n            <h2>{post.title}</h2>\n            <p>{post.content}</p>\n            <small>{new Date(post.createdAt).toLocaleDateString()}</small>\n          </li>\n        ))}\n      </ul>\n    </main>\n  );\n}\n\n\n// app/actions.ts\n'use server';\n\nimport { revalidateTag } from 'next/cache';\nimport { addPost } from '@/lib/posts';\n\nexport async function createPost(formData: FormData) {\n  const title = formData.get('title') as string;\n  const content = formData.get('content') as string;\n\n  if (!title || !content) {\n    throw new Error('Title and content are required');\n  }\n\n  addPost(title, content);\n\n  // Invalidate the \"posts\" cache tag so the next page load fetches\n  // fresh data instead of serving stale cached content.\n  // { expire: 0 } forces immediate expiration — no stale cache served.\n  revalidateTag('posts', { expire: 0 });\n}\n\n\n// lib/posts.ts\nexport interface Post {\n  id: string;\n  title: string;\n  content: string;\n  createdAt: Date;\n}\n\nconst posts: Post[] = [\n  {\n    id: '1',\n    title: 'Welcome',\n    content: 'This is the first post.',\n    createdAt: new Date('2026-07-01'),\n  },\n];\n\nexport function getPosts(): Post[] {\n  return posts;\n}\n\nexport function addPost(title: string, content: string): Post {\n  const newPost: Post = {\n    id: String(Date.now()),\n    title,\n    content,\n    createdAt: new Date(),\n  };\n  posts.push(newPost);\n  return newPost;\n}\n\n\n// app/api/posts/route.ts\nimport { NextResponse } from 'next/server';\nimport { getPosts } from '@/lib/posts';\n\nexport async function GET() {\n  const posts = getPosts();\n  return NextResponse.json(posts);\n}\n"
+    },
+    {
+      "name": "includes(/['\"]use server['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action uses 'use server' directive"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a Server Action calls updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls updateTag() for cache invalidation"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "defined",
+      "received": "undefined"
+    },
+    {
+      "name": "isTrue(a Server Action invalidates via updateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 45,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "true",
+      "received": "false"
+    },
+    {
+      "name": "isFalse(no Server Action relies on revalidateTag-only invalidation)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use revalidateTag for read-your-own-writes (should use updateTag)"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 46,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "false",
+      "received": "true"
+    },
+    {
+      "name": "isDefined(Server Action has post creation logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has post creation logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-037-updatetag-cache.eval.ts",
+        "line": 57,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…ED', [errors]: [ [Error], [Error] ] } } Export encountered an error on /page: /, exiting the build. ⨯ Next.js build worker exited with code: 1 and signal: null\"\noutput tail:\n> build\n> next build\n\nAttention: Next.js now collects completely anonymous telemetry regarding usage.\nThis information is used to shape Next.js' roadmap and prioritize features.\nYou can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:\nhttps://nextjs.org/telemetry\n\n▲ Next.js 16.2.0-canary.41 (Turbopack)\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 2.2s\n  Running TypeScript ...\n\n  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.\n  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:\n\n  \t- include was updated to add '.next/dev/types/**/*.ts'\n\n  The following mandatory changes were made to your tsconfig.json:\n\n  \t- jsx was set to react-jsx (next.js uses the React automatic runtime)\n\n  Finished TypeScript in 1887ms ...\n  Collecting page data using 3 workers ...\n  Generating static pages using 3 workers (0/4) ...\n  Generating static pages using 3 workers (1/4) \r\n\nError occurred prerendering page \"/\". Read more: https://nextjs.org/docs/messages/prerender-error\nTypeError: fetch failed\n    at async d (.next/server/chunks/ssr/[root-of-the-server]__5f0b8324._.js:1:396)\n    at async e (.next/server/chunks/ssr/[root-of-the-server]__5f0b8324._.js:1:545) {\n  digest: '1183606883',\n  [cause]: AggregateError: \n      at ignore-listed frames {\n    code: 'ECONNREFUSED',\n    [errors]: [ [Error], [Error] ]\n  }\n}\nExport encountered an error on /page: /, exiting the build.\n⨯ Next.js build worker exited with code: 1 and signal: null",
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 178827,
+    "outputTokens": 56047,
+    "cacheReadTokens": 2763904,
+    "requests": 72,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0484678712,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "igpkj6zelcefnjdxtxrc9"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1988
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 1339,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1989,
+          "durationMs": 1339,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1989,
+              "durationMs": 196,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 2185,
+              "durationMs": 213,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 2707,
+              "durationMs": 225,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_7d49264b-62d7-461e-8964-7192a61b6996.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 2932,
+              "durationMs": 201,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_7d49264b-62d7-461e-8964-7192a61b6996.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 3133,
+              "durationMs": 195,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 262,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3328,
+          "durationMs": 262,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1480,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 3591,
+          "durationMs": 199,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4009,
+          "durationMs": 199,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.claude/settings.json) && mv /tmp/niceeval-native-config-mrq75pcy-b3p8vu ~/.claude/settings.json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 4424,
+          "durationMs": 208,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.claude/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 294521,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5284,
+          "durationMs": 28795,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 34079,
+          "durationMs": 214,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 34293,
+          "durationMs": 257571,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Create a Server Action that creates a new post. The posts list uses cache tags for cach…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 291864,
+          "durationMs": 229,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 292405,
+          "durationMs": 208,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 34079,
+          "durationMs": 258534,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 293632,
+          "durationMs": 5959,
+          "failed": true,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 466,
+      "children": [
+        {
+          "id": "n18",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 299591,
+          "durationMs": 466,
+          "children": [
+            {
+              "id": "n19",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 299591,
+              "durationMs": 248,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 3
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 723
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1037,
+      "children": [
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 300784,
+          "durationMs": 191,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 300975,
+          "durationMs": 193,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 301168,
+          "durationMs": 217,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_670fe0af-01e3-4883-9b6e-62934f11ec8f.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 301603,
+          "durationMs": 217,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_670fe0af-01e3-4883-9b6e-62934f11ec8f.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 468
+    }
+  ],
+  "locator": "@1c87c4a8",
+  "startedAt": "2026-07-18T10:01:13.420Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4--mempal/2026-07-18T09-46-39-997Z-06m0/memory/agent-037-updatetag-cache/a0"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "memory/terminal-cancel-async-tasks",
+  "description": "terminal-bench cancel-async-tasks: implement cancellable bounded async task runner",
+  "verdict": "errored",
+  "fingerprint": "41a2d50ad8273d047b6bcada28d3485db9066c4c261a12ac5a935ce8d4b2f81c",
+  "attempt": 0,
+  "durationMs": 5551,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "fetch failed",
+    "phase": "sandbox.create",
+    "stack": "TypeError: fetch failed\n    at Object.processResponse (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:237:16)\n    at /Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/lib/web/fetch/index.js:1081:19\n    at node:internal/process/task_queues:151:7\n    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n    at AsyncResource.runMicrotask (node:internal/process/task_queues:148:8)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at /Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Function.createSandbox (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1179:17)\n    at async Function.create (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:93:9)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:46:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:126:40)",
+    "cause": {
+      "message": "Client network socket disconnected before secure TLS connection was established",
+      "name": "Error",
+      "code": "ECONNRESET"
+    }
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5550
+    }
+  ],
+  "locator": "@1v30avtu",
+  "startedAt": "2026-07-18T09:27:46.119Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

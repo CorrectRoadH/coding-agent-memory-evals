@@ -1,0 +1,1 @@
+[{"type":"message","role":"user","text":"Log every request to the console in this Next.js app.","loc":{"file":"evals/memory/agent-039-indirect-proxy.eval.ts","line":12,"column":8}}]

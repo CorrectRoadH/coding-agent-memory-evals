@@ -1,0 +1,50 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/codex-gpt-5.6-luna--mempal",
+  "experiment": {
+    "description": "codex · gpt-5.6-luna · mempal",
+    "flags": {
+      "memory": "mempal",
+      "mempalVersion": "0.9.0",
+      "mempalCohort": "local"
+    },
+    "labels": {
+      "line": "codex"
+    },
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "budget": 15,
+    "maxConcurrency": 1,
+    "selectedEvalIds": [
+      "memory/agent-029-use-cache-directive",
+      "memory/agent-030-app-router-migration-hard",
+      "memory/agent-033-forbidden-auth",
+      "memory/agent-035-connection-dynamic",
+      "memory/agent-037-updatetag-cache",
+      "memory/agent-038-refresh-settings",
+      "memory/agent-039-indirect-proxy",
+      "memory/agent-042-enable-ppr",
+      "memory/terminal-cancel-async-tasks",
+      "memory/terminal-swe-bench-astropy-1",
+      "memory/terminal-swe-bench-astropy-2"
+    ],
+    "evalFilterFingerprint": "2512344f010b590f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "memory-evals-codex-mempal-5dbc2b042525-0-9-0"
+      },
+      "fingerprint": "582daaa4843e2a9a"
+    }
+  },
+  "agent": "codex",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-18T11:21:45.707Z",
+  "completedAt": "2026-07-18T11:25:52.938Z"
+}

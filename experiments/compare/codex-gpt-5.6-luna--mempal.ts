@@ -1,6 +1,7 @@
 import { defineExperiment } from "niceeval";
 import { e2bSandbox } from "niceeval/sandbox";
 import { codexAgent } from "niceeval/adapter";
+import { withAgentsMd } from "../shared/agents-md.ts";
 import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate } from "../shared/mempal.ts";
 
 // codex-gpt-5.6-luna 的 mempal 变体:agent 用自带 shell 跑 mempal CLI(`search` / `ingest`),
@@ -10,14 +11,19 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 // 记忆按 ctx.experimentId(即本实验的路径推导 id `compare/codex-gpt-5.6-luna--mempal`)跨 eval /
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
+//
+// 叠 withAgentsMd:理由同 codex-gpt-5.6-luna--nowledge.ts / claude-dp-v4--mempal.ts。mempal 只靠
+// Skill 教 agent 用 CLI,不碰 AGENTS.md,叠上去零冲突。
 export default defineExperiment({
   evals: ["memory"],
-  description: "codex · gpt-5.6-luna · mempal",
+  description: "codex · gpt-5.6-luna · mempal + AGENTS.md",
   labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent({ skills: [mempalSkill] }),
-  flags: mempalFlags(),
+  flags: { ...mempalFlags(), agentsMdHint: true },
   model: "gpt-5.6-luna",
-  sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
+  sandbox: withAgentsMd(
+    e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
+  ),
   runs: 1,
   earlyExit: false,
   budget: 15,

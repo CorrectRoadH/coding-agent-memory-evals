@@ -1,0 +1,514 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "ca5d5eec3a8dcf757e243b5fba259efc4e16edfee35ab91147ec9ae1cc53ae11",
+  "attempt": 0,
+  "durationMs": 232455,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// app/products/page.tsx\nimport { revalidateTag, unstable_cache } from \"next/cache\";\nimport { getAllProducts, syncCatalog, type Product } from \"@/lib/db\";\n\n// ── Cache layer ──────────────────────────────────────────────────────\n// The result of getAllProducts is cached under the \"products\" tag.\n// Every view that depends on catalog data uses this same tag so that a\n// single revalidation freshens them all concurrently.\nconst getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  [\"admin-products-list\"],\n  { tags: [\"products\"] },\n);\n\n// ── Inline Server Action ─────────────────────────────────────────────\n// Co-located with the page so the sync trigger and its cache-invalidation\n// logic are visible right next to the rendered output.\nasync function syncCatalogAction() {\n  \"use server\";\n\n  console.log(\"⏳ Sync triggered — background job dispatched\");\n\n  // Fire the long-running sync in the background WITHOUT awaiting it.\n  // The admin gets immediate control back even though the product list\n  // may reflect pre-sync data for a few more seconds.\n  syncCatalog().catch((err: unknown) => {\n    console.error(\"Background catalog sync failed:\", err);\n  });\n\n  // Mark every fetch / cache entry tagged \"products\" as stale.\n  // The NEXT render of any consumer (this page, an API route, a different\n  // page) will re-execute its data function and see whatever state the\n  // data layer has at that moment — eventually consistent after the\n  // background sync finishes writing.\n  revalidateTag(\"products\", { expire: 0 });\n}\n\n// ── Helpers ──────────────────────────────────────────────────────────\n\nfunction statusBadge(status: Product[\"status\"]) {\n  const colors: Record<Product[\"status\"], string> = {\n    active: \"#16a34a\",\n    inactive: \"#ca8a04\",\n    discontinued: \"#dc2626\",\n  };\n  return (\n    <span\n      style={{\n        display: \"inline-block\",\n        padding: \"2px 8px\",\n        borderRadius: \"999px\",\n        fontSize: \"0.75rem\",\n        fontWeight: 600,\n        color: \"#fff\",\n        backgroundColor: colors[status],\n      }}\n    >\n      {status}\n    </span>\n  );\n}\n\n// ── Page ─────────────────────────────────────────────────────────────\n\nexport default async function ProductsPage() {\n  const products: Product[] = await getCachedProducts();\n\n  const anySynced = products.some((p) => p.lastSynced !== null);\n\n  return (\n    <div style={{ maxWidth: 960, margin: \"0 auto\", padding: \"2rem 1rem\" }}>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"space-between\",\n          alignItems: \"center\",\n          marginBottom: \"1.5rem\",\n        }}\n      >\n        <div>\n          <h1 style={{ margin: 0, fontSize: \"1.5rem\", fontWeight: 700 }}>\n            Product Catalog\n          </h1>\n          <p style={{ margin: \"0.25rem 0 0\", color: \"#666\", fontSize: \"0.875rem\" }}>\n            {products.length} products\n            {anySynced && (\n              <span>\n                {\" · \"}\n                last synced{\" \"}\n                {new Date(\n                  Math.max(\n                    ...products\n                      .map((p) => p.lastSynced)\n                      .filter(Boolean)\n                      .map((d) => new Date(d as string).getTime()),\n                  ),\n                ).toLocaleString()}\n              </span>\n            )}\n            {!anySynced && <span> — sync pending</span>}\n          </p>\n        </div>\n\n        {/* Regular HTML form → native Server Action submission.\n            No client JavaScript required; works even before hydration. */}\n        <form action={syncCatalogAction}>\n          <button\n            type=\"submit\"\n            style={{\n              padding: \"0.5rem 1.25rem\",\n              borderRadius: 6,\n              border: \"1px solid #d1d5db\",\n              background: \"#f9fafb\",\n              fontSize: \"0.875rem\",\n              fontWeight: 600,\n              cursor: \"pointer\",\n            }}\n          >\n            Sync latest catalog\n          </button>\n        </form…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// app/products/page.tsx\nimport { revalidateTag, unstable_cache } from \"next/cache\";\nimport { getAllProducts, syncCatalog, type Product } from \"@/lib/db\";\n\n// ── Cache layer ──────────────────────────────────────────────────────\n// The result of getAllProducts is cached under the \"products\" tag.\n// Every view that depends on catalog data uses this same tag so that a\n// single revalidation freshens them all concurrently.\nconst getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  [\"admin-products-list\"],\n  { tags: [\"products\"] },\n);\n\n// ── Inline Server Action ─────────────────────────────────────────────\n// Co-located with the page so the sync trigger and its cache-invalidation\n// logic are visible right next to the rendered output.\nasync function syncCatalogAction() {\n  \"use server\";\n\n  console.log(\"⏳ Sync triggered — background job dispatched\");\n\n  // Fire the long-running sync in the background WITHOUT awaiting it.\n  // The admin gets immediate control back even though the product list\n  // may reflect pre-sync data for a few more seconds.\n  syncCatalog().catch((err: unknown) => {\n    console.error(\"Background catalog sync failed:\", err);\n  });\n\n  // Mark every fetch / cache entry tagged \"products\" as stale.\n  // The NEXT render of any consumer (this page, an API route, a different\n  // page) will re-execute its data function and see whatever state the\n  // data layer has at that moment — eventually consistent after the\n  // background sync finishes writing.\n  revalidateTag(\"products\", { expire: 0 });\n}\n\n// ── Helpers ──────────────────────────────────────────────────────────\n\nfunction statusBadge(status: Product[\"status\"]) {\n  const colors: Record<Product[\"status\"], string> = {\n    active: \"#16a34a\",\n    inactive: \"#ca8a04\",\n    discontinued: \"#dc2626\",\n  };\n  return (\n    <span\n      style={{\n        display: \"inline-block\",\n        padding: \"2px 8px\",\n        borderRadius: \"999px\",\n        fontSize: \"0.75rem\",\n        fontWeight: 600,\n        color: \"#fff\",\n        backgroundColor: colors[status],\n      }}\n    >\n      {status}\n    </span>\n  );\n}\n\n// ── Page ─────────────────────────────────────────────────────────────\n\nexport default async function ProductsPage() {\n  const products: Product[] = await getCachedProducts();\n\n  const anySynced = products.some((p) => p.lastSynced !== null);\n\n  return (\n    <div style={{ maxWidth: 960, margin: \"0 auto\", padding: \"2rem 1rem\" }}>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"space-between\",\n          alignItems: \"center\",\n          marginBottom: \"1.5rem\",\n        }}\n      >\n        <div>\n          <h1 style={{ margin: 0, fontSize: \"1.5rem\", fontWeight: 700 }}>\n            Product Catalog\n          </h1>\n          <p style={{ margin: \"0.25rem 0 0\", color: \"#666\", fontSize: \"0.875rem\" }}>\n            {products.length} products\n            {anySynced && (\n              <span>\n                {\" · \"}\n                last synced{\" \"}\n                {new Date(\n                  Math.max(\n                    ...products\n                      .map((p) => p.lastSynced)\n                      .filter(Boolean)\n                      .map((d) => new Date(d as string).getTime()),\n                  ),\n                ).toLocaleString()}\n              </span>\n            )}\n            {!anySynced && <span> — sync pending</span>}\n          </p>\n        </div>\n\n        {/* Regular HTML form → native Server Action submission.\n            No client JavaScript required; works even before hydration. */}\n        <form action={syncCatalogAction}>\n          <button\n            type=\"submit\"\n            style={{\n              padding: \"0.5rem 1.25rem\",\n              borderRadius: 6,\n              border: \"1px solid #d1d5db\",\n              background: \"#f9fafb\",\n              fontSize: \"0.875rem\",\n              fontWeight: 600,\n              cursor: \"pointer\",\n            }}\n          >\n            Sync latest catalog\n          </button>\n        </form…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 91794,
+    "outputTokens": 67239,
+    "cacheReadTokens": 2404224,
+    "requests": 69,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.0384099072,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "id2s4osm7z1cj24pepewk"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 8476
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 1665,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 8478,
+          "durationMs": 1665,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 8477,
+              "durationMs": 306,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 8784,
+              "durationMs": 257,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 9379,
+              "durationMs": 278,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_ab20c7c3-3ecd-492d-a422-ba0e75738be0.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 9658,
+              "durationMs": 242,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_ab20c7c3-3ecd-492d-a422-ba0e75738be0.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 9900,
+              "durationMs": 242,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 374,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 10142,
+          "durationMs": 374,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1795,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 10517,
+          "durationMs": 277,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 11013,
+          "durationMs": 255,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.claude/settings.json) && mv /tmp/niceeval-native-config-mrq6i3zf-d0k6jr ~/.claude/settings.json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 11487,
+          "durationMs": 371,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.claude/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 218732,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 12521,
+          "durationMs": 23694,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 36222,
+          "durationMs": 824,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 37047,
+          "durationMs": 186542,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 223589,
+          "durationMs": 284,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 224159,
+          "durationMs": 285,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 36223,
+          "durationMs": 188223,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 225030,
+          "durationMs": 6013,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 545,
+      "children": [
+        {
+          "id": "n18",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 231044,
+          "durationMs": 545,
+          "children": [
+            {
+              "id": "n19",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 231043,
+              "durationMs": 296,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 865
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1440,
+      "children": [
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 232454,
+          "durationMs": 260,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 232714,
+          "durationMs": 305,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 233019,
+          "durationMs": 309,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_5b9fbb5d-58d2-47b9-846b-930ac889b55d.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 233626,
+          "durationMs": 264,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_5b9fbb5d-58d2-47b9-846b-930ac889b55d.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 462
+    }
+  ],
+  "locator": "@1x7iqmfe",
+  "startedAt": "2026-07-18T09:42:45.628Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_claude-dp-v4--mempal/2026-07-18T09-46-39-997Z-06m0/memory/agent-029-use-cache-directive/a0"
+}

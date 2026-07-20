@@ -1,0 +1,383 @@
+{
+  "id": "memory/agent-029-use-cache-directive",
+  "description": "next-evals agent-029: use cache directive and revalidateTag profile for eventual catalog refresh",
+  "verdict": "failed",
+  "fingerprint": "482bd4a17e9ef576defce68b7393d709ef1e5d30f773a2c199b3e9656add3073",
+  "attempt": 0,
+  "durationMs": 213602,
+  "assertions": [
+    {
+      "name": "includes(/['\"]use cache['\"];?/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 27,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /['\"]use cache['\"];?/",
+      "received": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Northstar · Product catalog',\n  description: 'Manage products, pricing, and inventory.'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n// app/page.tsx\nimport { unstable_cache, revalidateTag } from 'next/cache';\nimport { syncLatestCatalog, getAllProducts } from '@/lib/db';\n\nconst PRODUCTS_TAG = 'products';\n\nconst getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['catalog-products'],\n  { tags: [PRODUCTS_TAG], revalidate: 60 }\n);\n\nexport default async function Page() {\n  async function syncCatalog() {\n    'use server';\n\n    // Invalidate the shared catalog cache as soon as the sync is requested,\n    // then let the potentially large import run without blocking this page.\n    revalidateTag(PRODUCTS_TAG, 'max');\n    void syncLatestCatalog().then(() => revalidateTag(PRODUCTS_TAG, 'max'));\n  }\n\n  const products = await getCachedProducts();\n  const inStock = products.filter(product => product.inventory > 0).length;\n  const lowStock = products.filter(product => product.inventory > 0 && product.inventory < 10).length;\n\n  return (\n    <main className=\"shell\">\n      <header className=\"topbar\">\n        <div className=\"brand\"><span className=\"brand-mark\">N</span><span>Northstar</span></div>\n        <div className=\"topbar-right\"><span className=\"workspace-label\">Operations workspace</span><span className=\"avatar\">JD</span></div>\n      </header>\n\n      <div className=\"layout\">\n        <aside className=\"sidebar\">\n          <p className=\"eyebrow\">WORKSPACE</p>\n          <nav>\n            <a href=\"#overview\">▦ <span>Overview</span></a>\n            <a className=\"active\" href=\"#catalog\">▤ <span>Catalog</span><b>6</b></a>\n            <a href=\"#orders\">□ <span>Orders</span></a>\n            <a href=\"#customers\">♙ <span>Customers</span></a>\n          </nav>\n          <p className=\"eyebrow second\">MANAGE</p>\n          <nav>\n            <a href=\"#integrations\">⇄ <span>Integrations</span></a>\n            <a href=\"#settings\">⚙ <span>Settings</span></a>\n          </nav>\n          <div className=\"help-card\"><strong>Need a hand?</strong><span>Visit the help center</span><a href=\"#help\">↗</a></div>\n        </aside>\n\n        <section className=\"content\" id=\"catalog\">\n          <div className=\"page-heading\">\n            <div><p className=\"breadcrumb\">Workspace / Catalog</p><h1>Product catalog</h1><p className=\"subtitle\">Manage your products, pricing, and inventory in one place.</p></div>\n            <form action={syncCatalog}><button className=\"sync-button\" type=\"submit\"><span>↻</span> Sync latest catalog</button></form>\n          </div>\n\n          <div className=\"stats\">\n            <div><span className=\"stat-icon purple\">▤</span><div><p>Total products</p><strong>{products.length}</strong><small>↑ 8.2% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon green\">✓</span><div><p>In stock</p><strong>{inStock}</strong><small>↑ 4.6% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon amber\">!</span><div><p>Low stock</p><strong>{lowStock}</strong><small className=\"neutral\">Needs attention</small></div></div>\n            <div><span className=\"stat-icon blue\">$</span><div><p>Catalog value</p><strong>$48.2k</strong><small>↑ 12.4% <em>vs last month</em></small></div></div>\n          </div>\n\n          <div className=\"catalog-card\">\n            <div className=\"card-toolbar\"><div><h2>All products <span>{products.length}</span></h2><p>Last synced just now · Changes may take a moment to appear.</p></div><div className=\"tools\"><label className=\"search\">⌕<input placeholder=\"Search products\" /></label><button className=\"filter\">≡ Filter <span>2</span></button><button className=\"more\">•••</button></div></div>\n            <div class…"
+    },
+    {
+      "name": "includes(/cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Catalog reads use use-cache directive and products cache tag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheTag\\s*\\(\\s*['\"]products['\"]\\s*\\)/",
+      "received": "\n// app/layout.tsx\nimport type { Metadata } from 'next';\nimport './globals.css';\n\nexport const metadata: Metadata = {\n  title: 'Northstar · Product catalog',\n  description: 'Manage products, pricing, and inventory.'\n};\n\nexport default function RootLayout({\n  children\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  );\n}\n\n// app/page.tsx\nimport { unstable_cache, revalidateTag } from 'next/cache';\nimport { syncLatestCatalog, getAllProducts } from '@/lib/db';\n\nconst PRODUCTS_TAG = 'products';\n\nconst getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['catalog-products'],\n  { tags: [PRODUCTS_TAG], revalidate: 60 }\n);\n\nexport default async function Page() {\n  async function syncCatalog() {\n    'use server';\n\n    // Invalidate the shared catalog cache as soon as the sync is requested,\n    // then let the potentially large import run without blocking this page.\n    revalidateTag(PRODUCTS_TAG, 'max');\n    void syncLatestCatalog().then(() => revalidateTag(PRODUCTS_TAG, 'max'));\n  }\n\n  const products = await getCachedProducts();\n  const inStock = products.filter(product => product.inventory > 0).length;\n  const lowStock = products.filter(product => product.inventory > 0 && product.inventory < 10).length;\n\n  return (\n    <main className=\"shell\">\n      <header className=\"topbar\">\n        <div className=\"brand\"><span className=\"brand-mark\">N</span><span>Northstar</span></div>\n        <div className=\"topbar-right\"><span className=\"workspace-label\">Operations workspace</span><span className=\"avatar\">JD</span></div>\n      </header>\n\n      <div className=\"layout\">\n        <aside className=\"sidebar\">\n          <p className=\"eyebrow\">WORKSPACE</p>\n          <nav>\n            <a href=\"#overview\">▦ <span>Overview</span></a>\n            <a className=\"active\" href=\"#catalog\">▤ <span>Catalog</span><b>6</b></a>\n            <a href=\"#orders\">□ <span>Orders</span></a>\n            <a href=\"#customers\">♙ <span>Customers</span></a>\n          </nav>\n          <p className=\"eyebrow second\">MANAGE</p>\n          <nav>\n            <a href=\"#integrations\">⇄ <span>Integrations</span></a>\n            <a href=\"#settings\">⚙ <span>Settings</span></a>\n          </nav>\n          <div className=\"help-card\"><strong>Need a hand?</strong><span>Visit the help center</span><a href=\"#help\">↗</a></div>\n        </aside>\n\n        <section className=\"content\" id=\"catalog\">\n          <div className=\"page-heading\">\n            <div><p className=\"breadcrumb\">Workspace / Catalog</p><h1>Product catalog</h1><p className=\"subtitle\">Manage your products, pricing, and inventory in one place.</p></div>\n            <form action={syncCatalog}><button className=\"sync-button\" type=\"submit\"><span>↻</span> Sync latest catalog</button></form>\n          </div>\n\n          <div className=\"stats\">\n            <div><span className=\"stat-icon purple\">▤</span><div><p>Total products</p><strong>{products.length}</strong><small>↑ 8.2% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon green\">✓</span><div><p>In stock</p><strong>{inStock}</strong><small>↑ 4.6% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon amber\">!</span><div><p>Low stock</p><strong>{lowStock}</strong><small className=\"neutral\">Needs attention</small></div></div>\n            <div><span className=\"stat-icon blue\">$</span><div><p>Catalog value</p><strong>$48.2k</strong><small>↑ 12.4% <em>vs last month</em></small></div></div>\n          </div>\n\n          <div className=\"catalog-card\">\n            <div className=\"card-toolbar\"><div><h2>All products <span>{products.length}</span></h2><p>Last synced just now · Changes may take a moment to appear.</p></div><div className=\"tools\"><label className=\"search\">⌕<input placeholder=\"Search products\" /></label><button className=\"filter\">≡ Filter <span>2</span></button><button className=\"more\">•••</button></div></div>\n            <div class…"
+    },
+    {
+      "name": "includes(/import.*getAllProducts.*lib\\/db|from.*lib\\/db/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/await\\s+getAllProducts\\s*\\(|getAllProducts\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Page fetches products via lib/db"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 33,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(inline form-triggered Server Action exists in one file)",
+      "severity": "gate",
+      "groupPath": [
+        "Inline form-triggered Server Action flow exists"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(a file calls revalidateTag)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 48,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*revalidateTag.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 49,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 50,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 51,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /revalidateTag\\s*\\(\\s*['\"]products['\"]\\s*,/",
+      "received": "import { unstable_cache, revalidateTag } from 'next/cache';\nimport { syncLatestCatalog, getAllProducts } from '@/lib/db';\n\nconst PRODUCTS_TAG = 'products';\n\nconst getCachedProducts = unstable_cache(\n  async () => getAllProducts(),\n  ['catalog-products'],\n  { tags: [PRODUCTS_TAG], revalidate: 60 }\n);\n\nexport default async function Page() {\n  async function syncCatalog() {\n    'use server';\n\n    // Invalidate the shared catalog cache as soon as the sync is requested,\n    // then let the potentially large import run without blocking this page.\n    revalidateTag(PRODUCTS_TAG, 'max');\n    void syncLatestCatalog().then(() => revalidateTag(PRODUCTS_TAG, 'max'));\n  }\n\n  const products = await getCachedProducts();\n  const inStock = products.filter(product => product.inventory > 0).length;\n  const lowStock = products.filter(product => product.inventory > 0 && product.inventory < 10).length;\n\n  return (\n    <main className=\"shell\">\n      <header className=\"topbar\">\n        <div className=\"brand\"><span className=\"brand-mark\">N</span><span>Northstar</span></div>\n        <div className=\"topbar-right\"><span className=\"workspace-label\">Operations workspace</span><span className=\"avatar\">JD</span></div>\n      </header>\n\n      <div className=\"layout\">\n        <aside className=\"sidebar\">\n          <p className=\"eyebrow\">WORKSPACE</p>\n          <nav>\n            <a href=\"#overview\">▦ <span>Overview</span></a>\n            <a className=\"active\" href=\"#catalog\">▤ <span>Catalog</span><b>6</b></a>\n            <a href=\"#orders\">□ <span>Orders</span></a>\n            <a href=\"#customers\">♙ <span>Customers</span></a>\n          </nav>\n          <p className=\"eyebrow second\">MANAGE</p>\n          <nav>\n            <a href=\"#integrations\">⇄ <span>Integrations</span></a>\n            <a href=\"#settings\">⚙ <span>Settings</span></a>\n          </nav>\n          <div className=\"help-card\"><strong>Need a hand?</strong><span>Visit the help center</span><a href=\"#help\">↗</a></div>\n        </aside>\n\n        <section className=\"content\" id=\"catalog\">\n          <div className=\"page-heading\">\n            <div><p className=\"breadcrumb\">Workspace / Catalog</p><h1>Product catalog</h1><p className=\"subtitle\">Manage your products, pricing, and inventory in one place.</p></div>\n            <form action={syncCatalog}><button className=\"sync-button\" type=\"submit\"><span>↻</span> Sync latest catalog</button></form>\n          </div>\n\n          <div className=\"stats\">\n            <div><span className=\"stat-icon purple\">▤</span><div><p>Total products</p><strong>{products.length}</strong><small>↑ 8.2% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon green\">✓</span><div><p>In stock</p><strong>{inStock}</strong><small>↑ 4.6% <em>vs last month</em></small></div></div>\n            <div><span className=\"stat-icon amber\">!</span><div><p>Low stock</p><strong>{lowStock}</strong><small className=\"neutral\">Needs attention</small></div></div>\n            <div><span className=\"stat-icon blue\">$</span><div><p>Catalog value</p><strong>$48.2k</strong><small>↑ 12.4% <em>vs last month</em></small></div></div>\n          </div>\n\n          <div className=\"catalog-card\">\n            <div className=\"card-toolbar\"><div><h2>All products <span>{products.length}</span></h2><p>Last synced just now · Changes may take a moment to appear.</p></div><div className=\"tools\"><label className=\"search\">⌕<input placeholder=\"Search products\" /></label><button className=\"filter\">≡ Filter <span>2</span></button><button className=\"more\">•••</button></div></div>\n            <div className=\"table-wrap\"><table><thead><tr><th><input type=\"checkbox\" aria-label=\"Select all products\" /></th><th>PRODUCT ↕</th><th>SKU ↕</th><th>CATEGORY ↕</th><th>PRICE ↕</th><th>INVENTORY ↕</th><th>STATUS</th><th></th></tr></thead><tbody>{products.map(product => <tr key={product.id}><td><input type=\"checkbox\" aria-label={`Select ${product.name}`} /></td><td><div className=\"product\"><span className={`product-image im…"
+    },
+    {
+      "name": "excludes(/\\bupdateTag\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action revalidates products using revalidateTag profile"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 52,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-029-use-cache-directive.eval.ts",
+        "line": 55,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 89534,
+    "outputTokens": 6425,
+    "cacheReadTokens": 67072,
+    "requests": 11,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1347912,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iuxr0m9a98nbmknmh9087"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 8644
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 428,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 8644,
+          "durationMs": 428,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1109,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 9072,
+          "durationMs": 246,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 9318,
+          "durationMs": 239,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 9765,
+          "durationMs": 231,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrq6i36w_41yr1e'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 202065,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 10406,
+          "durationMs": 20537,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 30943,
+          "durationMs": 295,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 31238,
+          "durationMs": 168800,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'You are building an admin product catalog page for an e-commerce team.\n\nThe catalog is read-heavy an…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 200277,
+          "durationMs": 314,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 30943,
+          "durationMs": 169648,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 204433,
+          "durationMs": 7812,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 535,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 212247,
+          "durationMs": 534,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 212247,
+              "durationMs": 316,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 821
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 556
+    }
+  ],
+  "locator": "@14rx8fzj",
+  "startedAt": "2026-07-18T09:42:45.635Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

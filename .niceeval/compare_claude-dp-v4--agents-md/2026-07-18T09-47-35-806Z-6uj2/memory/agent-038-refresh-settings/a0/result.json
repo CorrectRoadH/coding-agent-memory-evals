@@ -1,0 +1,312 @@
+{
+  "id": "memory/agent-038-refresh-settings",
+  "description": "next-evals agent-038: refresh the current page from a Server Action via refresh() from next/cache, not redirect or router.refresh",
+  "verdict": "failed",
+  "fingerprint": "25132f06062d7c2e5a23158c951238847853788feaa1850469f0e2b5a4592642",
+  "attempt": 0,
+  "durationMs": 96529,
+  "assertions": [
+    {
+      "name": "includes(/import.*refresh.*from\\s+['\"]next\\/cache['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Imports refresh from next/cache"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /import.*refresh.*from\\s+['\"]next\\/cache['\"]/",
+      "received": "\n// app/page.tsx\nimport { cookies } from 'next/headers'\nimport { toggleNotifications } from './actions'\n\nexport default async function Home() {\n  const cookieStore = await cookies()\n  const notificationsEnabled = cookieStore.get('notifications')?.value === 'on'\n\n  return (\n    <main style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>\n      <h1>Settings</h1>\n\n      <p>\n        Notifications:{' '}\n        <strong>{notificationsEnabled ? 'On' : 'Off'}</strong>\n      </p>\n\n      <form action={toggleNotifications}>\n        <button\n          type=\"submit\"\n          style={{\n            padding: '0.5rem 1.25rem',\n            fontSize: '1rem',\n            cursor: 'pointer',\n          }}\n        >\n          Turn {notificationsEnabled ? 'Off' : 'On'}\n        </button>\n      </form>\n    </main>\n  )\n}\n\n\n// app/layout.tsx\nimport type { Metadata } from 'next'\n\nexport const metadata: Metadata = {\n  title: 'Settings',\n  description: 'User notification settings',\n}\n\nexport default function RootLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode\n}>) {\n  return (\n    <html lang=\"en\">\n      <body>{children}</body>\n    </html>\n  )\n}\n\n\n// next.config.ts\nimport type { NextConfig } from \"next\";\n\nconst nextConfig: NextConfig = {};\n\nexport default nextConfig;\n\n\n// app/actions.ts\n'use server'\n\nimport { revalidatePath } from 'next/cache'\nimport { cookies } from 'next/headers'\n\nexport async function toggleNotifications() {\n  const cookieStore = await cookies()\n  const current = cookieStore.get('notifications')?.value === 'on'\n\n  // Toggle the preference\n  cookieStore.set('notifications', current ? 'off' : 'on', {\n    maxAge: 60 * 60 * 24 * 365, // 1 year\n    path: '/',\n    httpOnly: true,\n    sameSite: 'lax',\n  })\n\n  // Refresh the current page — this invalidates the server cache and\n  // purges the client-side Router Cache, so the page re-fetches with\n  // the updated preference on the next render.\n  revalidatePath('/')\n}\n"
+    },
+    {
+      "name": "isDefined(a Server Action calls refresh())",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "defined",
+      "received": "undefined"
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(/)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action calls refresh()"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(Server Action has toggle logic)",
+      "severity": "gate",
+      "groupPath": [
+        "Server Action has notification toggle logic"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 34,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-038-refresh-settings.eval.ts",
+        "line": 40,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 137138,
+    "outputTokens": 13784,
+    "cacheReadTokens": 847744,
+    "requests": 33,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.025432523200000005,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iivw5xpr353e6q1k5w4aw"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1350
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 425,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1350,
+          "durationMs": 425,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "ln",
+              "startOffsetMs": 1561,
+              "durationMs": 214,
+              "command": {
+                "display": "ln -sf AGENTS.md CLAUDE.md",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 267,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1775,
+          "durationMs": 267,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 426,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2042,
+          "durationMs": 213,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 92700,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 2694,
+          "durationMs": 28016,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 30710,
+          "durationMs": 239,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 30949,
+          "durationMs": 55440,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Create a Server Action that toggles a user's notification preference (on/off). After to…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 86389,
+          "durationMs": 451,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 87232,
+          "durationMs": 232,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 30710,
+          "durationMs": 56754,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 87935,
+          "durationMs": 7233,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 614,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 3 files",
+          "startOffsetMs": 95168,
+          "durationMs": 614,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 95168,
+              "durationMs": 284,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 746
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 407
+    }
+  ],
+  "locator": "@1j9m92w6",
+  "startedAt": "2026-07-18T09:45:59.859Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

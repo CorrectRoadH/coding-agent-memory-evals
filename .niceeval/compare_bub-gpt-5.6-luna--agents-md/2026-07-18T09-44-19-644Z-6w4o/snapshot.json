@@ -1,0 +1,47 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/bub-gpt-5.6-luna--agents-md",
+  "experiment": {
+    "description": "bub · gpt-5.6-luna(tape on) · AGENTS.md",
+    "flags": {
+      "memory": "agents-md"
+    },
+    "labels": {
+      "line": "bub"
+    },
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "budget": 15,
+    "selectedEvalIds": [
+      "memory/agent-029-use-cache-directive",
+      "memory/agent-030-app-router-migration-hard",
+      "memory/agent-033-forbidden-auth",
+      "memory/agent-035-connection-dynamic",
+      "memory/agent-037-updatetag-cache",
+      "memory/agent-038-refresh-settings",
+      "memory/agent-039-indirect-proxy",
+      "memory/agent-042-enable-ppr",
+      "memory/terminal-cancel-async-tasks",
+      "memory/terminal-swe-bench-astropy-1",
+      "memory/terminal-swe-bench-astropy-2"
+    ],
+    "evalFilterFingerprint": "2512344f010b590f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-bub:v0.6.1"
+      },
+      "fingerprint": "32f4d1a3ef7968f0"
+    }
+  },
+  "agent": "bub",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-18T09:42:45.609Z",
+  "completedAt": "2026-07-18T10:29:55.757Z"
+}

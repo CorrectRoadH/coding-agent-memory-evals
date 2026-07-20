@@ -1,0 +1,398 @@
+{
+  "id": "memory/agent-042-enable-ppr",
+  "description": "next-evals agent-042: enable PPR via cacheComponents: true (Next.js 16), not the old experimental.ppr flag",
+  "verdict": "failed",
+  "fingerprint": "8d17b71adbdef962a6afeb5919072a00791e86d293861329ddc9c4e3c5f78103",
+  "attempt": 0,
+  "durationMs": 95082,
+  "assertions": [
+    {
+      "name": "isDefined(next.config.ts readable)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config.ts enables PPR via cacheComponents"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 19,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/cacheComponents\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config.ts enables PPR via cacheComponents"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 20,
+        "column": 9
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /cacheComponents\\s*:\\s*true/",
+      "received": "import type { NextConfig } from 'next'\n\nconst nextConfig: NextConfig = {\n  experimental: {\n    ppr: 'incremental',\n  },\n}\n\nexport default nextConfig\n"
+    },
+    {
+      "name": "excludes(/ppr\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT use the old experimental.ppr flag"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 28,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-042-enable-ppr.eval.ts",
+        "line": 31,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…acheComponents`. The Partial Prerendering feature is still available, but is now enabled via `cacheComponents`. Please update your next.config.ts accordingly.]\"\noutput tail:\n> build\n> next build\n\n\n\n> Build error occurred\n[Error: `experimental.ppr` has been merged into `cacheComponents`. The Partial Prerendering feature is still available, but is now enabled via `cacheComponents`. Please update your next.config.ts accordingly.]",
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 95819,
+    "outputTokens": 20392,
+    "cacheReadTokens": 639744,
+    "requests": 28,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.020915703200000003,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "itkyhf6dihdjappy7xh9o"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2116
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 3248,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2117,
+          "durationMs": 3248,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2117,
+              "durationMs": 262,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2379,
+              "durationMs": 1223,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 3602,
+              "durationMs": 262,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 3864,
+              "durationMs": 265,
+              "command": {
+                "display": "nmem config client set url 'https://improve-agenda-behavioral-annex.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4129,
+              "durationMs": 262,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_hW5U3QenkQfkXwx3Gpfxp9SNGrdr-CAU3en-XdD2ZWEInNQ27_oRuwfKohevsK2F'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4391,
+              "durationMs": 974,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 325,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5366,
+          "durationMs": 324,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 9390,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 5691,
+          "durationMs": 250,
+          "command": {
+            "display": "command -v claude >/dev/null 2>&1 || npm install -g @anthropic-ai/claude-code@2.1.207",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 5942,
+          "durationMs": 4860,
+          "command": {
+            "display": "claude plugin marketplace add 'nowledge-co/community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 10803,
+          "durationMs": 652,
+          "command": {
+            "display": "claude plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 11455,
+          "durationMs": 2416,
+          "command": {
+            "display": "claude plugin install 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 13871,
+          "durationMs": 757,
+          "command": {
+            "display": "claude plugin list --json",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 78704,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 15298,
+          "durationMs": 28565,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 43863,
+          "durationMs": 350,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "claude",
+          "startOffsetMs": 44213,
+          "durationMs": 46760,
+          "command": {
+            "display": "claude --print --dangerously-skip-permissions --model deepseek-v4-flash Enable partial pre-rendering for this app.",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "node",
+          "startOffsetMs": 90973,
+          "durationMs": 414,
+          "command": {
+            "display": "node -e 'const fs=require(\"fs\"),p=require(\"path\");let best=null;const walk=(d)=>{let es;try{es=fs.readdirSync(d,{withFileTypes:true})}catch{return}for(const e …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 91615,
+          "durationMs": 483,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 43863,
+          "durationMs": 48235,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 92748,
+          "durationMs": 1035,
+          "failed": true,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 487,
+      "children": [
+        {
+          "id": "n21",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 4 files",
+          "startOffsetMs": 93784,
+          "durationMs": 486,
+          "children": [
+            {
+              "id": "n22",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 93784,
+              "durationMs": 256,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 810
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 973
+    }
+  ],
+  "locator": "@1fnbdibh",
+  "startedAt": "2026-07-18T10:12:44.780Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

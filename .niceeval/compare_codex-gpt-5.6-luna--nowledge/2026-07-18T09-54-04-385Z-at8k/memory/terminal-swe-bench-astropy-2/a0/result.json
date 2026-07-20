@@ -1,0 +1,118 @@
+{
+  "id": "memory/terminal-swe-bench-astropy-2",
+  "description": "terminal-bench swe-bench-astropy-2: make ascii.qdp reader accept lower-case QDP commands (real SWE-bench astropy issue)",
+  "verdict": "errored",
+  "fingerprint": "1fc7fc4f48d54fcd8e12827b7821ab9e2d89dd8c7a60e7fb3a08f08473f5e5b0",
+  "attempt": 0,
+  "durationMs": 6414,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "[nowledge] server probe(https://minute-italiano-gardening-adapters.trycloudflare.com;挂了重跑 scripts/nowledge-mem.sh up) failed (exit 1): error: /health returned 502: error code: 502",
+    "phase": "sandbox.setup",
+    "stack": "Error: [nowledge] server probe(https://minute-italiano-gardening-adapters.trycloudflare.com;挂了重跑 scripts/nowledge-mem.sh up) failed (exit 1): error: /health returned 502: error code: 502\n    at requireCommand (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/nowledge.ts:109:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/nowledge.ts:189:9)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:586:29)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2368
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 4046,
+      "failed": true,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2368,
+          "durationMs": 4046,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2368,
+              "durationMs": 198,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2566,
+              "durationMs": 2783,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 5349,
+              "durationMs": 195,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5544,
+              "durationMs": 193,
+              "command": {
+                "display": "nmem config client set url 'https://minute-italiano-gardening-adapters.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5737,
+              "durationMs": 193,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_VJDB1skdD3JB7RdEBYNpd6v-h5uSCKN92tL46hW58kXS0j4gefz_l0ruW7WZiXIm'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5930,
+              "durationMs": 484,
+              "failed": true,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 1
+              }
+            }
+          ],
+          "failed": true
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 448
+    }
+  ],
+  "locator": "@1lgplucz",
+  "startedAt": "2026-07-18T09:54:59.731Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

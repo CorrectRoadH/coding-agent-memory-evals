@@ -1,0 +1,30 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "errored",
+  "fingerprint": "da6cdf992434c8c88b892582caa9a47021d49737499eadc49b8ea92cf5c6632c",
+  "attempt": 0,
+  "durationMs": 5744,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "2: [unknown] fetch failed",
+    "phase": "sandbox.create",
+    "stack": "SandboxError: 2: [unknown] fetch failed\n    at handleRpcError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:109:12)\n    at handleRpcErrorWithHealthCheck (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:142:10)\n    at Commands.start (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:485:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Commands.run (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/index.ts:421:18)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:100:7)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:46:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:126:40)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5744
+    }
+  ],
+  "locator": "@1yrcps12",
+  "startedAt": "2026-07-18T09:27:46.121Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

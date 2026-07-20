@@ -1,0 +1,118 @@
+{
+  "id": "memory/agent-030-app-router-migration-hard",
+  "description": "next-evals agent-030: migrate a complex Pages Router app to App Router",
+  "verdict": "errored",
+  "fingerprint": "e901d038221ccdb486a6159703c53cddb24aeef54141e3c0bbbac61e9b75aeef",
+  "attempt": 0,
+  "durationMs": 5890,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "[nowledge] server probe(https://minute-italiano-gardening-adapters.trycloudflare.com;挂了重跑 scripts/nowledge-mem.sh up) failed (exit 1): error: /health returned 502: error code: 502",
+    "phase": "sandbox.setup",
+    "stack": "Error: [nowledge] server probe(https://minute-italiano-gardening-adapters.trycloudflare.com;挂了重跑 scripts/nowledge-mem.sh up) failed (exit 1): error: /health returned 502: error code: 502\n    at requireCommand (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/nowledge.ts:109:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/Users/ctrdh/Code/coding-agent-memory-evals/experiments/shared/nowledge.ts:189:9)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:586:29)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1774
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 4115,
+      "failed": true,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1774,
+          "durationMs": 4115,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1774,
+              "durationMs": 200,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1975,
+              "durationMs": 2620,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 4595,
+              "durationMs": 301,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 4896,
+              "durationMs": 196,
+              "command": {
+                "display": "nmem config client set url 'https://minute-italiano-gardening-adapters.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5092,
+              "durationMs": 211,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_VJDB1skdD3JB7RdEBYNpd6v-h5uSCKN92tL46hW58kXS0j4gefz_l0ruW7WZiXIm'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5303,
+              "durationMs": 586,
+              "failed": true,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 1
+              }
+            }
+          ],
+          "failed": true
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 465
+    }
+  ],
+  "locator": "@1km1jz2k",
+  "startedAt": "2026-07-18T09:54:04.387Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

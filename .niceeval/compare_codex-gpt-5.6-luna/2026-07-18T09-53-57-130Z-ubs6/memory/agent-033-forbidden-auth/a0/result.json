@@ -1,0 +1,383 @@
+{
+  "id": "memory/agent-033-forbidden-auth",
+  "description": "next-evals agent-033: 403 admin gate via forbidden() from next/navigation with authInterrupts and a forbidden.tsx boundary",
+  "verdict": "passed",
+  "fingerprint": "a2d0e18b956b0cc6f4b0f4b6b3f5dbf7e4866aaf5c33c0d2f8266bb0246e0160",
+  "attempt": 0,
+  "durationMs": 162418,
+  "assertions": [
+    {
+      "name": "isDefined(next.config.ts readable)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 23,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/authInterrupts\\s*:\\s*true/)",
+      "severity": "gate",
+      "groupPath": [
+        "next.config enables authInterrupts"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 24,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isDefined(app/admin/page.tsx exists)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 29,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/import.*forbidden.*from\\s+['\"]next\\/navigation['\"]/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 30,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/forbidden\\s*\\(\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 31,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/admin|role/i)",
+      "severity": "gate",
+      "groupPath": [
+        "Admin page calls forbidden() from next/navigation on role check"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 32,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(forbidden.tsx boundary exists)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 36,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/export\\s+default\\s+function/)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 38,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "includes(/403|Forbidden|unauthorized|access/i)",
+      "severity": "gate",
+      "groupPath": [
+        "forbidden.tsx error boundary exists with proper UI"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 39,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "excludes(/redirect\\s*\\(\\s*['\"]\\/(login|unauthorized)['\"]\\s*\\)/)",
+      "severity": "gate",
+      "groupPath": [
+        "Does NOT redirect for authorization failures"
+      ],
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 43,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/memory/agent-033-forbidden-auth.eval.ts",
+        "line": 46,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "npm run build"
+    }
+  ],
+  "usage": {
+    "inputTokens": 367595,
+    "outputTokens": 3340,
+    "cacheReadTokens": 335616,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.4211966,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "i0lwbhncwaizrpbtjzw40"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5848
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 9469,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5849,
+          "durationMs": 9469,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 6056,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 15318,
+          "durationMs": 2037,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 17355,
+          "durationMs": 3809,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrq6t7da_g1xb1n'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 217,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 21374,
+          "durationMs": 216,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 139218,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 21804,
+          "durationMs": 16797,
+          "command": {
+            "display": "npm install --no-audit --no-fund",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 38602,
+          "durationMs": 227,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 38830,
+          "durationMs": 113362,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Create an admin page at /admin that checks …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 152211,
+          "durationMs": 227,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 38602,
+          "durationMs": 113836,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 152950,
+          "durationMs": 7858,
+          "command": {
+            "display": "npm run build",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 490,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 5 files",
+          "startOffsetMs": 160809,
+          "durationMs": 490,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 160809,
+              "durationMs": 278,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 2
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1117
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 494
+    }
+  ],
+  "locator": "@1ja9oc17",
+  "startedAt": "2026-07-18T09:51:16.675Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}
