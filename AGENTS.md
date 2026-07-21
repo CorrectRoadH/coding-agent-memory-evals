@@ -4,7 +4,11 @@ This repo is a benchmark suite for coding-agent memory conditions. The core rule
 
 总是使用中文回复与讨论
 
-## Git 工作流：直接在 main 上开发
+## 工作方式约定记在这里
+
+**工作方式 / 流程偏好一律记录在本文件（AGENTS.md，CLAUDE.md 是它的符号链接），不散落在个人 memory。** 个人 memory 只放调试 know-how、项目状态、上游候选等（见下方「记录问题与 Know-How 的规范」）；「我该怎么协作」这类约定放这里，保证换 agent / 换会话都能读到。
+
+### Git 工作流：直接在 main 上开发
 
 本仓库**直接在 `main` 分支上提交**，不开 feature 分支、不走 PR review 流程。需要提交时直接 commit 到 `main`（这覆盖「在默认分支上先建分支」的通用默认行为）。push 仍只在用户明确要求时进行。
 
