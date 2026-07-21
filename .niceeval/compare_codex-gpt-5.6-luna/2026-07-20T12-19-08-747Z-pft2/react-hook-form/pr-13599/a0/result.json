@@ -1,0 +1,236 @@
+{
+  "id": "react-hook-form/pr-13599",
+  "description": "react-hook-form pr-13599: stale out-of-order _setValid() calls can overwrite a newer, correct isValid/isValidating result (real react-hook-form issue)",
+  "verdict": "errored",
+  "fingerprint": "f285067900cd5c058980eff8b1d12b05aab24120b8782407607901162033bc20",
+  "attempt": 0,
+  "durationMs": 203882,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: stream disconnected before completion: Concurrency limit exceeded for user, please retry later · output tail: Reading additional input from stdin...",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "inn9tvvgoxogmyj1yi0er"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1386
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 295,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1387,
+          "durationMs": 295,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 638,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 1682,
+          "durationMs": 215,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 1898,
+          "durationMs": 219,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt75hsn_feq9fk'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 219,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2320,
+          "durationMs": 219,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 200145,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 2540,
+          "durationMs": 2732,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5272,
+          "durationMs": 8353,
+          "command": {
+            "display": "npm install -g pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 13626,
+          "durationMs": 422,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 14048,
+          "durationMs": 188398,
+          "failed": true,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 202448,
+          "durationMs": 235,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 13626,
+          "durationMs": 189057,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 452,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 0 files",
+          "startOffsetMs": 202684,
+          "durationMs": 452,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 202684,
+              "durationMs": 249,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 746
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 425
+    }
+  ],
+  "locator": "@1up9vgl1",
+  "startedAt": "2026-07-20T12:24:24.046Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

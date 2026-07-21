@@ -1,0 +1,254 @@
+{
+  "id": "react-datepicker/pr-6073",
+  "description": "react-datepicker pr-6073: in range mode across multiple months, the in-selecting-range hover highlight is wrongly applied to filler day cells that belong to an adjacent month; a cell must only join the selecting-range highlight when it actually belongs to the month its grid represents (real react-datepicker issue)",
+  "verdict": "passed",
+  "fingerprint": "6592f4f862a10dfb6a22c6dc43a340c2bebd7bc8c2f90c799156f43fde7ca358",
+  "attempt": 4,
+  "durationMs": 327429,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-datepicker/pr-6073.eval.ts",
+        "line": 91,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 689025,
+    "outputTokens": 3795,
+    "cacheReadTokens": 629504,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.7747454,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iok2x1mcu5xkucyiz0vlf"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1522
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 330,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1523,
+          "durationMs": 330,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 620,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 1853,
+          "durationMs": 218,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2071,
+          "durationMs": 215,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mru5xipo_2pmn9p'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 209,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2473,
+          "durationMs": 209,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 323341,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 2683,
+          "durationMs": 5764,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rdp-clone\nmv .rdp-clone/.git .git\nrm -rf .rdp-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 8447,
+          "durationMs": 19437,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 27886,
+          "durationMs": 302,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 28189,
+          "durationMs": 290414,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 318604,
+          "durationMs": 201,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 27886,
+          "durationMs": 290919,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 318995,
+          "durationMs": 7028,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 475,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 326024,
+          "durationMs": 474,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 326024,
+              "durationMs": 242,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 931
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 385
+    }
+  ],
+  "locator": "@1kg8r1u7",
+  "startedAt": "2026-07-21T04:37:58.373Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

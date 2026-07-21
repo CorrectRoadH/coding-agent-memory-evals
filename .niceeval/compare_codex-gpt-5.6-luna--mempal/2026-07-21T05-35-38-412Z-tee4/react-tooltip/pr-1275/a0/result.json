@@ -1,0 +1,410 @@
+{
+  "id": "react-tooltip/pr-1275",
+  "description": "react-tooltip pr-1275: with openOnClick, clicking an anchor whose own click handler calls stopPropagation() fails to open the tooltip, because the library listens for clicks at the document level during the bubbling phase; clicking the anchor must open the tooltip even when propagation is stopped (real react-tooltip issue)",
+  "verdict": "passed",
+  "fingerprint": "2bba581a9f396cf458c291fcf1768c236cdfa71c99c96e2afd7f5416232b6c28",
+  "attempt": 0,
+  "durationMs": 149781,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-tooltip/pr-1275.eval.ts",
+        "line": 97,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 155864,
+    "outputTokens": 1907,
+    "cacheReadTokens": 134656,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.1807716,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "imz1knxtvu3dbx9ad0o0k"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5328
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 9388,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 5329,
+          "durationMs": 9387,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 5329,
+              "durationMs": 1257,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 6586,
+              "durationMs": 2373,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 9254,
+              "durationMs": 1367,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_f0ef0581-7567-4cc3-b3c3-761f65c7d85d.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 10622,
+              "durationMs": 2451,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_f0ef0581-7567-4cc3-b3c3-761f65c7d85d.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 13074,
+              "durationMs": 1642,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 8413,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 14717,
+          "durationMs": 8412,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 12103,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 23130,
+          "durationMs": 1478,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 24609,
+          "durationMs": 3442,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mru6sz2y_4lgux4'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 28264,
+          "durationMs": 1322,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 29796,
+          "durationMs": 3451,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_p82nc3'\n\n## Skills\n\nSkill files are installed in `.agents/skills/`:\n\n- mempal-memory: .agents/skills/mempal-memory/SKILL.md\n…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 33247,
+          "durationMs": 1561,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 1795,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 35233,
+          "durationMs": 1795,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 111276,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 37032,
+          "durationMs": 4698,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/ReactTooltip/react-tooltip.git .rt-clone\nmv .rt-clone/.git .git\nrm -rf .rt-clone\ngi…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 41730,
+          "durationMs": 22604,
+          "command": {
+            "display": "npm install -g yarn@1.22.22 && yarn install --ignore-scripts --ignore-engines",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 64337,
+          "durationMs": 8102,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 72439,
+          "durationMs": 63159,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 135602,
+          "durationMs": 8701,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 64337,
+          "durationMs": 79966,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 144517,
+          "durationMs": 3786,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 564,
+      "children": [
+        {
+          "id": "n21",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 148304,
+          "durationMs": 563,
+          "children": [
+            {
+              "id": "n22",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 148304,
+              "durationMs": 351,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 912
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1156,
+      "children": [
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 149782,
+          "durationMs": 227,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 150009,
+          "durationMs": 226,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 150235,
+          "durationMs": 245,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_bc8b84c2-cbe0-4b26-8f9e-4334cd9856e5.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n26",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 150708,
+          "durationMs": 225,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_bc8b84c2-cbe0-4b26-8f9e-4334cd9856e5.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 487
+    }
+  ],
+  "locator": "@18zonr9q",
+  "startedAt": "2026-07-21T05:02:03.385Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna--mempal/2026-07-21T04-48-30-425Z-eush/react-tooltip/pr-1275/a0"
+}

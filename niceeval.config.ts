@@ -13,5 +13,5 @@ export default defineConfig({
   // (真正的低并发元凶是 run.ts 的调度 bug,不是这个数字本身;2026-07-11 已在本地
   // niceeval checkout 修掉该 bug——如果 19 仍然撞 RateLimitError,先怀疑 headroom 不够
   // 而不是怀疑调度逻辑又回归)。
-  maxConcurrency: 19,
+  maxConcurrency: 10,
 });

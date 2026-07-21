@@ -1,0 +1,30 @@
+{
+  "id": "react-hook-form/pr-13599",
+  "description": "react-hook-form pr-13599: stale out-of-order _setValid() calls can overwrite a newer, correct isValid/isValidating result (real react-hook-form issue)",
+  "verdict": "errored",
+  "fingerprint": "059bb669a34e71ac77bb435f5c2e90089178d0a08efedff65827bb0b3442909f",
+  "attempt": 0,
+  "durationMs": 251,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "404: template 'memory-evals-codex-mempal-5dbc2b042525-0-9-0' not found",
+    "phase": "sandbox.create",
+    "stack": "SandboxError: 404: template 'memory-evals-codex-mempal-5dbc2b042525-0-9-0' not found\n    at handleApiError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/index.ts:62:10)\n    at Function.createSandbox (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1184:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Function.create (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:128:9)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:46:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:126:40)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 251
+    }
+  ],
+  "locator": "@1ufye4qh",
+  "startedAt": "2026-07-20T12:33:38.652Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

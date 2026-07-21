@@ -1,0 +1,391 @@
+{
+  "id": "downshift/pr-1456",
+  "description": "downshift pr-1456: fix character-key type-ahead search to treat Space as a normal search character and to correctly advance through repeated-key matches (real downshift issue)",
+  "verdict": "errored",
+  "fingerprint": "604f0109c614444cff1d5ca0eea1309d9e4d73e1700588f8913a9fb51c7c7f52",
+  "attempt": 0,
+  "durationMs": 361395,
+  "assertions": [],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: stream disconnected before completion: Concurrency limit exceeded for user, please retry later · output tail: Reading additional input from stdin...",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "im3cdkydvr9hquuupu986"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3196
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 2001,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 3197,
+          "durationMs": 2001,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 3197,
+              "durationMs": 216,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 3413,
+              "durationMs": 241,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 3928,
+              "durationMs": 783,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_d2749c06-7887-4ae7-9a3e-532275c4628e.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 4711,
+              "durationMs": 244,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_d2749c06-7887-4ae7-9a3e-532275c4628e.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 4955,
+              "durationMs": 243,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 438,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5198,
+          "durationMs": 438,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 2085,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 5636,
+          "durationMs": 240,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 5876,
+          "durationMs": 249,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt6seqm_dptn8d'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 6351,
+          "durationMs": 253,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 6812,
+          "durationMs": 240,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_p3yqd6'\n\n## Skills\n\nSkill files are installed in `.agents/skills/`:\n\n- mempal-memory: .agents/skills/mempal-memory/SKILL.md\n…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 7052,
+          "durationMs": 240,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 245,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7721,
+          "durationMs": 244,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 352052,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 7966,
+          "durationMs": 2615,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/downshift-js/downshift.git .downshift-clone\nmv .downshift-clone/.git .git\nrm -rf .d…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 10581,
+          "durationMs": 74735,
+          "command": {
+            "display": "set -euo pipefail\nCYPRESS_INSTALL_BINARY=0 npm install\nnpm install --save-dev @babel/plugin-proposal-private-property-in-object@7.21.11 @babel/plugin-proposal-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 85317,
+          "durationMs": 303,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 85620,
+          "durationMs": 274144,
+          "failed": true,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 359764,
+          "durationMs": 253,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 85317,
+          "durationMs": 274700,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 487,
+      "children": [
+        {
+          "id": "n20",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 0 files",
+          "startOffsetMs": 360018,
+          "durationMs": 486,
+          "children": [
+            {
+              "id": "n21",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 360018,
+              "durationMs": 277,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 890
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1270,
+      "children": [
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 361395,
+          "durationMs": 243,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 361638,
+          "durationMs": 242,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 361880,
+          "durationMs": 260,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_e0fd86e3-6aea-41c6-8363-c1d8ece3bb4d.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 362417,
+          "durationMs": 245,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_e0fd86e3-6aea-41c6-8363-c1d8ece3bb4d.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 472
+    }
+  ],
+  "locator": "@1mp2ye7d",
+  "startedAt": "2026-07-20T12:14:09.578Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

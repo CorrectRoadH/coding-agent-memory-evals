@@ -1,0 +1,136 @@
+{
+  "id": "react-datepicker/pr-6206",
+  "description": "react-datepicker PR #6206: fix DatePicker's day-click / input-display / selectsMultiple all going off-by-one-day when the explicit timeZone prop differs from the local timezone (real GitHub issue #6193)",
+  "verdict": "errored",
+  "fingerprint": "3350040fdd359a728f8d91535afe118b893e303986c78166db08a73a4aeaf224",
+  "attempt": 0,
+  "durationMs": 1200041,
+  "assertions": [],
+  "error": {
+    "code": "timeout",
+    "message": "attempt timed out (1200000ms)",
+    "phase": "agent.run",
+    "stack": "Recent progress:\n  · tool: file change · completed\n  · tool: file change\n  · tool: file change · completed\n  · tool: file change\n  · tool: file change · completed\n  · tool: /bin/bash -lc 'rg -n \"safeDateRangeFormat|safeMultipleDatesFormat|DATE_RANGE_SEPARATOR|formatIn…\n  · tool: /bin/bash -lc 'rg -n \"safeDateRangeFormat|safeMultipleDatesFormat|DATE_RANGE_SEPARATOR|formatIn… · completed\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand'\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand' · completed\n  · tool: file change\n  · tool: file change · completed\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand'\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand' · completed\n  · tool: file change\n  · tool: file change · completed\n  · assistant: The first focused run caught type issues rather than behavioral failures. I’ve corrected the fo…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand'\n  · tool: /bin/bash -lc 'node_modules/.bin/jest src/test/timezone_test.test.tsx --runInBand' · completed\n  · tool: file change\n  · tool: file change · completed"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1639
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 379,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1640,
+          "durationMs": 379,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 723,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2019,
+          "durationMs": 243,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2262,
+          "durationMs": 255,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt7045m_dch8ve'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 247,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2742,
+          "durationMs": 247,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 1197052,
+      "failed": true,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 2990,
+          "durationMs": 6007,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rdp-clone\nmv .rdp-clone/.git .git\nrm -rf .rdp-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 8997,
+          "durationMs": 17721,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 26721,
+          "durationMs": 859,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 1658
+    }
+  ],
+  "locator": "@15fwfqr5",
+  "startedAt": "2026-07-20T12:20:12.724Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

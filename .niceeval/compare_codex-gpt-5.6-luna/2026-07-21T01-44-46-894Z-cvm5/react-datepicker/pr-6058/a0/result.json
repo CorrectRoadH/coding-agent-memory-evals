@@ -1,0 +1,258 @@
+{
+  "id": "react-datepicker/pr-6058",
+  "description": "react-datepicker pr-6058: changeMonth from a custom header doesn't reset monthSelectedIn back to the first panel with monthsShown=2 (real react-datepicker issue)",
+  "verdict": "failed",
+  "fingerprint": "588dc2c637dad0362563348e8a491965bbeb5c42781debd0f12b09c42b1ee999",
+  "attempt": 0,
+  "durationMs": 609284,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-datepicker/pr-6058.eval.ts",
+        "line": 83,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…et month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".\"\noutput tail:\nFAIL src/test/calendar_test.test.tsx\n  ● Test suite failed to run\n\n    \u001b[96msrc/test/calendar_test.test.tsx\u001b[0m:\u001b[93m1017\u001b[0m:\u001b[93m9\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2353: \u001b[0mObject literal may only specify known properties, and 'onMonthSelectedInChange' does not exist in type 'Partial<Pick<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\">> & (Omit<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\" | \"showMonthYearDropdown\"> & (({ ...; } & Pick<...>) | ({ ...; } & ... 2 more ... & Pick<...>)))'.\n\n    \u001b[7m1017\u001b[0m         onMonthSelectedInChange: onMonthSelectedInChangeSpy,\n    \u001b[7m    \u001b[0m \u001b[91m        ~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\nFAIL src/test/datepicker_test.test.tsx (6.251 s)\n  ● DatePicker › should reset monthSelectedIn to 0 when changeMonth is called from custom header\n\n    expect(received).toEqual(expected) // deep equality\n\n    Expected: 0\n    Received: 1\n\n      2948 |\n      2949 |     // monthSelectedIn should be reset to 0\n    > 2950 |     expect(instance!.state.monthSelectedIn).toEqual(0);\n           |                                             ^\n      2951 |   });\n      2952 |\n      2953 |   it(\"should show the popper arrow when showPopperArrow is true\", () => {\n\n      at Object.<anonymous> (src/test/datepicker_test.test.tsx:2950:45)\n\nTest Suites: 2 failed, 2 total\nTests:       1 failed, 301 skipped, 302 total\nSnapshots:   0 total\nTime:        11.958 s\nRan all test suites matching src/test/calendar_test.test.tsx|src/test/datepicker_test.test.tsx with tests matching \"should display the target month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 953926,
+    "outputTokens": 6984,
+    "cacheReadTokens": 884736,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 1.0843036000000001,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ifxhtl3tqpdw2d332u8cq"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1910
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 322,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1911,
+          "durationMs": 321,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 623,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2232,
+          "durationMs": 215,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2447,
+          "durationMs": 219,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt8crej_1xy0s5'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 217,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2855,
+          "durationMs": 217,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 603701,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3079,
+          "durationMs": 5902,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rd-clone\nmv .rd-clone/.git .git\nrm -rf .rd-clone\ng…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 8981,
+          "durationMs": 19896,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 28878,
+          "durationMs": 301,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 29179,
+          "durationMs": 563933,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 593114,
+          "durationMs": 231,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 28878,
+          "durationMs": 564467,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 594147,
+          "durationMs": 12625,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 594,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 606773,
+          "durationMs": 594,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 606773,
+              "durationMs": 265,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1917
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 454
+    }
+  ],
+  "locator": "@15w0flx2",
+  "startedAt": "2026-07-20T12:58:02.156Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna/2026-07-20T13-01-58-984Z-2hrb/react-datepicker/pr-6058/a0"
+}

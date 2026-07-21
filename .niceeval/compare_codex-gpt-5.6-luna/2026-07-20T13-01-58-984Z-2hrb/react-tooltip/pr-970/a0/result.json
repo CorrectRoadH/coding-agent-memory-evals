@@ -1,0 +1,257 @@
+{
+  "id": "react-tooltip/pr-970",
+  "description": "react-tooltip pr-970: expose the tooltip's actual computed placement so consumers can target it with placement-specific CSS (real react-tooltip feature request)",
+  "verdict": "failed",
+  "fingerprint": "f82c8142b68d8874441cd82fac3db79c2a85bd5c77c44c71fc592fc47f2d24fb",
+  "attempt": 0,
+  "durationMs": 378862,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-tooltip/pr-970.eval.ts",
+        "line": 110,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"… 1 failed, 1 total Tests: 2 failed, 3 passed, 5 total Snapshots: 0 total Time: 3.799 s, estimated 6 s Ran all test suites matching /src\\/test\\/utils.spec.js/i.\"\noutput tail:\n----------------------|---------|----------|---------|---------|-------------------\nFile                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s \n----------------------|---------|----------|---------|---------|-------------------\nAll files             |     100 |       75 |     100 |     100 |                   \n compute-positions.ts |     100 |    66.66 |     100 |     100 | 38-50             \n debounce.ts          |     100 |      100 |     100 |     100 |                   \n----------------------|---------|----------|---------|---------|-------------------\n\nFAIL src/test/utils.spec.js\n  compute positions\n    ✕ empty reference elements (6 ms)\n    ✕ empty tooltip reference element (2 ms)\n    ✓ empty tooltip arrow reference element (39 ms)\n    ✓ all reference elements (14 ms)\n  debounce\n    ✓ execute just once (2 ms)\n\n  ● compute positions › empty reference elements\n\n    expect(received).toEqual(expected) // deep equality\n\n    - Expected  - 1\n    + Received  + 0\n\n      Object {\n    -   \"place\": \"top\",\n        \"tooltipArrowStyles\": Object {},\n        \"tooltipStyles\": Object {},\n      }\n\n      13 |     })\n      14 |\n    > 15 |     expect(value).toEqual({ tooltipStyles: {}, tooltipArrowStyles: {}, place: 'top' })\n         |                   ^\n      16 |   })\n      17 |\n      18 |   test('empty tooltip reference element', async () => {\n\n      at Object.<anonymous> (src/test/utils.spec.js:15:19)\n\n  ● compute positions › empty tooltip reference element\n\n    expect(received).toEqual(expected) // deep equality\n\n    - Expected  - 1\n    + Received  + 0\n\n      Object {\n    -   \"place\": \"top\",\n        \"tooltipArrowStyles\": Object {},\n        \"tooltipStyles\": Object {},\n      }\n\n      24 |     })\n      25 |\n    > 26 |     expect(value).toEqual({ tooltipStyles: {}, tooltipArrowStyles: {}, place: 'top' })\n         |                   ^\n      27 |   })\n      28 |\n      29 |   test('empty tooltip arrow reference element', async () => {\n\n      at Object.<anonymous> (src/test/utils.spec.js:26:19)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 3 passed, 5 total\nSnapshots:   0 total\nTime:        3.799 s, estimated 6 s\nRan all test suites matching /src\\/test\\/utils.spec.js/i.",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 644635,
+    "outputTokens": 6963,
+    "cacheReadTokens": 593152,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.7457282,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ius68ryx4v81jgxhqvar3"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1888
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 347,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1888,
+          "durationMs": 347,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 638,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2235,
+          "durationMs": 216,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2451,
+          "durationMs": 235,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt8jguh_2n9wox'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 217,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 2873,
+          "durationMs": 217,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 373453,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3091,
+          "durationMs": 1792,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/ReactTooltip/react-tooltip.git .rt-clone\nmv .rt-clone/.git .git\nrm -rf .rt-clone\ngi…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 4883,
+          "durationMs": 29241,
+          "command": {
+            "display": "npm install -g yarn@1.22.22 && yarn install --ignore-scripts --ignore-engines",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 34129,
+          "durationMs": 311,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 34440,
+          "durationMs": 335035,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 369478,
+          "durationMs": 233,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 34129,
+          "durationMs": 335582,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 369923,
+          "durationMs": 6619,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 480,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 3 files",
+          "startOffsetMs": 376543,
+          "durationMs": 480,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 376543,
+              "durationMs": 260,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1838
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 436
+    }
+  ],
+  "locator": "@16m49t73",
+  "startedAt": "2026-07-20T13:03:15.062Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

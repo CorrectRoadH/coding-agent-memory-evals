@@ -1,0 +1,30 @@
+{
+  "id": "react-tooltip/pr-1275",
+  "description": "react-tooltip pr-1275: with openOnClick, clicking an anchor whose own click handler calls stopPropagation() fails to open the tooltip, because the library listens for clicks at the document level during the bubbling phase; clicking the anchor must open the tooltip even when propagation is stopped (real react-tooltip issue)",
+  "verdict": "errored",
+  "fingerprint": "2bba581a9f396cf458c291fcf1768c236cdfa71c99c96e2afd7f5416232b6c28",
+  "attempt": 0,
+  "durationMs": 60977,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "The operation was aborted due to timeout",
+    "phase": "sandbox.create",
+    "stack": "TimeoutError: The operation was aborted due to timeout\n    at new DOMException (node:internal/per_context/domexception:76:18)\n    at Timeout._onTimeout (node:internal/abort_controller:155:9)\n    at listOnTimeout (node:internal/timers:588:17)\n    at process.processTimers (node:internal/timers:523:7)\n    at /Users/ctrdh/Code/niceeval/node_modules/.pnpm/undici@7.28.0/node_modules/undici/index.js:157:7\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/inflight.ts:73:14)\n    at async coreFetch (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openapi-fetch@0.14.1/node_modules/openapi-fetch/src/index.js:162:20)\n    at async Filesystem2.write (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/filesystem/index.ts:753:19)\n    at async E2BSandbox.writeFiles (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:205:5)\n    at async withSandboxIoRetry (/Users/ctrdh/Code/niceeval/src/sandbox/io-retry.ts:36:14)\n    at async makeInSandboxReceiver (/Users/ctrdh/Code/niceeval/src/o11y/otlp/sandbox-receiver.ts:76:3)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 60976
+    }
+  ],
+  "locator": "@12l91qhz",
+  "startedAt": "2026-07-21T03:05:35.535Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

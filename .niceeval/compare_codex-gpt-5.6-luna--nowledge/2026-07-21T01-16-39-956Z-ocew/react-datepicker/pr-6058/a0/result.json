@@ -1,0 +1,494 @@
+{
+  "id": "react-datepicker/pr-6058",
+  "description": "react-datepicker pr-6058: changeMonth from a custom header doesn't reset monthSelectedIn back to the first panel with monthsShown=2 (real react-datepicker issue)",
+  "verdict": "failed",
+  "fingerprint": "7ba854427f120891a4bfd300a1e9460671c524e0d9406c796a0da18bf405dd71",
+  "attempt": 0,
+  "durationMs": 427134,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-datepicker/pr-6058.eval.ts",
+        "line": 83,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…et month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".\"\noutput tail:\nFAIL src/test/datepicker_test.test.tsx (7.415 s)\n  ● DatePicker › should reset monthSelectedIn to 0 when changeMonth is called from custom header\n\n    expect(received).toEqual(expected) // deep equality\n\n    Expected: 1\n    Received: 0\n\n      2939 |     // Click a day in the second month to set monthSelectedIn to 1\n      2940 |     fireEvent.click(dayButtonsInSecondMonth![10]!);\n    > 2941 |     expect(instance!.state.monthSelectedIn).toEqual(1);\n           |                                             ^\n      2942 |\n      2943 |     // Now call changeMonth from the custom header\n      2944 |     expect(changeMonthFn).toBeTruthy();\n\n      at Object.<anonymous> (src/test/datepicker_test.test.tsx:2941:45)\n\nFAIL src/test/calendar_test.test.tsx\n  ● Test suite failed to run\n\n    \u001b[96msrc/test/calendar_test.test.tsx\u001b[0m:\u001b[93m1017\u001b[0m:\u001b[93m9\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2353: \u001b[0mObject literal may only specify known properties, and 'onMonthSelectedInChange' does not exist in type 'Partial<Pick<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\">> & (Omit<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\" | \"showMonthYearDropdown\"> & (({ ...; } & Pick<...>) | ({ ...; } & ... 2 more ... & Pick<...>)))'.\n\n    \u001b[7m1017\u001b[0m         onMonthSelectedInChange: onMonthSelectedInChangeSpy,\n    \u001b[7m    \u001b[0m \u001b[91m        ~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\nTest Suites: 2 failed, 2 total\nTests:       1 failed, 301 skipped, 302 total\nSnapshots:   0 total\nTime:        9.857 s, estimated 15 s\nRan all test suites matching src/test/calendar_test.test.tsx|src/test/datepicker_test.test.tsx with tests matching \"should display the target month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 2143963,
+    "outputTokens": 9530,
+    "cacheReadTokens": 2044928,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 2.4056357999999998,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "imokqb2bdb8913h92ln2v"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1707
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 4461,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 1707,
+          "durationMs": 4461,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1707,
+              "durationMs": 224,
+              "command": {
+                "display": "command -v python3",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 1931,
+              "durationMs": 2884,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || uv tool install nmem-cli >/dev/null 2>&1 || pip install --user -q nmem-cli",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 4816,
+              "durationMs": 224,
+              "command": {
+                "display": "command -v nmem >/dev/null 2>&1 || { nmem_bin=\"$HOME/.local/bin/nmem\"; test -x \"$nmem_bin\" && { sudo -n ln -sf \"$nmem_bin\" /usr/local/bin/nmem 2>/dev/null || l…",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5040,
+              "durationMs": 234,
+              "command": {
+                "display": "nmem config client set url 'https://floating-housewives-delays-remaining.trycloudflare.com'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5274,
+              "durationMs": 232,
+              "command": {
+                "display": "nmem config client set api-key 'nmem_nB_zrGxsoRloqeCq4PxvuS65lxMMrDrbR2BjJw4w7Iryg_Rba_87FXS_Vf-3xc0G'",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n7",
+              "kind": "command",
+              "label": "nmem",
+              "startOffsetMs": 5506,
+              "durationMs": 662,
+              "command": {
+                "display": "nmem --json status",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 365,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6168,
+          "durationMs": 365,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 7287,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 6533,
+          "durationMs": 223,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 6761,
+          "durationMs": 238,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt96ixd_7owygp'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 7222,
+          "durationMs": 229,
+          "command": {
+            "display": "printf '\\n' >> ~/.codex/config.toml && cat /tmp/niceeval-native-config-mrt96j3z-3yb0jq >> ~/.codex/config.toml && printf '\\n' >> ~/.codex/config.toml && rm -f …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7451,
+          "durationMs": 230,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'NICEEVAL_PROVIDER_EOF'\n\n[model_providers.s2a]\nname = \"s2a\"\nbase_url = \"https://x1api.top/v1\"\nenv_key = \"CODEX_API_KEY\"\nwire_api …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 7683,
+          "durationMs": 228,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'MCPEOF'\n\n[mcp_servers.nowledge-mem]\nurl = \"https://floating-housewives-delays-remaining.trycloudflare.com/mcp/\"\n[mcp_servers.now…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 7912,
+          "durationMs": 2488,
+          "command": {
+            "display": "codex plugin marketplace add 'nowledge-co/community' --sparse '.agents' --sparse 'nowledge-mem-codex-plugin'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 10401,
+          "durationMs": 319,
+          "command": {
+            "display": "codex plugin marketplace list --json",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 10721,
+          "durationMs": 288,
+          "command": {
+            "display": "codex plugin add 'nowledge-mem@nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 11009,
+          "durationMs": 280,
+          "command": {
+            "display": "codex plugin list --json --marketplace 'nowledge-community'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "find",
+          "startOffsetMs": 11511,
+          "durationMs": 233,
+          "command": {
+            "display": "find \"${CODEX_HOME:-$HOME/.codex}\" -type f -name install_hooks.py -path \"*nowledge-mem*\" 2>/dev/null | head -1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "python3",
+          "startOffsetMs": 11745,
+          "durationMs": 353,
+          "command": {
+            "display": "python3 '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 12098,
+          "durationMs": 237,
+          "command": {
+            "display": "cat \"$(dirname \"$(dirname '/home/user/.codex/.tmp/marketplaces/nowledge-community/nowledge-mem-codex-plugin/scripts/install_hooks.py')\")/AGENTS.md\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 12555,
+          "durationMs": 241,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_mvszcz'\n# Nowledge Mem for Codex\n\nYou have access to the user's knowledge through the installed plugin skills, the `nmem` CL…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 12796,
+          "durationMs": 224,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 13020,
+          "durationMs": 222,
+          "command": {
+            "display": "test -f \"${CODEX_HOME:-$HOME/.codex}/hooks.json\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "grep",
+          "startOffsetMs": 13242,
+          "durationMs": 304,
+          "command": {
+            "display": "grep -q \"mcp_servers.nowledge-mem\" \"${CODEX_HOME:-$HOME/.codex}/config.toml\"",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 229,
+      "children": [
+        {
+          "id": "n25",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 13820,
+          "durationMs": 229,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 410869,
+      "children": [
+        {
+          "id": "n26",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 14050,
+          "durationMs": 5735,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rd-clone\nmv .rd-clone/.git .git\nrm -rf .rd-clone\ng…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n27",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 19785,
+          "durationMs": 19108,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n28",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 38893,
+          "durationMs": 314,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n29",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 39208,
+          "durationMs": 374021,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n30",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 413234,
+          "durationMs": 249,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n31",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 38893,
+          "durationMs": 374590,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n32",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 414393,
+          "durationMs": 10523,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 537,
+      "children": [
+        {
+          "id": "n33",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 2 files",
+          "startOffsetMs": 424918,
+          "durationMs": 536,
+          "children": [
+            {
+              "id": "n34",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 424918,
+              "durationMs": 275,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1678
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 439
+    }
+  ],
+  "locator": "@1i1ni99m",
+  "startedAt": "2026-07-20T13:21:06.536Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna--nowledge/2026-07-20T12-53-25-046Z-cabp/react-datepicker/pr-6058/a0"
+}

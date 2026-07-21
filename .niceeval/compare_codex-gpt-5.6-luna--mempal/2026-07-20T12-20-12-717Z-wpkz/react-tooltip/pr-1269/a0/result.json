@@ -1,0 +1,30 @@
+{
+  "id": "react-tooltip/pr-1269",
+  "description": "react-tooltip pr-1269: keep a clickable tooltip open while the pointer moves from the anchor onto the tooltip body itself (real react-tooltip issue)",
+  "verdict": "errored",
+  "fingerprint": "1a35a61463da83aee658d983b06f6b67c847b155dfbe669a34cf27d52494d9cd",
+  "attempt": 0,
+  "durationMs": 207,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "404: template 'memory-evals-codex-mempal-5dbc2b042525-0-9-0' not found",
+    "phase": "sandbox.create",
+    "stack": "SandboxError: 404: template 'memory-evals-codex-mempal-5dbc2b042525-0-9-0' not found\n    at handleApiError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/index.ts:62:10)\n    at Function.createSandbox (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1184:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Function.create (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:128:9)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:46:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:126:40)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 207
+    }
+  ],
+  "locator": "@15795d7m",
+  "startedAt": "2026-07-20T12:33:39.117Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

@@ -1,0 +1,276 @@
+{
+  "id": "yet-another-react-lightbox/pr-408",
+  "description": "yet-another-react-lightbox pr-408: let the Zoom plugin opt custom slide types into zoom via supports/maxZoom props (real yet-another-react-lightbox issue)",
+  "verdict": "passed",
+  "fingerprint": "a4e6d2afea8ee27b8dbd8d5ed2f91c8ffe2030451038793e607f9d559c7be31d",
+  "attempt": 0,
+  "durationMs": 837251,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/yet-another-react-lightbox/pr-408.eval.ts",
+        "line": 153,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "usage": {
+    "inputTokens": 1435886,
+    "outputTokens": 10201,
+    "cacheReadTokens": 1274112,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 1.6245032,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ideiqfg13fv9j5ma2oqd0"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1954
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 397,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1954,
+          "durationMs": 397,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 671,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2351,
+          "durationMs": 240,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2591,
+          "durationMs": 244,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt8kalz_3jn3gg'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 238,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3022,
+          "durationMs": 238,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 804076,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3262,
+          "durationMs": 1225,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/igordanchenko/yet-another-react-lightbox.git .yarl-clone\nmv .yarl-clone/.git .git\nr…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 4487,
+          "durationMs": 4741,
+          "command": {
+            "display": "set -euo pipefail\nnpm install -g n@10.2.0\nn 22.13.0",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 9228,
+          "durationMs": 283,
+          "command": {
+            "display": "set -euo pipefail\nMAJOR=$(node -p \"process.versions.node.split('.')[0]\")\nMINOR=$(node -p \"process.versions.node.split('.')[1]\")\nif [ \"$MAJOR\" -lt 22 ] || { [ \"…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 9511,
+          "durationMs": 7935,
+          "command": {
+            "display": "npm install",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 17448,
+          "durationMs": 281,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 17730,
+          "durationMs": 777901,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 795633,
+          "durationMs": 3800,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 17448,
+          "durationMs": 781986,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 803945,
+          "durationMs": 3391,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 7653,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 6 files",
+          "startOffsetMs": 807336,
+          "durationMs": 7653,
+          "children": [
+            {
+              "id": "n15",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 807336,
+              "durationMs": 5807,
+              "command": {
+                "display": "set -eu\nD=/tmp/.niceeval-ledger-export\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"se…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 22261
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 3751
+    }
+  ],
+  "locator": "@10e4hrki",
+  "startedAt": "2026-07-20T13:03:53.496Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

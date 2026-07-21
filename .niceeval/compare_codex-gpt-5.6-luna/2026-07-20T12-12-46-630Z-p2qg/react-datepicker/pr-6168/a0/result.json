@@ -1,0 +1,30 @@
+{
+  "id": "react-datepicker/pr-6168",
+  "description": "react-datepicker pr-6168: calendar dialog must opt out of browser auto-translation so Safari's translate feature doesn't corrupt it (real react-datepicker issue)",
+  "verdict": "errored",
+  "fingerprint": "35641fdcadee8e979df93e8eefaed42dc015f31d225e7db843b19ba3c3802564",
+  "attempt": 0,
+  "durationMs": 7933,
+  "assertions": [],
+  "error": {
+    "code": "unexpected-error",
+    "message": "Rate limit exceeded, please try again later - you have reached the maximum number of concurrent E2B sandboxes (20). If you need more, please visit 'https://e2b.dev/docs/billing'",
+    "phase": "sandbox.create",
+    "stack": "RateLimitError: Rate limit exceeded, please try again later - you have reached the maximum number of concurrent E2B sandboxes (20). If you need more, please visit 'https://e2b.dev/docs/billing'\n    at handleApiError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/api/index.ts:55:14)\n    at Function.createSandbox (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/sandboxApi.ts:1184:17)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async Function.create (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/index.ts:306:25)\n    at async Function.create (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:128:9)\n    at async withProvisionRetry (/Users/ctrdh/Code/niceeval/src/sandbox/retry.ts:46:14)\n    at async <anonymous> (/Users/ctrdh/Code/niceeval/src/sandbox/resolve.ts:126:40)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 7948
+    }
+  ],
+  "locator": "@1zgwgz0b",
+  "startedAt": "2026-07-20T12:12:38.680Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

@@ -1,0 +1,42 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/codex-gpt-5.6-luna",
+  "experiment": {
+    "description": "codex · gpt-5.6-luna",
+    "flags": {
+      "memory": "baseline"
+    },
+    "labels": {
+      "line": "codex"
+    },
+    "runs": 5,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "budget": 15,
+    "selectedEvalIds": [
+      "downshift/pr-1414",
+      "react-datepicker/pr-6073",
+      "react-hook-form/pr-13579",
+      "react-hook-form/pr-13594",
+      "react-tooltip/pr-1275",
+      "react-tooltip/pr-1278"
+    ],
+    "evalFilterFingerprint": "550ebbf8d4981a2f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-codex:v0.6.1"
+      },
+      "fingerprint": "a9a1ccbf6199944d"
+    }
+  },
+  "agent": "codex",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-21T04:26:26.225Z",
+  "completedAt": "2026-07-21T04:43:26.234Z"
+}

@@ -1,0 +1,158 @@
+{
+  "id": "yet-another-react-lightbox/pr-408",
+  "description": "yet-another-react-lightbox pr-408: let the Zoom plugin opt custom slide types into zoom via supports/maxZoom props (real yet-another-react-lightbox issue)",
+  "verdict": "errored",
+  "fingerprint": "a4e6d2afea8ee27b8dbd8d5ed2f91c8ffe2030451038793e607f9d559c7be31d",
+  "attempt": 0,
+  "durationMs": 1200026,
+  "assertions": [],
+  "error": {
+    "code": "timeout",
+    "message": "attempt timed out (1200000ms)",
+    "phase": "agent.run",
+    "stack": "Recent progress:\n  · tool: /bin/bash -lc 'npx tsc --noEmit'\n  · tool: /bin/bash -lc 'npx tsc --noEmit' · completed\n  · tool: /bin/bash -lc 'npx vitest run test/unit/plugins/Zoom.spec.ts'\n  · tool: /bin/bash -lc 'npx vitest run test/unit/plugins/Zoom.spec.ts' · completed\n  · tool: /bin/bash -lc 'npm run build:js'\n  · tool: /bin/bash -lc 'npm run build:js' · completed\n  · assistant: The focused runtime test passes, and the production build caught one strict typing issue in the…\n  · tool: file change\n  · tool: file change · completed\n  · tool: /bin/bash -lc \"rg -n \\\"CLASS_SLIDE_WRAPPER\\\" src/consts.ts src && sed -n '1,80p' src/plugins/zo…\n  · tool: /bin/bash -lc \"rg -n \\\"CLASS_SLIDE_WRAPPER\\\" src/consts.ts src && sed -n '1,80p' src/plugins/zo… · completed\n  · tool: file change\n  · tool: file change · completed\n  · tool: /bin/bash -lc 'git diff -- src/plugins/zoom/index.ts src/plugins/zoom/props.ts src/plugins/zoom…\n  · tool: /bin/bash -lc 'git diff -- src/plugins/zoom/index.ts src/plugins/zoom/props.ts src/plugins/zoom… · completed\n  · tool: /bin/bash -lc 'npm run build:js'\n  · tool: /bin/bash -lc 'npm run build:js' · completed\n  · assistant: The production bundle now compiles cleanly. I’m adding regression coverage using the existing v…\n  · tool: file change\n  · tool: file change · completed"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6113
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 8286,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6113,
+          "durationMs": 8286,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 5572,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 14399,
+          "durationMs": 1718,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 16117,
+          "durationMs": 3650,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrt7ghsf_ef3mn2'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 3141,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 19971,
+          "durationMs": 3141,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 1176914,
+      "failed": true,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 23113,
+          "durationMs": 4646,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/igordanchenko/yet-another-react-lightbox.git .yarl-clone\nmv .yarl-clone/.git .git\nr…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 27759,
+          "durationMs": 5992,
+          "command": {
+            "display": "set -euo pipefail\nnpm install -g n@10.2.0\nn 22.13.0",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 33751,
+          "durationMs": 3097,
+          "command": {
+            "display": "set -euo pipefail\nMAJOR=$(node -p \"process.versions.node.split('.')[0]\")\nMINOR=$(node -p \"process.versions.node.split('.')[1]\")\nif [ \"$MAJOR\" -lt 22 ] || { [ \"…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 36848,
+          "durationMs": 10641,
+          "command": {
+            "display": "npm install",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 47489,
+          "durationMs": 8230,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 467
+    }
+  ],
+  "locator": "@1rfn6o49",
+  "startedAt": "2026-07-20T12:32:43.034Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}
