@@ -1,0 +1,1 @@
+[{"type":"message","role":"user","text":"Explain briefly why retries need a jitter, and mention the risk of not having one.","loc":{"file":"evals/_smoke-rubric/rubric.eval.ts","line":8,"column":13}},{"type":"message","role":"assistant","text":"Jitter randomizes retry delays; without it, clients retry in lockstep causing a thundering herd on the server."}]

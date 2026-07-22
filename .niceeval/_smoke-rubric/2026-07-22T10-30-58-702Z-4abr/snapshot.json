@@ -1,0 +1,22 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 8,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "_smoke-rubric",
+  "experiment": {
+    "description": "smoke: rubric-style points scoring with real judge call",
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 600000,
+    "selectedEvalIds": [
+      "_smoke-rubric/rubric"
+    ],
+    "evalFilterFingerprint": "f8d076aa187e665d"
+  },
+  "agent": "smoke-fake-agent",
+  "startedAt": "2026-07-22T10:30:53.314Z",
+  "completedAt": "2026-07-22T10:30:58.708Z"
+}

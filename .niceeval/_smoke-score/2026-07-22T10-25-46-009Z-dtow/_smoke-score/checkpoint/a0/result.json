@@ -1,0 +1,99 @@
+{
+  "id": "_smoke-score/checkpoint",
+  "description": "smoke: checkpoint-style points scoring",
+  "verdict": "passed",
+  "fingerprint": "9807091911113c7cf399bae92b57099738bf3ad24ffcedadecc3518ce25dac61",
+  "attempt": 0,
+  "durationMs": 11,
+  "assertions": [
+    {
+      "name": "calledTool(search)",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/_smoke-score/checkpoint.eval.ts",
+        "line": 9,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "received": "search [completed]\n  input: {\"q\":\"x\"}\n  output: {\"ok\":true}",
+      "points": 2
+    },
+    {
+      "name": "includes(\"done\")",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/_smoke-score/checkpoint.eval.ts",
+        "line": 10,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "points": 3
+    }
+  ],
+  "scoring": "points",
+  "scoreEntries": [
+    {
+      "label": "bonus",
+      "points": 1,
+      "loc": {
+        "file": "evals/_smoke-score/checkpoint.eval.ts",
+        "line": 11,
+        "column": 7
+      }
+    }
+  ],
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "requests": 0
+  },
+  "coverage": {
+    "events": {
+      "status": "unknown"
+    },
+    "actions": {
+      "status": "unknown"
+    },
+    "messages": {
+      "status": "unknown"
+    },
+    "usage": {
+      "status": "unknown"
+    },
+    "status": {
+      "status": "unknown"
+    },
+    "data": {
+      "status": "unknown"
+    }
+  },
+  "phases": [
+    {
+      "name": "eval.run",
+      "durationMs": 9,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 10,
+          "durationMs": 0,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    }
+  ],
+  "locator": "@1u0ob6m7",
+  "startedAt": "2026-07-22T10:25:45.994Z",
+  "hasEvents": true,
+  "hasTrace": false,
+  "hasSources": true
+}
