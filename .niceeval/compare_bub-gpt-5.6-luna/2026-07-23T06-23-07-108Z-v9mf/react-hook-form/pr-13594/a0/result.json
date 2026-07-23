@@ -1,0 +1,264 @@
+{
+  "id": "react-hook-form/pr-13594",
+  "description": "react-hook-form pr-13594: on a disabled form, setValue(..., { shouldDirty: true }) must still mark the field and form dirty (an explicit programmatic dirty request), while ordinary interaction on a disabled form stays non-dirty (real react-hook-form issue #13592)",
+  "verdict": "failed",
+  "fingerprint": "0c0fcd020dbfbfa276eb66a3b99ef5330e29528498029cc0c03fb69cfe7f37e3",
+  "attempt": 0,
+  "durationMs": 405171,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-hook-form/pr-13594.eval.ts",
+        "line": 93,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…otal Tests: 2 failed, 35 passed, 37 total Snapshots: 0 total Time: 1.45 s, estimated 2 s Ran all test suites matching src/__tests__/useForm/formState.test.tsx.\"\noutput tail:\n    ✓ should recompute isDirty after toggling disabled (8 ms)\n    ✓ should prevent dirty from updating when the form is disabled (6 ms)\n    ✕ should mark field and form as dirty with setValue shouldDirty when the form is disabled (3 ms)\n    ✕ should clear dirty state when setValue restores the default value on a disabled form (2 ms)\n    ✓ should return updated value with NaN data type (8 ms)\n    ✓ should only trigger validation on blur (12 ms)\n    ✓ should report isDirty as false on mount when defaultValues contain numeric string keys (issue #13346) (4 ms)\n    ✓ should not update valid with onBlur mode (5 ms)\n    ✓ should produce a new errors reference on each mutation so memoized child components re-render (19 ms)\n    isValid\n      ✓ should return isValid correctly with resolver (86 ms)\n      ✓ should return true for onBlur mode by default (14 ms)\n      ✓ should return true for onChange mode by default (11 ms)\n      ✓ should return true for all mode by default (9 ms)\n      ✓ should return false when default value is not valid value (6 ms)\n      ✓ should return false when custom register with validation (4 ms)\n      ✓ should update valid when toggle Controller (64 ms)\n      ✓ should set isValid to true after async values provide valid data (12 ms)\n    when using with reset API\n      ✓ should render isValid as true with reset at useEffect with valid data (10 ms)\n      ✓ should render isValid as false with reset at useEffect with valid data (8 ms)\n    when defaultValue supplied\n      ✓ should update isValid to true for validation with inline defaultValue (8 ms)\n      ✓ should update isValid to true for Controller validation (7 ms)\n    when delay config is set\n      ✓ should only show error after 500ms with register (10 ms)\n      ✓ should only show error after 500ms with Controller (9 ms)\n      ✓ should prevent error from showing once input is validated (9 ms)\n      when delayError is provided\n        ✓ should only show error after 500ms with register and render formState instantly (18 ms)\n        ✓ should delay, show immediately, or cancel error via setValue depending on delayError option (11 ms)\n        ✓ should show error immediately when form-level delayError is not configured (5 ms)\n\n  ● formState › should mark field and form as dirty with setValue shouldDirty when the form is disabled\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: true\n    Received: false\n\n      900 |\n      901 |     expect(result.current.getFieldState('test').isDirty).toBe(true);\n    > 902 |     expect(result.current.formState.isDirty).toBe(true);\n          |                                              ^\n      903 |     expect(result.current.formState.dirtyFields).toEqual({ test: true });\n      904 |   });\n      905 |\n\n      at toBe (src/__tests__/useForm/formState.test.tsx:902:46)\n\n  ● formState › should clear dirty state when setValue restores the default value on a disabled form\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: true\n    Received: false\n\n      922 |     });\n      923 |\n    > 924 |     expect(result.current.formState.isDirty).toBe(true);\n          |                                              ^\n      925 |\n      926 |     act(() => {\n      927 |       result.current.setValue('test', 'a', { shouldDirty: true });\n\n      at toBe (src/__tests__/useForm/formState.test.tsx:924:46)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 35 passed, 37 total\nSnapshots:   0 total\nTime:        1.45 s, estimated 2 s\nRan all test suites matching src/__tests__/useForm/formState.test.tsx.",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 524234,
+    "outputTokens": 7052,
+    "cacheReadTokens": 475136,
+    "requests": 25,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.6140595999999999,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iu7syrll065docohe46bv"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1390
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 292,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1390,
+          "durationMs": 292,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1060,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 1682,
+          "durationMs": 195,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 1877,
+          "durationMs": 198,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2301,
+          "durationMs": 222,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrx4l5rg_9095bu'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 401124,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 2742,
+          "durationMs": 2742,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 5484,
+          "durationMs": 8445,
+          "command": {
+            "display": "npm install -g pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 13931,
+          "durationMs": 687,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 14619,
+          "durationMs": 37302,
+          "failed": true,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Your working directory is a checkout of the real react-hook-form repository at the commit where the …",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 58392,
+          "durationMs": 342657,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Your working directory is a checkout of the real react-hook-form repository at the commit where the …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 401295,
+          "durationMs": 208,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 13932,
+          "durationMs": 387572,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 401777,
+          "durationMs": 2088,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 470,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 403867,
+          "durationMs": 470,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 403866,
+              "durationMs": 229,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 833
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 403
+    }
+  ],
+  "locator": "@1rlb6jj7",
+  "startedAt": "2026-07-23T06:23:40.398Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

@@ -1,0 +1,259 @@
+{
+  "id": "react-hook-form/pr-13512",
+  "description": "react-hook-form pr-13512: with shouldUseNativeValidation, the native setCustomValidity()/reportValidity() call for a multi-ref field (radio group) only ever lands on the first ref, leaving the browser's native validation bubble anchored to a single radio button instead of the whole group (real react-hook-form issue)",
+  "verdict": "failed",
+  "fingerprint": "6891283020d2273275b3e42f84d92a5e76289c7f90fa7b1efafb6f46d085fda6",
+  "attempt": 0,
+  "durationMs": 271403,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-hook-form/pr-13512.eval.ts",
+        "line": 109,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…l Tests: 2 failed, 20 passed, 22 total Snapshots: 0 total Time: 0.869 s, estimated 1 s Ran all test suites matching src/__tests__/logic/validateField.test.tsx.\"\noutput tail:\nFAIL Web src/__tests__/logic/validateField.test.tsx\n  validateField\n    ✓ should return required true when input not filled with required (7 ms)\n    ✓ should return max error (14 ms)\n    ✓ should return min error (3 ms)\n    ✓ should return min and max error for custom input (1 ms)\n    ✓ should return max length error  (1 ms)\n    ✓ should return min length error  (1 ms)\n    ✓ should return pattern error when not matching (3 ms)\n    ✓ should validate for custom validation (2 ms)\n    ✓ should return error message when it is defined (1 ms)\n    ✓ should return result or empty string when validate has error (2 ms)\n    ✓ if undefined returned from validate, no error is reported (1 ms)\n    ✓ should do nothing when validate is not an object nor function (1 ms)\n    ✓ should return all validation errors (2 ms)\n    ✓ should handle pattern with g flag (1 ms)\n    ✓ should return all validation error messages (2 ms)\n    ✓ should validate field array with required attribute\n    with Browser native validation\n      ✓ should invoke setCustomValidity for invalid input (1 ms)\n      ✓ should invoke setCustomValidity for invalid input with its message (1 ms)\n      ✓ should invoke setCustomValidity with empty string for a valid input (1 ms)\n      ✕ should invoke setCustomValidity on all refs for a required radio group (13 ms)\n      ✕ should clear setCustomValidity on all refs for a valid radio group (1 ms)\n      ✓ should abort validation early when input is disabled (1 ms)\n\n  ● validateField › with Browser native validation › should invoke setCustomValidity on all refs for a required radio group\n\n    expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\n    Expected: \"You missed that\"\n\n    Number of calls: 0\n\n      2321 |\n      2322 |       expect(setCustomValidity1).toHaveBeenCalledWith('You missed that');\n    > 2323 |       expect(setCustomValidity2).toHaveBeenCalledWith('You missed that');\n           |                                  ^\n      2324 |       expect(reportValidity).toHaveBeenCalledTimes(1);\n      2325 |     });\n      2326 |\n\n      at toHaveBeenCalledWith (src/__tests__/logic/validateField.test.tsx:2323:34)\n\n  ● validateField › with Browser native validation › should clear setCustomValidity on all refs for a valid radio group\n\n    expect(jest.fn()).toHaveBeenCalledWith(...expected)\n\n    Expected: \"\"\n\n    Number of calls: 0\n\n      2368 |\n      2369 |       expect(setCustomValidity1).toHaveBeenCalledWith('');\n    > 2370 |       expect(setCustomValidity2).toHaveBeenCalledWith('');\n           |                                  ^\n      2371 |       expect(reportValidity).toHaveBeenCalledTimes(1);\n      2372 |     });\n      2373 |\n\n      at toHaveBeenCalledWith (src/__tests__/logic/validateField.test.tsx:2370:34)\n\nTest Suites: 1 failed, 1 total\nTests:       2 failed, 20 passed, 22 total\nSnapshots:   0 total\nTime:        0.869 s, estimated 1 s\nRan all test suites matching src/__tests__/logic/validateField.test.tsx.",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 182201,
+    "outputTokens": 2096,
+    "cacheReadTokens": 156416,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.2104186,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iuv078bhis0ik5ghn0do3"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1559
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 289,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1560,
+          "durationMs": 289,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1428,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 1849,
+          "durationMs": 219,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2068,
+          "durationMs": 208,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrw7dai2_c7qj3a'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 195,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3277,
+          "durationMs": 195,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 266650,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3472,
+          "durationMs": 2684,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 6156,
+          "durationMs": 7998,
+          "command": {
+            "display": "npm install -g pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 14155,
+          "durationMs": 397,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 14552,
+          "durationMs": 253586,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Your working directory is a checkout of the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 268139,
+          "durationMs": 213,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 14155,
+          "durationMs": 254197,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 268635,
+          "durationMs": 1487,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 427,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 270122,
+          "durationMs": 427,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 270122,
+              "durationMs": 208,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 854
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 418
+    }
+  ],
+  "locator": "@1cxslphl",
+  "startedAt": "2026-07-22T14:53:46.198Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_codex-gpt-5.6-luna/2026-07-22T14-46-27-383Z-6bd1/react-hook-form/pr-13512/a0"
+}

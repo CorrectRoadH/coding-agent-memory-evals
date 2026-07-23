@@ -1,0 +1,31 @@
+{
+  "id": "react-datepicker/pr-6206",
+  "description": "react-datepicker PR #6206: fix DatePicker's day-click / input-display / selectsMultiple all going off-by-one-day when the explicit timeZone prop differs from the local timezone (real GitHub issue #6193)",
+  "verdict": "errored",
+  "fingerprint": "22a339cb8da03c92a5bd02e441f109c630b2150d4024aaad3fff2ce098106da8",
+  "attempt": 0,
+  "durationMs": 5699,
+  "assertions": [],
+  "scoring": "pass",
+  "error": {
+    "code": "unexpected-error",
+    "message": "in-sandbox OTLP collector failed to report its port within 3s. Collector log:\n(empty)",
+    "phase": "sandbox.create",
+    "stack": "Error: in-sandbox OTLP collector failed to report its port within 3s. Collector log:\n(empty)\n    at makeInSandboxReceiver (/Users/ctrdh/Code/niceeval/src/o11y/otlp/sandbox-receiver.ts:91:11)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5699
+    }
+  ],
+  "locator": "@1q1ctxjr",
+  "startedAt": "2026-07-23T06:56:48.579Z",
+  "hasEvents": false,
+  "hasTrace": false,
+  "hasSources": false
+}

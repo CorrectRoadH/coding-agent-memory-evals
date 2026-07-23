@@ -71,11 +71,9 @@ export default defineEval({
       )
       .then((turn) => turn.expectOk());
 
-    const calendarTest = await readFile(fixture("tests/calendar_test.test.tsx"), "utf8");
     const datepickerTest = await readFile(fixture("tests/datepicker_test.test.tsx"), "utf8");
     const runTests = await readFile(fixture("tests/run-tests.sh"), "utf8");
     await t.sandbox.writeFiles({
-      "src/test/calendar_test.test.tsx": calendarTest,
       "src/test/datepicker_test.test.tsx": datepickerTest,
       "tests/run-tests.sh": runTests,
     });

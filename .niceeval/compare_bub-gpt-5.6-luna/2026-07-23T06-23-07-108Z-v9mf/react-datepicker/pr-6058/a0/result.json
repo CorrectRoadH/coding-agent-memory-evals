@@ -1,0 +1,253 @@
+{
+  "id": "react-datepicker/pr-6058",
+  "description": "react-datepicker pr-6058: changeMonth from a custom header doesn't reset monthSelectedIn back to the first panel with monthsShown=2 (real react-datepicker issue)",
+  "verdict": "failed",
+  "fingerprint": "74d04ad6e262ffeb1c19c436454623566eef48c5e850c7f703d1ecc6998682ba",
+  "attempt": 0,
+  "durationMs": 365839,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-datepicker/pr-6058.eval.ts",
+        "line": 83,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…et month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".\"\noutput tail:\nFAIL src/test/datepicker_test.test.tsx (10.389 s)\n  ● DatePicker › should reset monthSelectedIn to 0 when changeMonth is called from custom header\n\n    expect(received).toEqual(expected) // deep equality\n\n    Expected: 0\n    Received: 1\n\n      2948 |\n      2949 |     // monthSelectedIn should be reset to 0\n    > 2950 |     expect(instance!.state.monthSelectedIn).toEqual(0);\n           |                                             ^\n      2951 |   });\n      2952 |\n      2953 |   it(\"should show the popper arrow when showPopperArrow is true\", () => {\n\n      at Object.<anonymous> (src/test/datepicker_test.test.tsx:2950:45)\n\nFAIL src/test/calendar_test.test.tsx\n  ● Test suite failed to run\n\n    \u001b[96msrc/test/calendar_test.test.tsx\u001b[0m:\u001b[93m1017\u001b[0m:\u001b[93m9\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2353: \u001b[0mObject literal may only specify known properties, and 'onMonthSelectedInChange' does not exist in type 'Partial<Pick<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\">> & (Omit<CalendarProps, \"dropdownMode\" | \"onSelect\" | \"dateFormat\" | \"onClickOutside\" | \"showMonthYearDropdown\"> & (({ ...; } & Pick<...>) | ({ ...; } & ... 2 more ... & Pick<...>)))'.\n\n    \u001b[7m1017\u001b[0m         onMonthSelectedInChange: onMonthSelectedInChangeSpy,\n    \u001b[7m    \u001b[0m \u001b[91m        ~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\nTest Suites: 2 failed, 2 total\nTests:       1 failed, 301 skipped, 302 total\nSnapshots:   0 total\nTime:        12.417 s, estimated 17 s\nRan all test suites matching src/test/calendar_test.test.tsx|src/test/datepicker_test.test.tsx with tests matching \"should display the target month in the leftmost position when changeMonth is called with monthsShown|should reset monthSelectedIn to 0 when changeMonth is called from custom header\".",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 413763,
+    "outputTokens": 7662,
+    "cacheReadTokens": 369664,
+    "requests": 23,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.4967014,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "itlacppzbc5q7bdyle1ek"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3187
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 413,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3187,
+          "durationMs": 413,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1066,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3600,
+          "durationMs": 212,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3812,
+          "durationMs": 222,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4218,
+          "durationMs": 227,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrwzuik0_8izoff'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 359458,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 4667,
+          "durationMs": 6000,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rd-clone\nmv .rd-clone/.git .git\nrm -rf .rd-clone\ng…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 10667,
+          "durationMs": 20507,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 31175,
+          "durationMs": 297,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 31472,
+          "durationMs": 318081,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Your working directory is a checkout of the real react-datepicker repository at the commit where the…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 349778,
+          "durationMs": 246,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 31175,
+          "durationMs": 318849,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 350658,
+          "durationMs": 13461,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 462,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 364124,
+          "durationMs": 462,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 364124,
+              "durationMs": 268,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1253
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 450
+    }
+  ],
+  "locator": "@1nfgljcy",
+  "startedAt": "2026-07-23T04:10:56.886Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true,
+  "artifactBase": "compare_bub-gpt-5.6-luna/2026-07-23T04-14-22-193Z-iunc/react-datepicker/pr-6058/a0"
+}

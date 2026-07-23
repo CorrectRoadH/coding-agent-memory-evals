@@ -58,6 +58,34 @@ Use the original benchmark's pass condition wherever possible:
 
 Additional source assertions are fine when they are part of the task's functional requirement. Avoid assertions whose only purpose is proving that an agent remembered a fact.
 
+### 隐藏测试不许断言 prompt 没给过的标识符
+
+直接把上游 PR 的测试搬来当隐藏测试是**默认错误做法**——上游测试是贴着上游实现写的，会连带把私有命名搬进判据。规则：
+
+> **隐藏测试里出现的每一个标识符（CSS 类名、DOM 结构、函数返回的键名、组件 state 字段、新增的 callback prop），要么在 prompt 里写清楚是公开契约，要么就不许出现在断言里。**
+
+区分标准是「库的使用者需不需要知道它」：
+- **是公开契约** → 写进 prompt，理直气壮地断言。例：`react-tooltip__place-<placement>` 类名，consumer 要写 CSS 就必须知道；不写死这个名字功能本身就没意义。
+- **不是** → 改成行为断言。例：内部函数多返回一个键、组件 state 叫什么、新造的 wrapper 节点叫什么。
+
+行为断言的常用替代手法（都在本仓库有现成例子）：
+- 读无障碍标签而不是内部 state：`.react-datepicker__month` 的 `aria-label="Month June, 2024"` 能直接判断哪个面板显示哪个月（pr-6058）
+- 用文档顺序而不是新类名：`compareDocumentPosition` 比较 `__current-month` / `__day-names` / `__month` 的先后，可完整表达 top/middle/bottom（pr-6092）
+- 用公开 prop 驱动内部状态：react-tooltip 的 `middlewares` 是公开 prop，用一个强制 placement 的 floating-ui middleware 就能造出「实际 placement ≠ 请求的 place」，无需 mock 内部模块（pr-970）
+- 给异步实现留出 flush：断言前 `await act(async () => {})`，让 observer / microtask 类实现也能算对，而不是只认同步写法（lightbox commit-5578052）
+
+### 新增或改动隐藏测试后必须做三向验证
+
+只验 RED→GREEN 会漏掉「测试锁死了上游实现」这一类问题——这正是 2026-07-23 那次四道题 100% 失败的成因。三向缺一不可：
+
+1. **RED**：base commit 原样跑隐藏测试 → 必须挂，且**挂的原因要正确**（是功能缺失，不是编译错、找不到文件之类）
+2. **GREEN**：打上游官方修复 → 必须全过
+3. **ALT**：自己写一个**合理但与上游不同**的实现 → 也必须全过
+
+第 3 步是硬性要求。ALT 不用写得漂亮，够用就行：换个类名、换个内部字段名、把上游的新 callback prop 换成组件本地 state。只要 ALT 挂了，就是测试在考实现而不是考功能，回去改测试。
+
+顺带一提，跑 GREEN 时如果上游官方修复自己都过不了某条断言（lightbox 那道就是：官方 fix 解决不了「祖先 dir 属性被改」的场景），说明 prompt 描述的症状和测试考的场景根本不是同一件事，要改的是 prompt。
+
 ## 记录问题与 Know-How 的规范
 
 调试基础设施问题（sandbox 报错、agent 安装失败、eval 超时等）时，发现的具体问题和修法**记入 memory**，不写进本文件。

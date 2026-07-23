@@ -140,22 +140,61 @@ describe("RTL", () => {
     testRTLKeyboardNavigation();
   });
 
-  describe("dynamic dir attribute change", () => {
-    it("updates keyboard navigation when dir changes from ltr to rtl", () => {
+  describe("dir changes after mount", () => {
+    // These assert observable keyboard behaviour only. Any mechanism that makes the
+    // lightbox pick up the current direction is fine; the awaited act() below gives
+    // asynchronous mechanisms (observers, microtask-deferred updates) a chance to
+    // settle before the assertion, so this does not lock in one implementation.
+    const flush = async () => {
+      await act(async () => {
+        await Promise.resolve();
+      });
+    };
+
+    it("switches to RTL navigation when dir changes from ltr to rtl", async () => {
       const spy = mockComputedStyleRTL();
 
       const { rerender } = renderInlineLightbox({ inline: { dir: "ltr" }, index: 1 });
 
-      // LTR: ArrowRight goes next
+      // LTR: ArrowLeft goes to the previous slide
+      expectCurrentImageToBe("image2");
+      pressArrowLeft();
+      expectCurrentImageToBe("image1");
+
+      // back to the middle slide, so the next assertion is not decided by a carousel boundary
       pressArrowRight();
-      expectCurrentImageToBe("image3");
+      expectCurrentImageToBe("image2");
 
-      // switch to RTL
       rerender(lightbox({ slides, carousel: { finite: true }, plugins: [Inline], inline: { dir: "rtl" }, index: 1 }));
+      await flush();
 
-      // RTL: ArrowLeft goes next
+      // RTL: the same key must now go to the NEXT slide
       pressArrowLeft();
       expectCurrentImageToBe("image3");
+
+      spy.mockRestore();
+    });
+
+    it("switches back to LTR navigation when dir changes from rtl to ltr", async () => {
+      const spy = mockComputedStyleRTL();
+
+      const { rerender } = renderInlineLightbox({ inline: { dir: "rtl" }, index: 1 });
+
+      // RTL: ArrowLeft goes to the next slide
+      expectCurrentImageToBe("image2");
+      pressArrowLeft();
+      expectCurrentImageToBe("image3");
+
+      // back to the middle slide
+      pressArrowRight();
+      expectCurrentImageToBe("image2");
+
+      rerender(lightbox({ slides, carousel: { finite: true }, plugins: [Inline], inline: { dir: "ltr" }, index: 1 }));
+      await flush();
+
+      // LTR: the same key must now go back to the PREVIOUS slide
+      pressArrowLeft();
+      expectCurrentImageToBe("image1");
 
       spy.mockRestore();
     });

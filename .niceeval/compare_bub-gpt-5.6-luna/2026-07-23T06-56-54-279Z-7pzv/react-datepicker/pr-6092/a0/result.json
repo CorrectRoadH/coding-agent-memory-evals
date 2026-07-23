@@ -1,0 +1,252 @@
+{
+  "id": "react-datepicker/pr-6092",
+  "description": "react-datepicker PR #6092: add a monthHeaderPosition prop (top/middle/bottom) so the month nav header can render relative to each month's day grid instead of only at the top of the calendar (real react-datepicker feature request)",
+  "verdict": "failed",
+  "fingerprint": "35af043d13cd05619fd164c22d87b437d55fee163b8c29bf5e7d317de242819a",
+  "attempt": 0,
+  "durationMs": 356780,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/react-datepicker/pr-6092.eval.ts",
+        "line": 104,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "exit 0",
+      "received": "exit 1 · \"…s: 1 failed, 1 total Tests: 5 failed, 3 passed, 8 total Snapshots: 0 total Time: 10.436 s Ran all test suites matching src/test/month_header_position.test.tsx.\"\noutput tail:\n    ✕ should render month header for each month when multiple months shown with bottom position (71 ms)\n    ✓ should use top position when monthHeaderPosition is 'top' (22 ms)\n    ✕ should render month header with middle position when navigation buttons might be hidden (23 ms)\n    ✓ should render month header with bottom position when renderCustomHeader is provided (38 ms)\n\n  ● monthHeaderPosition › should render month header in middle position when monthHeaderPosition is 'middle'\n\n    expect(received).not.toBeNull()\n\n    Received: null\n\n      66 |       \".react-datepicker__header-wrapper\",\n      67 |     );\n    > 68 |     expect(headerWrapper).not.toBeNull();\n         |                               ^\n      69 |   });\n      70 |\n      71 |   it(\"should render month header in bottom position when monthHeaderPosition is 'bottom'\", () => {\n\n      at Object.<anonymous> (src/test/month_header_position.test.tsx:68:31)\n\n  ● monthHeaderPosition › should render month header in bottom position when monthHeaderPosition is 'bottom'\n\n    expect(received).not.toBeNull()\n\n    Received: null\n\n      102 |       \".react-datepicker__header-wrapper\",\n      103 |     );\n    > 104 |     expect(headerWrapper).not.toBeNull();\n          |                               ^\n      105 |   });\n      106 |\n      107 |   it(\"should render month header for each month when multiple months shown with middle position\", () => {\n\n      at Object.<anonymous> (src/test/month_header_position.test.tsx:104:31)\n\n  ● monthHeaderPosition › should render month header for each month when multiple months shown with middle position\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 2\n    Received: 0\n\n      121 |       \".react-datepicker__header-wrapper\",\n      122 |     );\n    > 123 |     expect(headerWrappers.length).toBe(2);\n          |                                   ^\n      124 |\n      125 |     const monthHeaders = container.querySelectorAll(\n      126 |       \".react-datepicker__header-wrapper .react-datepicker__header .react-datepicker__current-month\",\n\n      at Object.<anonymous> (src/test/month_header_position.test.tsx:123:35)\n\n  ● monthHeaderPosition › should render month header for each month when multiple months shown with bottom position\n\n    expect(received).toBe(expected) // Object.is equality\n\n    Expected: 2\n    Received: 0\n\n      145 |       \".react-datepicker__header-wrapper\",\n      146 |     );\n    > 147 |     expect(headerWrappers.length).toBe(2);\n          |                                   ^\n      148 |\n      149 |     const monthHeaders = container.querySelectorAll(\n      150 |       \".react-datepicker__header-wrapper .react-datepicker__header .react-datepicker__current-month\",\n\n      at Object.<anonymous> (src/test/month_header_position.test.tsx:147:35)\n\n  ● monthHeaderPosition › should render month header with middle position when navigation buttons might be hidden\n\n    expect(received).not.toBeNull()\n\n    Received: null\n\n      193 |       \".react-datepicker__header-wrapper\",\n      194 |     );\n    > 195 |     expect(headerWrapper).not.toBeNull();\n          |                               ^\n      196 |\n      197 |     const header = container.querySelector(\".react-datepicker__header\");\n      198 |     expect(header).not.toBeNull();\n\n      at Object.<anonymous> (src/test/month_header_position.test.tsx:195:31)\n\nTest Suites: 1 failed, 1 total\nTests:       5 failed, 3 passed, 8 total\nSnapshots:   0 total\nTime:        10.436 s\nRan all test suites matching src/test/month_header_position.test.tsx.",
+      "evidence": "bash tests/run-tests.sh"
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 679838,
+    "outputTokens": 7149,
+    "cacheReadTokens": 561152,
+    "requests": 21,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.7788472,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iujoz9izkos0hddl9t0z5"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2665
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 412,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2666,
+          "durationMs": 412,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1130,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 3078,
+          "durationMs": 216,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 3294,
+          "durationMs": 218,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 3747,
+          "durationMs": 226,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrx5rsys_cowbcf'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 350721,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 4208,
+          "durationMs": 5923,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/Hacker0x01/react-datepicker.git .rdp-clone\nmv .rdp-clone/.git .git\nrm -rf .rdp-clon…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "corepack",
+          "startOffsetMs": 10131,
+          "durationMs": 19561,
+          "command": {
+            "display": "corepack enable && yarn install --immutable",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 29699,
+          "durationMs": 337,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 30037,
+          "durationMs": 313046,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Your working directory is a checkout of the real react-datepicker repository (a React date-picker co…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 343337,
+          "durationMs": 236,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 29700,
+          "durationMs": 313877,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 343788,
+          "durationMs": 11139,
+          "failed": true,
+          "command": {
+            "display": "bash tests/run-tests.sh",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 513,
+      "children": [
+        {
+          "id": "n12",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 4 files",
+          "startOffsetMs": 354930,
+          "durationMs": 513,
+          "children": [
+            {
+              "id": "n13",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 354930,
+              "durationMs": 257,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1336
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 483
+    }
+  ],
+  "locator": "@164pl3t1",
+  "startedAt": "2026-07-23T06:56:48.576Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

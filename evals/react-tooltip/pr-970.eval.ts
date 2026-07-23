@@ -84,14 +84,15 @@ export default defineEval({
           "this actual, final placement internally (it needs it to calculate the inline pixel styles that " +
           "position the tooltip and its arrow), but that computed value is never exposed anywhere a consumer " +
           "could use it -- it's used once to derive coordinates and then discarded.\n\n" +
-          "Add a CSS class to the tooltip's root DOM element that reflects the actual computed placement (for " +
-          "example a class along the lines of `react-tooltip__place-<placement>`, with `<placement>` being " +
-          "`top`, `bottom`, `left`, or `right` -- whatever the tooltip actually resolved to, not necessarily the " +
-          "requested `place` prop), and keep it in sync whenever the tooltip recomputes its position (e.g. across " +
-          "re-renders, anchor changes, or content/size changes). This lets consumers write placement-specific " +
-          "CSS overrides (arrow direction, offsets, etc.) for tooltips that may auto-flip. The class should " +
-          "always be present once the tooltip has computed a position at least once, so it doesn't flash " +
-          "unstyled before the first flip decision.\n\n" +
+          "Add a CSS class to the tooltip's root DOM element that reflects the actual computed placement, and " +
+          "keep it in sync whenever the tooltip recomputes its position (e.g. across re-renders, anchor " +
+          "changes, or content/size changes). This lets consumers write placement-specific CSS overrides " +
+          "(arrow direction, offsets, etc.) for tooltips that may auto-flip -- so the class name itself is part " +
+          "of the public API here and must be exactly `react-tooltip__place-<placement>`, with `<placement>` " +
+          "being `top`, `bottom`, `left`, or `right`: whatever the tooltip actually resolved to, not " +
+          "necessarily the requested `place` prop. Exactly one such class should be on the element at a time " +
+          "(no stale placement classes left behind), and one should already be there the moment the tooltip " +
+          "first renders, so it doesn't flash unstyled before the first flip decision.\n\n" +
           "Environment notes: no root access is needed. Dependencies are already installed via `npm install -g " +
           "yarn@1.22.22 && yarn install --ignore-scripts --ignore-engines`. Run tests with Jest, e.g. `node_modules/.bin/jest " +
           "src/test/utils.spec.js` to scope to the relevant utility tests. The position-computation logic lives " +
@@ -100,10 +101,10 @@ export default defineEval({
       )
       .then((turn) => turn.expectOk());
 
-    const utilsSpec = await readFile(fixture("tests/utils.spec.js"), "utf8");
+    const placeClassSpec = await readFile(fixture("tests/tooltip-place-class.spec.js"), "utf8");
     const runTests = await readFile(fixture("tests/run-tests.sh"), "utf8");
     await t.sandbox.writeFiles({
-      "src/test/utils.spec.js": utilsSpec,
+      "src/test/tooltip-place-class.spec.js": placeClassSpec,
       "tests/run-tests.sh": runTests,
     });
 

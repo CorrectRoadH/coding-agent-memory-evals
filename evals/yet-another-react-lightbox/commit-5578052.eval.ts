@@ -112,11 +112,13 @@ export default defineEval({
           "'next slide'. It detects the direction by reading the computed CSS `direction` of its own root " +
           "element (via `getComputedStyle`). The problem is that this detection only ever runs once, at the " +
           "moment the lightbox's root element is first attached to the DOM — the result is then cached in " +
-          "component state for the lifetime of that mount and never rechecked. So if whatever controls the " +
-          "computed direction changes later — for example an ancestor element's `dir` attribute is toggled from " +
-          "`ltr` to `rtl` at runtime, after the lightbox has already mounted — the lightbox does not notice. It " +
-          "keeps behaving as if the direction were still whatever it detected at mount time (e.g. arrow keys " +
-          "keep working in the old direction's sense) instead of picking up the new, current direction.\n\n" +
+          "component state for the lifetime of that mount and never rechecked. So when the direction changes " +
+          "while the lightbox stays mounted — for example the application re-renders the still-mounted " +
+          "lightbox with a different `dir` on its container, switching it from `ltr` to `rtl` — the lightbox " +
+          "does not notice. It keeps behaving as if the direction were still whatever it detected at mount " +
+          "time (e.g. arrow keys keep working in the old direction's sense) instead of picking up the new, " +
+          "current direction. The direction must stay correct in both directions of change (ltr→rtl and " +
+          "rtl→ltr), for as long as the component remains mounted.\n\n" +
           "Environment notes: dependencies are already installed (Node, npm). You can scope the existing Vitest " +
           "suite to whatever file you're iterating on with `npx vitest run <path-to-file>`. Fix the library " +
           "source; do not just add workarounds in test files.",

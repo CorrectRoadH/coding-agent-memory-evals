@@ -72,9 +72,10 @@ export default defineEval({
           "should default to \"top\", which preserves today's only behavior (header above the grid, shared " +
           "navigation buttons at the top of the whole calendar).\n\n" +
           "When set to \"middle\" or \"bottom\", the navigation header for a month should be moved out of the " +
-          "single, calendar-wide top header area and attached to that month's own container instead — " +
-          "positioned within the day-grid area for \"middle\", or below the day grid for \"bottom\" — rather " +
-          "than living outside/above it. It must remain fully functional in either position: the month/year " +
+          "single, calendar-wide top header area and attached to that month's own container instead — for " +
+          "\"middle\" it should read after that month's row of weekday names but before its rows of days, and " +
+          "for \"bottom\" it should read after its rows of days — rather than living outside/above the grid. " +
+          "It must remain fully functional in either position: the month/year " +
           "(and combined month-year, when in that mode) dropdowns still need to work, previous/next navigation " +
           "still needs to work including correctly disabling near a configured `minDate`/`maxDate`, and a " +
           "caller supplying a custom header via `renderCustomHeader` should still see their custom header " +

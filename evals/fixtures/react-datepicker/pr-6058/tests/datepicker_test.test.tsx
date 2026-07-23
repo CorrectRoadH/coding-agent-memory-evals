@@ -2897,57 +2897,87 @@ describe("DatePicker", () => {
     expect(instance!.state.monthSelectedIn).toEqual(undefined);
   });
 
-  it("should reset monthSelectedIn to 0 when changeMonth is called from custom header", () => {
-    let instance: DatePicker | null = null;
-    let changeMonthFn: ((month: number) => void) | null = null;
-
-    const { container } = render(
-      <DatePicker
-        ref={(node) => {
-          instance = node;
-        }}
-        inline
-        monthsShown={2}
-        selected={newDate("2024-06-15")}
-        renderCustomHeader={({ changeMonth }) => {
-          changeMonthFn = changeMonth;
-          return (
-            <div>
-              <button
-                data-testid="change-month-btn"
-                onClick={() => changeMonth(0)}
-              >
-                Go to January
-              </button>
-            </div>
-          );
-        }}
-      />,
-    );
-
-    expect(instance).toBeTruthy();
-
-    // First, select a day in the second month panel to set monthSelectedIn to 1
-    const dayButtonsInSecondMonth = container
-      .querySelectorAll(".react-datepicker__month-container")[1]
-      ?.querySelectorAll(
-        ".react-datepicker__day:not(.react-datepicker__day--outside-month)",
+  describe("changeMonth from a custom header with multiple months shown", () => {
+    // These assert what a user of the library can observe: which visible panel the
+    // target month is rendered in. `.react-datepicker__month` carries an accessible
+    // "Month <name>, <year>" label, so the panel contents can be read directly from
+    // the DOM without reaching into component internals.
+    const panelMonthLabels = (container: HTMLElement) =>
+      Array.from(
+        container.querySelectorAll(".react-datepicker__month-container"),
+      ).map((panel) =>
+        panel
+          .querySelector(".react-datepicker__month")
+          ?.getAttribute("aria-label"),
       );
-    expect(dayButtonsInSecondMonth).toBeTruthy();
-    expect(dayButtonsInSecondMonth!.length).toBeGreaterThan(0);
 
-    // Click a day in the second month to set monthSelectedIn to 1
-    fireEvent.click(dayButtonsInSecondMonth![10]!);
-    expect(instance!.state.monthSelectedIn).toEqual(1);
+    const renderTwoPanelPicker = () => {
+      let changeMonthFn: ((month: number) => void) | null = null;
 
-    // Now call changeMonth from the custom header
-    expect(changeMonthFn).toBeTruthy();
-    act(() => {
-      changeMonthFn!(0); // Change to January
+      const { container } = render(
+        <DatePicker
+          inline
+          monthsShown={2}
+          selected={newDate("2024-06-15")}
+          renderCustomHeader={({ changeMonth }) => {
+            changeMonthFn = changeMonth;
+            return <div className="custom-header" />;
+          }}
+        />,
+      );
+
+      return { container, getChangeMonth: () => changeMonthFn };
+    };
+
+    const clickDayInSecondPanel = (container: HTMLElement) => {
+      const daysInSecondPanel = container
+        .querySelectorAll(".react-datepicker__month-container")[1]
+        ?.querySelectorAll(
+          ".react-datepicker__day:not(.react-datepicker__day--outside-month)",
+        );
+      expect(daysInSecondPanel?.length).toBeGreaterThan(0);
+      fireEvent.click(daysInSecondPanel![10]!);
+    };
+
+    it("should display the target month in the leftmost panel after a day was selected in the second panel", () => {
+      const { container, getChangeMonth } = renderTwoPanelPicker();
+
+      expect(panelMonthLabels(container)).toEqual([
+        "Month June, 2024",
+        "Month July, 2024",
+      ]);
+
+      // selecting a day in the rightmost panel is what makes the component start
+      // tracking that panel; the bug is that this tracking is never reset
+      clickDayInSecondPanel(container);
+
+      act(() => {
+        getChangeMonth()!(0); // jump to January
+      });
+
+      expect(panelMonthLabels(container)).toEqual([
+        "Month January, 2024",
+        "Month February, 2024",
+      ]);
     });
 
-    // monthSelectedIn should be reset to 0
-    expect(instance!.state.monthSelectedIn).toEqual(0);
+    it("should keep the target month in the leftmost panel on repeated changeMonth calls", () => {
+      const { container, getChangeMonth } = renderTwoPanelPicker();
+
+      clickDayInSecondPanel(container);
+
+      act(() => {
+        getChangeMonth()!(0); // January
+      });
+      act(() => {
+        getChangeMonth()!(8); // September
+      });
+
+      expect(panelMonthLabels(container)).toEqual([
+        "Month September, 2024",
+        "Month October, 2024",
+      ]);
+    });
   });
 
   it("should show the popper arrow when showPopperArrow is true", () => {
