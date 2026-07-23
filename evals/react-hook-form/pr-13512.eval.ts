@@ -68,7 +68,7 @@ export default defineEval({
     // 退出码 1 失败;跳过脚本本地验证过不影响 jest 结果,且顺带跳过不需要的 husky prepare 钩子。
     t.progress({ message: "installing dependencies" });
     const installed = await t.sandbox.runShell(
-      "npm install -g pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+      "npm install -g --prefix /usr/local pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
     );
     if (installed.exitCode !== 0) {
       throw new Error(`pnpm install failed: ${(installed.stderr || installed.stdout).trim().slice(-500)}`);

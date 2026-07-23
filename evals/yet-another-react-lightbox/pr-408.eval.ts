@@ -75,7 +75,7 @@ export default defineEval({
     // npm package, no corepack involved) before installing dependencies.
     t.progress({ message: "installing Node 22.13 runtime (test tooling needs it, sandbox default is older)" });
     const nodeSwapped = await t.sandbox.runShell(
-      ["set -euo pipefail", "npm install -g n@10.2.0", "n 22.13.0"].join("\n"),
+      ["set -euo pipefail", "npm install -g --prefix /usr/local n@10.2.0", "n 22.13.0"].join("\n"),
     );
     if (nodeSwapped.exitCode !== 0) {
       throw new Error(`Node runtime swap failed: ${(nodeSwapped.stderr || nodeSwapped.stdout).trim().slice(-500)}`);

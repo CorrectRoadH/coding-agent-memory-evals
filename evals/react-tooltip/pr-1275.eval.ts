@@ -61,7 +61,7 @@ export default defineEval({
     // postinstall builds (e.g. an old brotli addon) that are not needed to run Jest.
     t.progress({ message: "installing deps (yarn classic v1)" });
     const installed = await t.sandbox.runShell(
-      "npm install -g yarn@1.22.22 && yarn install --ignore-scripts --ignore-engines",
+      "npm install -g --prefix /usr/local yarn@1.22.22 && yarn install --ignore-scripts --ignore-engines",
     );
     if (installed.exitCode !== 0) {
       throw new Error(`yarn install failed: ${(installed.stderr || installed.stdout).trim().slice(-500)}`);

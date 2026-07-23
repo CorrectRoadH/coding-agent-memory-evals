@@ -54,7 +54,7 @@ export default defineEval({
     // 不影响 jest(经 @swc/jest 现场转译)判分。
     t.progress({ message: "installing dependencies" });
     const installed = await t.sandbox.runShell(
-      "npm install -g pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+      "npm install -g --prefix /usr/local pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
     );
     if (installed.exitCode !== 0) {
       throw new Error(`pnpm install failed: ${(installed.stderr || installed.stdout).trim().slice(-500)}`);

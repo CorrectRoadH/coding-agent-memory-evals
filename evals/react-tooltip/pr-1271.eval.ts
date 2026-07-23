@@ -67,7 +67,7 @@ export default defineEval({
     // yarn classic hard-fails the install (not just a warning) without this flag.
     t.progress({ message: "installing deps (yarn classic)" });
     const installed = await t.sandbox.runShell(
-      "npm install -g yarn@1 && yarn install --ignore-scripts --ignore-engines",
+      "npm install -g --prefix /usr/local yarn@1 && yarn install --ignore-scripts --ignore-engines",
     );
     if (installed.exitCode !== 0) {
       throw new Error(`yarn install failed: ${(installed.stderr || installed.stdout).trim().slice(-500)}`);
