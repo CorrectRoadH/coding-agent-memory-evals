@@ -3,7 +3,7 @@ import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
 
-// Chain link 4 of 4 — the cumulative check. Same base commit again; none of the three earlier
+// Chain link 4 of 5 — the cumulative check on argument handling. Same base commit again; none of the three earlier
 // commands exists in this checkout. The prompts state only what is genuinely new (tags
 // can overlap, `--top`), and lean on everything else:
 //

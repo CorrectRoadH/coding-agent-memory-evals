@@ -3,7 +3,7 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
 
-// Chain link 2 of 4. Starts from the same base commit as link 1 — `entry stats` does not
+// Chain link 2 of 5. Starts from the same base commit as link 1 — `entry stats` does not
 // exist in this checkout, so nothing below can be reverse-engineered from the code.
 //
 // Recalled from link 1 (deliberately not restated in the prompts):
@@ -12,7 +12,7 @@ import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } fr
 //   R2  --json with integer `seconds` and `total_seconds`
 //   R4  `(no data)` on stdout + exit 0 for an empty result
 //
-// Established here for links 3 and 4 to recall:
+// Established here for links 3-5 to recall:
 //   R6  new commands default to TODAY when no window is given (report's Monday→today
 //       default is legacy and deliberately not followed)
 //   R7  chronological order, oldest first

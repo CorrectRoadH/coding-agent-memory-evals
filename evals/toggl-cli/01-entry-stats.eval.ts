@@ -3,7 +3,7 @@ import { commandSucceeded, equals } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, type ProbeCase } from "./harness.ts";
 
-// Chain link 1 of 4 — the one that ESTABLISHES the conventions. Nothing here is recalled
+// Chain link 1 of 5 — the one that ESTABLISHES the conventions. Nothing here is recalled
 // from an earlier session, so every condition (memory or not) should be able to pass it;
 // it is the control point of the chain. What matters is that the three turns state, in
 // plain conversation, a set of project-wide rules that are *not* derivable from the
@@ -17,7 +17,7 @@ import { installRustToolchain, prepareRepo, runProbe, type ProbeCase } from "./h
 //   R4  an empty result prints `(no data)` on stdout and exits 0
 //   R5  no new dependencies
 //
-// Links 02-04 start from this same base commit — none of this code is there — and only
+// Links 02-05 start from this same base commit — none of this code is there — and only
 // gesture at these rules ("the way we agreed", "our usual style"). See ./README.md.
 
 const DAY = "2026-03-05";

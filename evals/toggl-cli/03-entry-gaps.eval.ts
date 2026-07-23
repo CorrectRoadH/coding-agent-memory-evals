@@ -3,7 +3,7 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
 
-// Chain link 3 of 4. Same base commit as the others: neither `entry stats` nor
+// Chain link 3 of 5. Same base commit as the others: neither `entry stats` nor
 // `entry daily` exists here.
 //
 // Recalled from links 1-2 (not restated in the prompts):
@@ -13,7 +13,7 @@ import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } fr
 //   R6  no window flags means today (NOT report's Monday→today)
 //   R7  oldest first
 //
-// Established here for link 4 to recall:
+// Established here for link 4 to recall (link 5 uses no numeric arguments):
 //   R8  bad argument values fail with exit code 2, before any API call is made
 
 const DAY = today();
