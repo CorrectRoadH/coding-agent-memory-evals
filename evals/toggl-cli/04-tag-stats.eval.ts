@@ -1,7 +1,7 @@
 import { defineEval } from "niceeval";
 import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
-import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
+import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
 // Chain link 4 of 5 — the cumulative check on argument handling. Same base commit again; none of the three earlier
 // commands exists in this checkout. The prompts state only what is genuinely new (tags
@@ -110,11 +110,13 @@ export default defineEval({
     });
 
     await t.group("compact duration style, recalled", () => {
-      t.check(probe.human.lines, equals(["1h 30m code", "1h 10m deep", "45m (no tag)", "2h 25m Total"]));
+      const lines1 = orderedLines(probe.human, ["1h 30m code", "1h 10m deep", "45m (no tag)", "2h 25m Total"]);
+      t.check(lines1.ok, isTrue(lines1.message));
     });
 
     await t.group("--top cuts rows but not the total", () => {
-      t.check(probe["top-2"].lines, equals(["1h 30m code", "1h 10m deep", "2h 25m Total"]));
+      const lines2 = orderedLines(probe["top-2"], ["1h 30m code", "1h 10m deep", "2h 25m Total"]);
+      t.check(lines2.ok, isTrue(lines2.message));
     });
 
     await t.group("no window flags means today, recalled", () => {
@@ -136,7 +138,8 @@ export default defineEval({
     });
 
     await t.group("empty window prints (no data) and exits 0, recalled", () => {
-      t.check(probe.empty.lines, equals(["(no data)"]));
+      const lines3 = orderedLines(probe.empty, ["(no data)"]);
+      t.check(lines3.ok, isTrue(lines3.message));
       t.check(probe.empty.exit, equals(0));
       t.check(tagSummary(asJson(probe["empty-json"])), equals([]));
       t.check(asJson(probe["empty-json"])?.total_seconds, equals(0));

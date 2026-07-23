@@ -152,6 +152,29 @@ export interface ProbeCase {
 }
 
 /**
+ * Check that `expected` shows up among a case's stdout lines, in order.
+ *
+ * Deliberately a subsequence check rather than an exact match: a title line, a `------`
+ * rule or a `── 2026-07-23 Thursday ──` group header is a perfectly reasonable thing for
+ * an implementation to add, and none of it has anything to do with the conventions these
+ * evals grade. An exact match failed a run whose rendering was completely correct. What
+ * still gets caught: wrong duration rendering, wrong order, missing rows, and a missing
+ * `(no data)` line — because those change the lines themselves, not what surrounds them.
+ */
+export const orderedLines = (probeCase: ProbeCase, expected: string[]) => {
+  let cursor = 0;
+  for (const line of probeCase.lines) {
+    if (line === expected[cursor]) cursor += 1;
+  }
+  return {
+    ok: cursor === expected.length,
+    message:
+      `expected these lines, in this order: ${JSON.stringify(expected)}\n` +
+      `actual stdout lines: ${JSON.stringify(probeCase.lines)}`,
+  };
+};
+
+/**
  * Build the agent's code, run every planned CLI invocation against a throwaway HTTP stub,
  * and hand back what each one did. Assertions stay in the eval file — one per agreed
  * convention — so a failing run shows which convention was missed, not just "tests failed".

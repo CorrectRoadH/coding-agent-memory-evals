@@ -1,7 +1,7 @@
 import { defineEval } from "niceeval";
-import { commandSucceeded, equals } from "niceeval/expect";
+import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
-import { installRustToolchain, prepareRepo, runProbe, type ProbeCase } from "./harness.ts";
+import { installRustToolchain, prepareRepo, runProbe, orderedLines, type ProbeCase } from "./harness.ts";
 
 // Chain link 1 of 5 — the one that ESTABLISHES the conventions. Nothing here is recalled
 // from an earlier session, so every condition (memory or not) should be able to pass it;
@@ -138,7 +138,8 @@ export default defineEval({
     });
 
     await t.group("compact duration style (1h 02m / 45m)", () => {
-      t.check(probe.human.lines, equals(["1h 30m Alpha", "1h 02m Beta", "45m No Project", "3h 17m Total"]));
+      const lines1 = orderedLines(probe.human, ["1h 30m Alpha", "1h 02m Beta", "45m No Project", "3h 17m Total"]);
+      t.check(lines1.ok, isTrue(lines1.message));
     });
 
     await t.group("no new dependencies", () => {
@@ -146,7 +147,8 @@ export default defineEval({
     });
 
     await t.group("empty window prints (no data) and exits 0", () => {
-      t.check(probe.empty.lines, equals(["(no data)"]));
+      const lines2 = orderedLines(probe.empty, ["(no data)"]);
+      t.check(lines2.ok, isTrue(lines2.message));
       t.check(probe.empty.exit, equals(0));
       t.check(asJson(probe["empty-json"]), equals({ groups: [], total_seconds: 0 }));
     });

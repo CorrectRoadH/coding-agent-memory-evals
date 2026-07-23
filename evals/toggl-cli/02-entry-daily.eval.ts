@@ -1,7 +1,7 @@
 import { defineEval } from "niceeval";
 import { equals, isTrue } from "niceeval/expect";
 
-import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
+import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
 // Chain link 2 of 5. Starts from the same base commit as link 1 — `entry stats` does not
 // exist in this checkout, so nothing below can be reverse-engineered from the code.
@@ -123,12 +123,13 @@ export default defineEval({
     });
 
     await t.group("compact duration style, recalled from the entry-stats session", () => {
-      t.check(probe.human.lines, equals([
+      const lines1 = orderedLines(probe.human, [
         "2026-03-03 1h 30m",
         "2026-03-04 45m",
         "2026-03-05 1h 02m",
         "Total 3h 17m",
-      ]));
+      ]);
+      t.check(lines1.ok, isTrue(lines1.message));
     });
 
     await t.group("JSON reports integer seconds under total_seconds, recalled", () => {
@@ -142,11 +143,13 @@ export default defineEval({
         ),
         isTrue(`the CLI should have asked for ${today()}; it asked for ${JSON.stringify(probe["default-window"].requests)}`),
       );
-      t.check(probe["default-window"].lines, equals([`${today()} 10m`, "Total 10m"]));
+      const lines2 = orderedLines(probe["default-window"], [`${today()} 10m`, "Total 10m"]);
+      t.check(lines2.ok, isTrue(lines2.message));
     });
 
     await t.group("empty window prints (no data) and exits 0, recalled", () => {
-      t.check(probe.empty.lines, equals(["(no data)"]));
+      const lines3 = orderedLines(probe.empty, ["(no data)"]);
+      t.check(lines3.ok, isTrue(lines3.message));
       t.check(probe.empty.exit, equals(0));
       t.check(daySummary(asJson(probe["empty-json"])), equals([]));
       t.check(asJson(probe["empty-json"])?.total_seconds, equals(0));

@@ -1,7 +1,7 @@
 import { defineEval } from "niceeval";
 import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
-import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
+import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
 // Chain link 5 of 5 — the longest reach back. Same base commit as every other link, so
 // none of the four earlier commands exists here. The prompts below introduce exactly one
@@ -108,7 +108,8 @@ export default defineEval({
     });
 
     await t.group("compact duration style, recalled", () => {
-      t.check(probe.human.lines, equals(["09:00 1h 15m", "11:00 45m", "14:00 1h 02m", "Total 3h 02m"]));
+      const lines1 = orderedLines(probe.human, ["09:00 1h 15m", "11:00 45m", "14:00 1h 02m", "Total 3h 02m"]);
+      t.check(lines1.ok, isTrue(lines1.message));
     });
 
     await t.group("JSON reports integer seconds under total_seconds, recalled", () => {
@@ -129,7 +130,8 @@ export default defineEval({
     });
 
     await t.group("empty window prints (no data) and exits 0, recalled", () => {
-      t.check(probe.empty.lines, equals(["(no data)"]));
+      const lines2 = orderedLines(probe.empty, ["(no data)"]);
+      t.check(lines2.ok, isTrue(lines2.message));
       t.check(probe.empty.exit, equals(0));
       t.check(hourSummary(asJson(probe["empty-json"])), equals([]));
       t.check(asJson(probe["empty-json"])?.total_seconds, equals(0));

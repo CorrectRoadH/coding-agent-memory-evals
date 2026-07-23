@@ -1,7 +1,7 @@
 import { defineEval } from "niceeval";
 import { equals, isTrue } from "niceeval/expect";
 
-import { installRustToolchain, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
+import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
 // Chain link 3 of 5. Same base commit as the others: neither `entry stats` nor
 // `entry daily` exists here.
@@ -114,7 +114,8 @@ export default defineEval({
     });
 
     await t.group("compact duration style, recalled", () => {
-      t.check(probe.human.lines, equals(["10:00-10:30 30m", "11:00-13:00 2h 00m", "Total 2h 30m"]));
+      const lines1 = orderedLines(probe.human, ["10:00-10:30 30m", "11:00-13:00 2h 00m", "Total 2h 30m"]);
+      t.check(lines1.ok, isTrue(lines1.message));
     });
 
     await t.group("JSON reports integer seconds under total_seconds, recalled", () => {
@@ -131,8 +132,10 @@ export default defineEval({
     });
 
     await t.group("--min filters, and an empty result prints (no data), recalled", () => {
-      t.check(probe["min-45"].lines, equals(["11:00-13:00 2h 00m", "Total 2h 00m"]));
-      t.check(probe["min-180"].lines, equals(["(no data)"]));
+      const lines2 = orderedLines(probe["min-45"], ["11:00-13:00 2h 00m", "Total 2h 00m"]);
+      t.check(lines2.ok, isTrue(lines2.message));
+      const lines3 = orderedLines(probe["min-180"], ["(no data)"]);
+      t.check(lines3.ok, isTrue(lines3.message));
       t.check(probe["min-180"].exit, equals(0));
     });
 
