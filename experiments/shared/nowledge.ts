@@ -18,7 +18,8 @@ import type { Sandbox, SandboxHook, SandboxHookContext } from "niceeval/sandbox"
  * 启停是一个工厂 `nowledgeLifecycle()`:每个实验文件各自 `const nowledge = nowledgeLifecycle();`,
  * 拿到一套共享同一闭包的 `{ endpoint, setup, teardown, sandboxSetup }`。`setup` 在本实验第一个
  * attempt 前激活一个全新 mem 实例(容器+隧道,经 scripts/nowledge-mem.sh up)并把连接信息存进
- * 工厂闭包;`teardown` 在全部 attempt 收尾后 best-effort probe 再 down 反激活。claude 与 codex
+ * 工厂闭包;`teardown` 在全部 attempt 收尾后 best-effort probe 再 down 反激活,并按状态目录
+ * 台账扫掉本实验前缀下 owner pid 已死的遗留孤儿(强杀后的恢复路径靠这段,不靠闭包)。claude 与 codex
  * 两个 nowledge 实验同批跑时各持一份工厂实例,坐标互不覆写——`pnpm exec niceeval exp compare`
  * 一条命令跑齐,无需 wrapper。
  *
