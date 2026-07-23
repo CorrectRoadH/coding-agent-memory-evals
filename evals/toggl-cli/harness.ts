@@ -41,6 +41,9 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
     "if command -v apt-get >/dev/null 2>&1; then",
     "  apt-get update -qq",
     "  apt-get install -y -qq --no-install-recommends pkg-config libssl-dev libdbus-1-dev build-essential curl ca-certificates >/dev/null",
+    // Reclaim the package lists: attempts have died mid-run with a bare "terminated", and a
+    // sandbox that ran out of room is the likeliest reading, so every hundred MB counts.
+    "  apt-get clean && rm -rf /var/lib/apt/lists/*",
     "fi",
     "if ! command -v cargo >/dev/null 2>&1 && [ ! -x /usr/local/cargo/bin/cargo ]; then",
     "  export RUSTUP_HOME=/usr/local/rustup CARGO_HOME=/usr/local/cargo",
@@ -66,11 +69,11 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
     'for home in /root /home/*; do',
     '  [ -d "$home" ] || continue',
     '  mkdir -p "$home/.cargo"',
-    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n' > \"$home/.cargo/config.toml\"",
+    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n\\n[profile.dev]\\ndebug = false\\n' > \"$home/.cargo/config.toml\"",
     '  chmod -R a+rwX "$home/.cargo" 2>/dev/null || true',
     "done",
     'if [ -n "${CARGO_HOME:-}" ] || [ -d /usr/local/cargo ]; then',
-    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n' > \"${CARGO_HOME:-/usr/local/cargo}/config.toml\"",
+    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n\\n[profile.dev]\\ndebug = false\\n' > \"${CARGO_HOME:-/usr/local/cargo}/config.toml\"",
     "fi",
     "cargo --version",
     "python3 --version",
@@ -123,6 +126,19 @@ export const prepareRepo = async (t: TestContext) => {
   if (built.exitCode !== 0) {
     throw new Error(`baseline cargo build failed: ${(built.stderr || built.stdout).trim().slice(-800)}`);
   }
+
+  // Attempts have died mid-run with a bare "terminated" and no further explanation. Record
+  // what the sandbox had left after the warm-up so the next occurrence can be attributed
+  // (or ruled out) instead of guessed at.
+  const disk = await t.sandbox.runShell(
+    "df -Pk / /opt 2>/dev/null | tail -n +2 | awk '{printf \"%s: %s KB free of %s KB; \", $6, $4, $2}'; " +
+      "du -sk /opt/cargo-target 2>/dev/null | awk '{printf \"build tree %s KB\", $1}'",
+  );
+  t.diagnostic({
+    code: "sandbox-space-after-warmup",
+    level: "warning",
+    message: disk.stdout.trim() || "df/du produced no output",
+  });
 };
 
 /** One fake-API window: entries served when the request path contains `contains`. */
