@@ -21,7 +21,7 @@ import { nowledgeClaudeConfig, nowledgeFlags, nowledgeLifecycle } from "../share
 const nowledge = nowledgeLifecycle();
 
 export default defineExperiment({
-  evals: ["react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
+  evals: ["react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/", "toggl-cli/"],
   description: "claude-code · deepseek-v4-flash · Nowledge Mem",
   labels: { line: "claude" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: claudeCodeAgent({

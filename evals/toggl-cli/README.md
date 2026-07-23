@@ -1,0 +1,70 @@
+# toggl-cli：一条跨 eval 的「项目约定」链
+
+四道题，同一个真实仓库（[CorrectRoadH/toggl-cli](https://github.com/CorrectRoadH/toggl-cli)，Rust CLI），
+每道题都是**给 CLI 加一个新命令**的真实开发任务，每道题三轮对话。
+
+与本仓库其它题的区别：这四道题不是彼此独立的，**后一道题的需求描述会含糊地指向前一道题里定下的约定**
+（"照我们上次定的来"、"输出风格跟那个 stats 一样"、"按我们对参数错误的一贯处理"）。
+带记忆的条件应该记得这些约定，不带记忆的只能猜——而仓库里恰恰没有任何线索可猜。
+
+## 为什么记忆是唯一线索
+
+**四道题都从同一个 base commit（`8646f29`）clone**，谁也不建立在谁的产出之上。
+所以做第 3 题时，checkout 里没有第 1、2 题写的任何代码。跨题传递的只有对话里说过的话。
+
+这同时切断了另一条路径：agent 把约定**写进仓库文档**。第一次跑 01 时 codex 就主动往 `AGENTS.md`
+加了一条"新命令必须支持 --json，JSON 里时长用整数秒"——在真实的连续开发里这条记录会留在仓库中，
+但这里下一题从干净 base commit 重新 clone，它不会传下去。这是刻意的：要测的是 agent 的记忆机制，
+不是它会不会写文档。代价是牺牲了一点真实性，换来把「跨会话信息传递」这个变量单独隔离出来。
+
+更关键的是，被引用的约定都**与仓库现状相反或不可推断**：
+
+| 约定 | 建立于 | 仓库里的"自然答案"是什么 |
+|---|---|---|
+| R1 新命令用紧凑时长 `1h 02m` / `45m` | 01 | 仓库里**只有** `H:MM:SS`（`report.rs`、`search.rs`、`models.rs` 三处），照抄是最自然的选择 |
+| R2 `--json` 里时长一律整数秒 `seconds`，总计 `total_seconds` | 01 | 键名无从推断 |
+| R3 共享 helper 放 `src/utilities.rs` | 01 | 仓库里 `format_duration_hms` 已经被复制了两份，继续复制才是"随大流" |
+| R4 空结果打印 `(no data)` 且 exit 0 | 01 | `list` 命令的现状是往 **stderr** 打 `No entries found.` |
+| R5 不加新依赖 | 01 | — |
+| R6 不带 `--since/--until` 时窗口是**今天** | 02 | `report.rs` 的默认是"本周一 → 今天"，照抄它就错 |
+| R7 时间正序，旧 → 新 | 02 | — |
+| R8 参数非法 → exit 2，且在任何网络请求之前 | 03 | 直接返回 `Err` 得到的是 exit **1**；要 2 得像 `main.rs` 处理未知子命令那样显式 `exit(2)` |
+
+第 1 题把 R1–R5 明明白白说清楚，是**控制点**——任何条件都该过。
+第 2 题复用 R1/R2/R4 并建立 R6/R7；第 3 题复用 R1/R2/R4/R6/R7 并建立 R8；
+第 4 题复用 R1/R2/R4/R6/R8，是综合考。
+
+## 判据：黑盒探针，不碰实现内部
+
+`_support/probe.py` 起一个假的 Toggl API（`TOGGL_API_URL` 指过去，`TOGGL_DISABLE_HTTP_CACHE=1`
+关掉磁盘缓存），按计划跑若干条真实 CLI 调用，回收每条的 stdout / exit code / **CLI 实际请求的 URL**。
+断言全部写在 `.eval.ts` 里，一条约定一条断言——报告里能直接看出某次运行是丢了"紧凑时长"还是丢了"默认今天"，
+而不是笼统的一句"测试失败"。
+
+因此断言只涉及**CLI 使用者能观察到的东西**：命令名、flag、输出文本、退出码、请求的 query。
+没有任何一条断言引用 agent 未被告知的内部标识符（函数名、结构体、模块路径）。
+
+「默认今天」这条特别注意锚定在 `start_date=` 上：`--until` 会被规范化成次日 00:00，
+所以"路径里含今天的日期"在旧的"本周一→今天"默认下也会成立，必须比对 `start_date=<今天>`。
+
+## 三向验证（2026-07-23）
+
+按仓库规范，每道题都验过三个方向：
+
+- **RED**：base commit 上跑判据 → 全挂，且原因正确（`unrecognized subcommand 'stats'`，不是编译/环境错）
+- **GREEN**：四个命令各写了一版参考实现 → 断言全过。
+  过程中发现两处契约需要确认可实现性：
+  - `--min 0` / `--top 0` 要求 exit 2，而返回 `Err` 只得到 exit 1 → 需显式 `std::process::exit(2)`，
+    仓库 `main.rs` 里有现成先例，确认可实现
+  - `entry gaps` 的 `Total` 是各 gap 之和；`tag stats` 的 `Total` 是实际记录时长（tag 会重叠，
+    不是各行之和）——两者都在 prompt 里写明了
+- **ALT**：把参考实现换成写法完全不同的一版（`BTreeMap` → `Vec`+sort、`json!` → serde struct、
+  多输出一个 JSON 键、换列宽、`!is_running()` → `duration > 0`、自带局部格式化函数）→ 断言依然全过，
+  确认判据考的是功能不是实现
+
+## 运行环境
+
+Rust 工具链和系统依赖（`libdbus-1-dev` / `libssl-dev` / `pkg-config`）由 `harness.ts` 的
+`installRustToolchain` 以 root 装进 `/usr/local`，属于 `eval.setup`，不进 agent diff。
+依赖的首次编译（冷 build 数分钟）在 `prepareRepo` 里预热掉，否则这段时间会被计进 agent 的预算，
+变成一个与记忆无关的条件间差异。单题 `timeoutMs` 因此放宽到 30 分钟。

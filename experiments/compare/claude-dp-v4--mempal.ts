@@ -15,7 +15,7 @@ import { mempalFlags, mempalSetup, mempalSkill, mempalTeardown, mempalTemplate }
 // 跨 run 累积(host 侧 .cache/mempal/state/);做干净对照前先 `rm -rf .cache/mempal/state/`,
 // 并在报告里注明状态起点(空库/带积累)。
 export default defineExperiment({
-  evals: ["react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/"],
+  evals: ["react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/", "toggl-cli/"],
   description: "claude-code · deepseek-v4-flash · mempal",
   labels: { line: "claude" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: claudeCodeAgent({

@@ -64,6 +64,11 @@ Additional source assertions are fine when they are part of the task's functiona
 
 > **隐藏测试里出现的每一个标识符（CSS 类名、DOM 结构、函数返回的键名、组件 state 字段、新增的 callback prop），要么在 prompt 里写清楚是公开契约，要么就不许出现在断言里。**
 
+**链式题（`evals/toggl-cli/` 那种跨 eval 引用约定的题）把「prompt」放宽为「本 eval 或链上任一前序 eval 的 prompt」**——
+那正是被测能力：约定在第 1 题说过，第 3 题只含糊提一句"照老规矩"，agent 得靠记忆补上。放宽的只有「在哪说过」，
+没放宽「说没说过」：链上从没出现过的标识符，照样不许进断言。写链式题时在 eval 文件头把「本题建立了哪几条约定 /
+本题复用哪几条、来自哪一题」列成表，否则过几周没人能判断某条断言是否合法。
+
 区分标准是「库的使用者需不需要知道它」：
 - **是公开契约** → 写进 prompt，理直气壮地断言。例：`react-tooltip__place-<placement>` 类名，consumer 要写 CSS 就必须知道；不写死这个名字功能本身就没意义。
 - **不是** → 改成行为断言。例：内部函数多返回一个键、组件 state 叫什么、新造的 wrapper 节点叫什么。
