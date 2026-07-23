@@ -16,6 +16,5 @@ export default defineExperiment({
   evals: ["scoring-smoke/"],
   runs: 1,
   earlyExit: false,
-  budget: 2,
   timeoutMs: 600_000,
 });

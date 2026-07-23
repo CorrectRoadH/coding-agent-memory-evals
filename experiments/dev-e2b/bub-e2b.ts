@@ -17,6 +17,5 @@ export default defineExperiment({
   evals: ["memory"],
   runs: 1,
   earlyExit: true,
-  budget: 2,
   timeoutMs: 1200000,
 });

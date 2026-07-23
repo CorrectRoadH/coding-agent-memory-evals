@@ -1,0 +1,287 @@
+{
+  "id": "scoring-smoke/checkpoint",
+  "description": "冒烟:创建配置文件、跑两条命令,按检查点计分",
+  "verdict": "passed",
+  "fingerprint": "49c70ed6f3b24abbc86b7caa25b4b7eb5199d52fff8fd9e49bc37365853c766a",
+  "attempt": 0,
+  "durationMs": 66314,
+  "assertions": [
+    {
+      "name": "isTrue(SMOKE.md created)",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/scoring-smoke/checkpoint.eval.ts",
+        "line": 17,
+        "column": 5
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "fileChanged(SMOKE.md)",
+      "severity": "soft",
+      "loc": {
+        "file": "evals/scoring-smoke/checkpoint.eval.ts",
+        "line": 19,
+        "column": 15
+      },
+      "outcome": "passed",
+      "score": 1,
+      "threshold": 1,
+      "points": 1
+    },
+    {
+      "name": "calledTool(shell)",
+      "severity": "soft",
+      "loc": {
+        "file": "evals/scoring-smoke/checkpoint.eval.ts",
+        "line": 20,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "threshold": 1,
+      "received": "command_execution [completed]\n  input: {\"command\":\"/bin/bash -lc 'echo done > /tmp/smoke-marker.txt\\ncat SMOKE.md'\"}\n  output: {\"output\":\"niceeval scoring smoke\\n\",\"exit_code\":0}",
+      "points": 1
+    },
+    {
+      "name": "commandSucceeded()",
+      "severity": "soft",
+      "loc": {
+        "file": "evals/scoring-smoke/checkpoint.eval.ts",
+        "line": 23,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "threshold": 1,
+      "evidence": "cat SMOKE.md",
+      "points": 1
+    },
+    {
+      "name": "includes(\"niceeval scoring smoke\")",
+      "severity": "soft",
+      "loc": {
+        "file": "evals/scoring-smoke/checkpoint.eval.ts",
+        "line": 24,
+        "column": 7
+      },
+      "outcome": "passed",
+      "score": 1,
+      "threshold": 1,
+      "points": 1
+    }
+  ],
+  "scoring": "points",
+  "scoreEntries": [],
+  "usage": {
+    "inputTokens": 97521,
+    "outputTokens": 325,
+    "cacheReadTokens": 69888,
+    "requests": 1,
+    "cacheWriteTokens": 0
+  },
+  "estimatedCostUSD": 0.10645980000000001,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "docker",
+    "sandboxId": "b875024bb0d9"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 33342
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 52,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 33345,
+          "durationMs": 51,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 9160,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 33397,
+          "durationMs": 9104,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 42501,
+          "durationMs": 24,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mrwxok6e_e8dfj6'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 47,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 42556,
+          "durationMs": 47,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 23665,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 42603,
+          "durationMs": 22,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 42626,
+          "durationMs": 23531,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust '在当前目录创建文件 SMOKE.md,写入一行文字:niceeval scoring …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 66161,
+          "durationMs": 59,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 42603,
+          "durationMs": 23617,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 66246,
+          "durationMs": 21,
+          "command": {
+            "display": "cat SMOKE.md",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 43,
+      "children": [
+        {
+          "id": "n10",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 66268,
+          "durationMs": 43,
+          "children": [
+            {
+              "id": "n11",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 66268,
+              "durationMs": 37,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 2
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 529
+    }
+  ],
+  "locator": "@12rw9dzp",
+  "startedAt": "2026-07-23T03:09:41.537Z",
+  "hasEvents": true,
+  "hasTrace": true,
+  "hasSources": true
+}

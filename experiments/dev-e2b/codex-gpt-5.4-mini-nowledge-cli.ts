@@ -23,6 +23,5 @@ export default defineExperiment({
   teardown: nowledge.teardown,
   runs: 1,
   earlyExit: true,
-  budget: 5,
   timeoutMs: 2_700_000,
 });

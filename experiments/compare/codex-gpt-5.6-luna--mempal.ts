@@ -20,7 +20,6 @@ export default defineExperiment({
   sandbox: e2bSandbox({ template: mempalTemplate("codex") }).setup(mempalSetup("codex")).teardown(mempalTeardown("codex")),
   runs: 1,
   earlyExit: false,
-  budget: 200,  // 不设实际上限:30 个 eval 带记忆开销远超 $15,200 作 runaway backstop
   // 串行跑(niceeval ≥0.4.5 按实验限流,不影响同批基线):attempt 的
   // [载入记忆态 … 回存] 是临界区,声明式串行取代 helper 手写锁。
   maxConcurrency: 1,

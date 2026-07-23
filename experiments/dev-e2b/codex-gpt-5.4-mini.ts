@@ -15,7 +15,6 @@ export default defineExperiment({
   sandbox: e2bSandbox({ template: NICEEVAL_CODEX_E2B_TEMPLATE }),
   runs: 1,
   earlyExit: true,
-  budget: 5,
   // astropy eval 里 agent 和测试阶段都要从源码构建,别用全局 600s;与 eval 级 timeoutMs 对齐。
   timeoutMs: 2_700_000,
 });

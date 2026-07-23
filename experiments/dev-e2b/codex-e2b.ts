@@ -13,7 +13,6 @@ export default defineExperiment({
   evals: ["memory"],
   runs: 1,
   earlyExit: true,
-  budget: 2,
   // repomod 的 build + terminal 的 pytest 合计可能超 10 分钟;给 20 分钟宽裕。
   timeoutMs: 1200000,
 });

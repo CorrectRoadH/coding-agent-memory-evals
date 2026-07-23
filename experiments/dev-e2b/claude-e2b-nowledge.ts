@@ -29,7 +29,6 @@ export default defineExperiment({
   teardown: nowledge.teardown,
   runs: 1,
   earlyExit: true,
-  budget: 5,
   // 与 codex 变体对齐:astropy eval 两阶段都要源码构建,别用全局 600s(冒烟只挑轻 eval 时用不满)
   timeoutMs: 2_700_000,
 });

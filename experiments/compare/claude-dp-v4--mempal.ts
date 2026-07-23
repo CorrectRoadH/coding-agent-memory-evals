@@ -29,7 +29,6 @@ export default defineExperiment({
   sandbox: e2bSandbox({ template: mempalTemplate("claude") }).setup(mempalSetup("claude")).teardown(mempalTeardown("claude")),
   runs: 1,
   earlyExit: true,
-  budget: 2,
   // 串行跑(niceeval ≥0.4.5 按实验限流,不影响同批基线):attempt 的
   // [载入记忆态 … 回存] 是临界区,声明式串行取代 helper 手写锁。
   maxConcurrency: 1,

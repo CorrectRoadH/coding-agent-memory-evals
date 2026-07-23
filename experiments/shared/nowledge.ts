@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import type { ExperimentHookContext } from "niceeval";
@@ -25,8 +26,13 @@ import type { Sandbox, SandboxHook, SandboxHookContext } from "niceeval/sandbox"
  * 但并行 attempt 会读写同一个库。实验声明 maxConcurrency: 1 串行,让累积顺序确定。
  */
 
+// 实例状态根目录:每个实例一个子目录(env / port / cloudflared.pid / owner),由
+// scripts/nowledge-mem.sh up 创建、down 删除——目录存在即「实例还没被反激活」,是 teardown
+// 跨进程找回孤儿的持久化台账(niceeval 恢复契约:补执行是新进程语义,闭包不可依赖)。
+const CACHE_DIR = fileURLToPath(new URL("../../.cache/nowledge-mem", import.meta.url));
+
 // default 实例的 env(手动 `scripts/nowledge-mem.sh up` 的调试流,不经 niceeval setup 时的兜底)。
-const ENV_FILE = fileURLToPath(new URL("../../.cache/nowledge-mem/default/env", import.meta.url));
+const ENV_FILE = join(CACHE_DIR, "default", "env");
 
 const CTL = fileURLToPath(new URL("../../scripts/nowledge-mem.sh", import.meta.url));
 const execFileAsync = promisify(execFile);
@@ -98,6 +104,70 @@ export function nowledgeFlags(): Record<string, string> {
   return { memory: "nowledge", nowledgeVersion: NOWLEDGE_VERSION };
 }
 
+/** 实例名的实验前缀;setup 起名与 teardown 扫孤儿必须用同一个投影。 */
+function instancePrefix(experimentId: string): string {
+  return `exp-${experimentId.replace(/[^A-Za-z0-9]+/g, "-")}-`;
+}
+
+function pidAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 从状态目录台账找回本实验的遗留实例:目录名带实验前缀、owner pid 已死(或没有 owner 文件,
+ * 兼容本修复之前泄漏的旧孤儿)的都是待收尾的孤儿;owner pid 仍存活的属于并发 run,不触碰——
+ * 与 niceeval 收尾登记「pid 不存活才是遗留义务」同一判据。
+ */
+function listOrphanInstances(prefix: string, exclude?: string): string[] {
+  let entries: string[];
+  try {
+    entries = readdirSync(CACHE_DIR);
+  } catch {
+    return [];
+  }
+  const orphans: string[] = [];
+  for (const name of entries) {
+    if (!name.startsWith(prefix) || name === exclude) continue;
+    let ownerPid: number | undefined;
+    try {
+      ownerPid = Number.parseInt(readFileSync(join(CACHE_DIR, name, "owner"), "utf8").trim(), 10) || undefined;
+    } catch {
+      ownerPid = undefined;
+    }
+    if (ownerPid !== undefined && pidAlive(ownerPid)) continue;
+    orphans.push(name);
+  }
+  return orphans;
+}
+
+/**
+ * 极端形态兜底:状态目录被手工清掉、容器还在跑(正是孤儿容器把宿主 loadavg 顶爆的形态)。
+ * 活着的实例必有状态目录(up 创建、down 才删),所以「名字带本实验前缀 + 无状态目录」的容器
+ * 一定是孤儿,直接 rm -f;隧道 pid 文件已随目录丢失,cloudflared 残留不在此兜底范围。
+ */
+async function pruneDirlessContainers(prefix: string): Promise<string[]> {
+  const namePrefix = `nowledge-mem-${prefix}`;
+  let stdout: string;
+  try {
+    ({ stdout } = await execFileAsync("docker", ["ps", "-a", "--filter", `name=^${namePrefix}`, "--format", "{{.Names}}"]));
+  } catch {
+    return []; // docker 不可用时这条兜底自然也无从谈起
+  }
+  const pruned: string[] = [];
+  for (const name of stdout.split("\n").map((s) => s.trim()).filter(Boolean)) {
+    const instanceName = name.slice("nowledge-mem-".length);
+    if (existsSync(join(CACHE_DIR, instanceName))) continue; // 有台账的走 listOrphanInstances 的 owner 判据
+    await execFileAsync("docker", ["rm", "-f", name]);
+    pruned.push(name);
+  }
+  return pruned;
+}
+
 function hookLog(ctx: SandboxHookContext, message: string): void {
   ctx.progress({ message });
 }
@@ -135,26 +205,52 @@ export function nowledgeLifecycle() {
      */
     async setup(ctx: ExperimentHookContext) {
       // 实例名带实验 id 与时间戳:并发跑多个实验互不干扰,残留也可辨认
-      instance = `exp-${ctx.experimentId.replace(/[^A-Za-z0-9]+/g, "-")}-${Date.now()}`;
+      instance = `${instancePrefix(ctx.experimentId)}${Date.now()}`;
       ctx.progress({ message: `[nowledge] activating mem instance ${instance}` });
       await nowledgeCtl("up", instance);
+      // owner 台账:teardown 的孤儿判据是「owner pid 已死」,并发 run 的活实例靠它免于误清
+      writeFileSync(join(CACHE_DIR, instance, "owner"), String(process.pid));
       env = readInstanceEnv(instance);
       ctx.progress({ message: `[nowledge] mem ready → ${env.url}` });
     },
 
     /**
-     * 实验级生命周期(ExperimentDef.teardown):该实验全部 attempt 收尾后先 best-effort probe
-     * (写路径落库验证,短超时、中断时跳过,不该挡住拆容器)再 down 反激活(必达底线,try/finally
-     * 保证 probe 无论成败都执行)。`setup` 没走到起实例就抛错时 `instance` 未赋值,直接跳过。
+     * 实验级生命周期(ExperimentDef.teardown):正常路径先 best-effort probe(写路径落库验证,
+     * 短超时、中断时跳过,不该挡住拆容器)再 down 自己这份实例(必达底线,try/finally 保证
+     * probe 无论成败都执行)。之后**总是**按状态目录台账扫本实验前缀的遗留孤儿逐个 down——
+     * 恢复路径(启动自愈 / `--teardown`)闭包里没有 instance,靠的就是这一段;正常路径顺带
+     * 自愈历史泄漏。owner pid 仍存活的实例属于并发 run,不触碰。孤儿 down 失败聚合抛出,
+     * 落成 experiment-teardown-failed 可见,不静默吞。
      */
     async teardown(ctx: ExperimentHookContext) {
-      if (!instance) return;
-      try {
-        if (!ctx.signal?.aborted) {
-          await nowledgeCtl("probe", instance, { timeoutMs: 10_000 }).catch(() => {});
+      if (instance) {
+        try {
+          if (!ctx.signal?.aborted) {
+            await nowledgeCtl("probe", instance, { timeoutMs: 10_000 }).catch(() => {});
+          }
+        } finally {
+          await nowledgeCtl("down", instance);
         }
-      } finally {
-        await nowledgeCtl("down", instance);
+      }
+
+      const failures: string[] = [];
+      for (const orphan of listOrphanInstances(instancePrefix(ctx.experimentId), instance)) {
+        ctx.progress({ message: `[nowledge] downing orphan instance ${orphan}` });
+        try {
+          await nowledgeCtl("down", orphan);
+        } catch (e) {
+          failures.push(`${orphan}: ${(e as Error).message}`);
+        }
+      }
+      try {
+        for (const name of await pruneDirlessContainers(instancePrefix(ctx.experimentId))) {
+          ctx.progress({ message: `[nowledge] removed dirless orphan container ${name}` });
+        }
+      } catch (e) {
+        failures.push(`dirless-container prune: ${(e as Error).message}`);
+      }
+      if (failures.length > 0) {
+        throw new Error(`[nowledge] orphan cleanup failed (${failures.length}): ${failures.join("; ")}`);
       }
     },
 

@@ -18,6 +18,5 @@ export default defineExperiment({
   sandbox: e2bSandbox({ template: NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE }),
   runs: 1,
   earlyExit: true,
-  budget: 2,
   timeoutMs: 1200000,
 });

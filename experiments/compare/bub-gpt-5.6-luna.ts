@@ -18,7 +18,6 @@ export default defineExperiment({
   // 写在各 eval 的 test(t) 里(t.sandbox.uploadDirectory + runCommand)。experiment 只管怎么跑。
   runs: 1,
   earlyExit: false, // 要完整通过率分布,以便报 pass^k
-  budget: 15,
   // 与 claude 组对齐(重型题 mvn build / pytest 可能超 10 分钟),消除条件间超时偏置。
   timeoutMs: 1200000,
 });

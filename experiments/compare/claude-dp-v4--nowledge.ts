@@ -36,7 +36,6 @@ export default defineExperiment({
   teardown: nowledge.teardown,
   runs: 1,
   earlyExit: true,
-  budget: 2,
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--mempal 语义)。
   maxConcurrency: 1,
   timeoutMs: 1200000,
