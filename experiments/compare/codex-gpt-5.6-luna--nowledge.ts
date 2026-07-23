@@ -30,7 +30,7 @@ export default defineExperiment({
   teardown: nowledge.teardown,
   runs: 1,
   earlyExit: false,
-  budget: 15,
+  budget: 200,  // 不设实际上限:30 个 eval 带记忆开销远超 $15,200 作 runaway backstop
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--nowledge 语义)。
   maxConcurrency: 1,
   // 与 codex baseline/mempal 对齐,astropy eval 两阶段都要源码构建。

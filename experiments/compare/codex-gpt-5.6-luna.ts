@@ -16,7 +16,7 @@ export default defineExperiment({
   // 代理(base_url + key)走 .env,由 niceeval codex adapter 配成自定义 model_provider(wire_api=responses)
   runs: 1,
   earlyExit: false,
-  budget: 15,
+  budget: 200,  // 不设实际上限:evals 目录前缀展开成 30 个 eval,$15 盖不住(mempal/nowledge 跑到一半就 budget_exhausted 留 unstarted),200 作 runaway backstop
   // 与 claude 组对齐(重型题 mvn build / pytest 可能超 10 分钟),消除条件间超时偏置。
   timeoutMs: 1200000,
 });
