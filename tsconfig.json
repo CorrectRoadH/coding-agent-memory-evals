@@ -15,5 +15,5 @@
     "jsx": "react-jsx"
   },
   "include": ["evals", "experiments", "scripts", "reports", "niceeval.config.ts"],
-  "exclude": ["node_modules", "workspaces"]
+  "exclude": ["node_modules", "workspaces", "evals/fixtures"]
 }
