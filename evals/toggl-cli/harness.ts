@@ -56,19 +56,21 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
     "printf 'export PATH=\"%s:$PATH\"\\n' \"$CARGO_BIN_DIR\" > /etc/profile.d/rust.sh",
     "chmod +x /etc/profile.d/rust.sh",
     // Keep cargo's build directory OUT of the working copy. A debug build of this crate is
-    // ~1GB, and leaving it under the workdir made the post-run diff capture flaky (attempts
-    // died with "capturing diff · fetch failed"). A cargo config file is used rather than an
-    // env var so it applies to every cargo invocation — ours and the agent's — regardless of
-    // whether that shell sourced /etc/profile.d.
-    "mkdir -p /tmp/cargo-target && chmod 1777 /tmp/cargo-target",
+    // ~1GB, and leaving it under the workdir made the post-run diff capture flaky (attempts died
+    // with "capturing diff · fetch failed" and "export agent windows failed"). /opt rather than
+    // /tmp on purpose: if the sandbox mounts /tmp as tmpfs, a 1GB build tree would be charged to
+    // RAM and get the sandbox OOM-terminated. A cargo config file rather than an env var so it
+    // applies to every cargo invocation — ours and the agent's — regardless of whether that
+    // shell sourced /etc/profile.d.
+    "mkdir -p /opt/cargo-target && chmod 1777 /opt/cargo-target",
     'for home in /root /home/*; do',
     '  [ -d "$home" ] || continue',
     '  mkdir -p "$home/.cargo"',
-    "  printf '[build]\\ntarget-dir = \"/tmp/cargo-target\"\\n' > \"$home/.cargo/config.toml\"",
+    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n' > \"$home/.cargo/config.toml\"",
     '  chmod -R a+rwX "$home/.cargo" 2>/dev/null || true',
     "done",
     'if [ -n "${CARGO_HOME:-}" ] || [ -d /usr/local/cargo ]; then',
-    "  printf '[build]\\ntarget-dir = \"/tmp/cargo-target\"\\n' > \"${CARGO_HOME:-/usr/local/cargo}/config.toml\"",
+    "  printf '[build]\\ntarget-dir = \"/opt/cargo-target\"\\n' > \"${CARGO_HOME:-/usr/local/cargo}/config.toml\"",
     "fi",
     "cargo --version",
     "python3 --version",
