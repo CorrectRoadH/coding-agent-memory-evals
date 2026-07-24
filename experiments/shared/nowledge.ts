@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { ExperimentFatalError } from "niceeval";
 import { shared } from "niceeval/adapter";
 import type { ClaudeCodeConfig, ClaudeCodePluginSpec, CodexConfig, CodexPluginSpec, McpServer } from "niceeval/adapter";
 import type { Sandbox, SandboxHook, SandboxHookContext } from "niceeval/sandbox";
@@ -77,11 +78,23 @@ function hookLog(ctx: SandboxHookContext, message: string): void {
   ctx.progress({ message });
 }
 
-async function requireCommand(sb: Sandbox, label: string, script: string): Promise<void> {
+/**
+ * `shared: true` 声明这条探针的死因对全实验共享——远程实例挂了、模板缺依赖,不是这一条
+ * attempt 的运气问题,剩下的 attempt 撞上去只会同因同死。抛 `ExperimentFatalError` 让 niceeval
+ * 落实验级止损闸:第一条照常 errored,余量计 unstarted、完成状态 incomplete,不再一条条烧沙箱。
+ * 装包一类可能被网络抖动搞挂的步骤不带这个声明——那种失败不可证明为兄弟共享,重跑就好。
+ */
+async function requireCommand(
+  sb: Sandbox,
+  label: string,
+  script: string,
+  opts: { shared?: boolean } = {},
+): Promise<void> {
   const result = await sb.runShell(script);
   if (result.exitCode !== 0) {
     const tail = (result.stderr || result.stdout).trim().slice(-500) || "no output";
-    throw new Error(`[nowledge] ${label} failed (exit ${result.exitCode}): ${tail}`);
+    const message = `[nowledge] ${label} failed (exit ${result.exitCode}): ${tail}`;
+    throw opts.shared ? new ExperimentFatalError(message) : new Error(message);
   }
 }
 
@@ -93,8 +106,8 @@ export function nowledgeSandboxSetup(endpoint: () => NowledgeEnv = nowledgeEndpo
   return async (sb, ctx) => {
     const conn = endpoint();
 
-    // 插件的 lifecycle hooks 与 install_hooks.py 都要 python3
-    await requireCommand(sb, "python3 probe", "command -v python3");
+    // 插件的 lifecycle hooks 与 install_hooks.py 都要 python3。模板里没有就是全实验没有。
+    await requireCommand(sb, "python3 probe", "command -v python3", { shared: true });
 
     // nmem-cli 是 ~12MB 的单二进制 wheel,attempt 级安装可接受;uv 优先,pip 兜底
     await requireCommand(
@@ -111,8 +124,14 @@ export function nowledgeSandboxSetup(endpoint: () => NowledgeEnv = nowledgeEndpo
 
     await requireCommand(sb, "nmem client url", `nmem config client set url '${conn.url}'`);
     await requireCommand(sb, "nmem client api-key", `nmem config client set api-key '${conn.apiKey}'`);
-    // 端到端探活:隧道挂了在这里死,不浪费 agent.setup 和模型调用
-    await requireCommand(sb, `server probe(${conn.url};挂了则服务端/隧道已死,修好后更新 .env)`, "nmem --json status");
+    // 端到端探活:隧道挂了在这里死,不浪费 agent.setup 和模型调用。远程实例是全实验共享的
+    // 单点,它挂了整批必死——声明 shared 让止损闸停掉余量,而不是 36 条 attempt 一条条撞。
+    await requireCommand(
+      sb,
+      `server probe(${conn.url};挂了则服务端/隧道已死,修好后更新 .env)`,
+      "nmem --json status",
+      { shared: true },
+    );
     hookLog(ctx, `[nowledge] nmem client ready → ${conn.url}`);
   };
 }
