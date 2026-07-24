@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeClaudeConfig, nowledgeFlags, nowledgeLifecycle } from "../shared/nowledge.ts";
+import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSandboxSetup } from "../shared/nowledge.ts";
 
 // claude-dp-v4 的 Nowledge Mem 变体:同模型同沙箱,只多一层 Nowledge Mem 记忆条件 ——
 // 官方 claude-code 插件(装上即挂 SessionStart 读 / UserPromptSubmit 指引 / Stop 写 的 lifecycle
@@ -10,16 +10,13 @@ import { nowledgeClaudeConfig, nowledgeFlags, nowledgeLifecycle } from "../share
 // 对照 claude-dp-v4.ts 看 pass 率与效率(时间/token/重复失败命令)的差异。dev-e2b/claude-e2b-nowledge
 // 已冒烟跑通(probe 实锤 Stop hook 落 thread 到服务端)。
 //
-// 中心化 mem 服务端 + 隧道由 nowledgeLifecycle() 工厂的 setup/teardown 管理:niceeval 在本实验
-// 第一个 attempt 前激活一个全新实例(空记忆库,状态起点干净),全部 attempt 收尾后 probe + down
-// 反激活——`pnpm exec niceeval exp compare` 一条命令跑齐 9 个 config,无需 wrapper 脚本;激活失败
-// 只让本实验记 errored,不污染同批其它实验。
+// mem 服务端是长期运行的固定远程实例(连接坐标在 .env,见 shared/nowledge.ts 文件头):
+// niceeval 侧无任何生命周期,沙箱钩子只做接线,记忆跨 run / 跨实验持续积累,与 mempal
+// 「状态跨 run 存续」对齐。同批的 codex-gpt-5.6-luna--nowledge 共用同一个库;正式对比要说清
+// 起点库状态。license 在服务端侧一次性激活(device 固定,seat 稳定占一个,不再随 run 增长);
+// free tier memory 上限 50,持久积累库容易撞上限,正式跑前确认服务端是 pro。
 // 隔离:中心化 server 下并行 attempt 共享同一记忆库,故 maxConcurrency:1 串行 —— 让跨 eval 的记忆
-// 累积顺序确定(eval N 读得到 eval N-1 写的),与 mempal 条件语义对齐。正式对比要 pro license
-// (free tier memory 上限 50);seat 偶发用尽会降级 free,正式跑设 NOWLEDGE_REQUIRE_PRO=1 硬失败
-// 以保证条件一致。
-const nowledge = nowledgeLifecycle();
-
+// 累积顺序确定(eval N 读得到 eval N-1 写的),与 mempal 条件语义对齐。
 export default defineExperiment({
   evals: ["react-hook-form/", "react-datepicker/", "downshift/", "react-tooltip/", "yet-another-react-lightbox/", "toggl-cli/"],
   description: "claude-code · deepseek-v4-flash · Nowledge Mem",
@@ -31,9 +28,7 @@ export default defineExperiment({
   }),
   flags: { ...nowledgeFlags() },
   model: "deepseek-v4-flash",
-  sandbox: e2bSandbox({ template: NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE }).setup(nowledge.sandboxSetup()),
-  setup: nowledge.setup,
-  teardown: nowledge.teardown,
+  sandbox: e2bSandbox({ template: NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE }).setup(nowledgeSandboxSetup()),
   runs: 1,
   earlyExit: true,
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--mempal 语义)。

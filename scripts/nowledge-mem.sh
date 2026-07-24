@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# 临时 Nowledge Mem 实例管理:宿主机 docker 起服务端 + cloudflared quick tunnel 暴露给 E2B 沙箱。
+# Nowledge Mem 实例管理(纯手动运维工具):宿主机 docker 起服务端 + cloudflared quick tunnel
+# 暴露给 E2B 沙箱。niceeval 侧不再调用本脚本——experiments/shared/nowledge.ts 只从仓库 .env 读
+# 固定连接(NMEM_URL / NMEM_API_KEY),服务端生命周期完全在这里手动管。up 完把
+# .cache/nowledge-mem/<name>/env 里的坐标抄进仓库 .env 即接上实验。
 #
 # 每个实例(默认名 default)独立:容器、端口、隧道、数据目录、env 文件。
-# 「每次 exp 新激活、跑完反激活」由 experiments/shared/nowledge.ts 的 nowledgeExperimentSetup()
-# (niceeval 实验级 setup 钩子)程序化调用本脚本完成;手动调试才直接敲:
-#   up <name>   → 全新记忆库(embedding 模型走共享缓存,秒级就绪)
-#   down <name> → 拆容器+隧道并【删除该实例数据】;共享模型缓存保留
+#   up <name>   → 起(或复用)实例;数据目录已有内容就是同一个记忆库继续
+#   stop <name> → 停运行时(拆容器+隧道),【数据保留】,下次 up 同库续跑;license seat 不释放
+#   down <name> → 拆容器+隧道并【删除该实例数据】;实例目录带 keep 标记文件(手动 touch)时
+#                 拒绝执行,置 NOWLEDGE_FORCE=1 强制——给长期积累库上的防手滑险
 #
-# 用法: scripts/nowledge-mem.sh up|down|status|env [instance-name]
-# up 之后连接信息落 .cache/nowledge-mem/<name>/env(NMEM_URL / NMEM_API_KEY)。
+# 用法: scripts/nowledge-mem.sh up|stop|down|status|probe|env [instance-name]
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -247,8 +249,28 @@ up() {
   log "  NMEM_API_KEY=${api_key:0:12}…"
 }
 
+# 停运行时、保数据:拆隧道+容器,$STATE_DIR(data/config/port/keep)原样保留,下次 up 同库
+# 继续。license 有意不反激活——持久实例的 device 身份存在 data 里,数据在则 device 不变,
+# seat 稳定占一个不随起停增长(临时实例形态「每实例全新 device、seat 只增不减」的修法)。
+stop() {
+  if pid=$(tunnel_pid); then
+    kill "$pid" 2>/dev/null || true
+    log "隧道已停(pid $pid)"
+  fi
+  rm -f "$TUNNEL_PID_FILE"
+  if docker inspect "$CONTAINER" >/dev/null 2>&1; then
+    docker rm -f "$CONTAINER" >/dev/null
+    log "容器已删(记忆数据保留于 $STATE_DIR)"
+  fi
+}
+
 # 反激活:先释放 license seat,再拆容器+隧道,删除该实例的记忆数据。共享模型缓存保留。
+# keep 标记(手动 touch .cache/nowledge-mem/<name>/keep)= 这是长期积累库,裸 down 拒绝执行,
+# 防止手滑一条命令删掉攒了几周的记忆;只想停运行时用 stop,确认销毁置 NOWLEDGE_FORCE=1。
 down() {
+  if [ -f "$STATE_DIR/keep" ] && [ "${NOWLEDGE_FORCE:-0}" != "1" ]; then
+    die "实例 $NAME 带 keep 标记(持久记忆库)。停运行时用 stop;确认连数据销毁请 NOWLEDGE_FORCE=1 $0 down $NAME"
+  fi
   license_deactivate
   if pid=$(tunnel_pid); then
     kill "$pid" 2>/dev/null || true
@@ -312,9 +334,10 @@ status() {
 
 case "${1:-}" in
   up) up ;;
+  stop) stop ;;
   down) down ;;
   status) status ;;
   probe) probe ;;
   env) cat "$ENV_FILE" 2>/dev/null || die "还没 up" ;;
-  *) die "用法: $0 up|down|status|probe|env [instance-name(默认 default)]" ;;
+  *) die "用法: $0 up|stop|down|status|probe|env [instance-name(默认 default)]" ;;
 esac
