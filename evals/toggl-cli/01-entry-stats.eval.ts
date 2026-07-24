@@ -3,10 +3,9 @@ import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, orderedLines, type ProbeCase } from "./harness.ts";
 
-// 链的第 1 题 —— 「建立约定」的那一题。这里不回忆任何前一次会话的东西,所以任何条件(带不带
-// 记忆)都该能过它;它是整条链的控制点。关键在于:三轮对话用大白话说清了一组项目级规则,而这些
-// 规则从 checkout 里推不出来:
+// 链的第 1 题。三轮对话用大白话说清一组项目级约定,这些约定从 checkout 里推不出来。
 //
+// 本题建立:
 //   R1  所有新命令用紧凑时长 `1h 02m` / `45m` / `0m`
 //       (仓库自己只会渲染 `H:MM:SS`,而且是两处复制粘贴的 helper)
 //   R2  每个新命令都带 --json;JSON 里时长一律整数秒放在 `seconds`,总计是 `total_seconds`,键全 snake_case
@@ -14,8 +13,10 @@ import { installRustToolchain, prepareRepo, runProbe, orderedLines, type ProbeCa
 //   R4  空结果在 stdout 打 `(no data)` 并 exit 0
 //   R5  不加新依赖
 //
-// 02-05 都从这同一个 base commit 起步——这些代码一行都不在——只会含糊提一句这些规则
-// (「照我们上次定的」「照我们惯用的风格」)。见 ./README.md。
+// 本题复用:无(链的起点)。约定与命令形状都在本题 prompt 里写清。
+//
+// 后续各题都从这同一个 base commit 起步——上面这些代码一行都不在——只会含糊提一句这些约定
+// (「照我们上次定的」「照我们惯用的风格」)。
 
 const DAY = "2026-03-05";
 

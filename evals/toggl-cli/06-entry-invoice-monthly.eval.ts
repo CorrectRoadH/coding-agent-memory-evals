@@ -3,19 +3,20 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, orderedLines, prepareRepo, runProbe, type ProbeCase } from "./harness.ts";
 
-// 链的第 6 题 —— 「两条规则都靠记忆」的验证题(与第 5 题成对)。
+// 链的第 6 题。按月汇总的开票视图。
 //
-// 命令的功能形状(按月、只算 billable、输出格式)都在本题 prompt 说清,但计费怎么算完全没说:
-// prompt 只说「用我们 invoice 的计费规则」。那套规则是两条记忆的叠加——15 分钟向上取整(第 2 题建立)
-// 加 30 分钟最低计费额(第 5 题建立),checkout 里都查不到。
-//   · 无记忆 → 不知道取整、也不知道最低额 → 数字全错 → FAIL。
-//   · 带记忆 → 召回两条规则、正确叠加 → 数字对 → PASS。
-// 这是链里对记忆依赖最深的一题:要同时记起分属两次会话建立的两条规则。
+// 本题建立:无。
+//
+// 本题复用:R-round(15 分钟向上取整)来自第 2 题、R-min(30 分钟最低计费额)来自第 5 题,两条
+// 叠加使用;本题 prompt 只说「用我们 invoice 的计费规则」,两条都不重述。R4 / R5 来自第 1 题。
+//
+// 命令的功能形状(按月分桶、键格式、排序、输出格式)在本题 prompt 里说清;计费口径不在。
+// base commit 的仓库里没有任何计费或取整逻辑。判据只看最终计费数字,不锁实现。
 const M1 = "2026-01-15";
 const M2 = "2026-02-10";
 
 // 2026-01: 420s→取整900→最低1800。2026-02: 2400s→取整2700→2700。合计 4500。
-// 只取整不套最低 → 01 月=900;都不懂 → 01 月=420。都对才 1800。
+// 数据把三档拆得开:只套 R-round → 01 月=900;两条都不套 → 01 月=420;两条都套才 1800。
 const ENTRIES = [
   { id: 2, description: "feb", start: `${M2}T09:00:00Z`, stop: `${M2}T09:40:00Z`, duration: 2400, billable: true, workspace_id: 1, project_id: 11 },
   { id: 1, description: "jan", start: `${M1}T09:00:00Z`, stop: `${M1}T09:07:00Z`, duration: 420, billable: true, workspace_id: 1, project_id: 11 },
@@ -90,7 +91,7 @@ export default defineEval({
       t.check(probe.empty.exit, equals(0));
     });
 
-    // --- 决定性断言:金额要同时记起「15 分钟取整」和「30 分钟最低额」两条规则才对 ---
+    // --- 计费口径:本题 prompt 未重述,规则见 R-round(第 2 题)+ R-min(第 5 题) ---
     await t.group("金额体现取整+最低额(两条规则分属第 2、5 题,都靠记忆)", () => {
       t.check(monthSummary(asJson(probe.json)), equals([
         ["2026-01", 1800],

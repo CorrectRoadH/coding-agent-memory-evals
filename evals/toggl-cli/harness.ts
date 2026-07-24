@@ -1,8 +1,8 @@
 // toggl-cli 链的共享底座。不是 eval 文件(没有 `.eval.ts` 后缀),所以 runner 发现阶段会忽略它。
 //
-// 本文件夹里每道 eval 都从同一个 base commit clone 真实仓库——谁也不建立在前一道的产出之上。
-// 这是刻意的:跨 eval 传递的只有对话里说过的话(命名、输出风格、默认值、被否掉的选项),于是带记忆
-// 的 agent 有优势,不带记忆的在 checkout 里找不到任何可反推的线索。
+// 本文件夹里每道 eval 都从同一个 base commit clone 真实仓库——谁也不建立在前一道的产出之上,
+// 所以跨 eval 传递的只有对话里说过的话(命名、输出风格、计费口径、被否掉的选项)。每道题各自
+// 建立与复用了哪些约定,见各 eval 文件头。
 
 import { readFile } from "node:fs/promises";
 

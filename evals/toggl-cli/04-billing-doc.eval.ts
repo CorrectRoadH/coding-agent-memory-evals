@@ -1,14 +1,14 @@
 import { defineEval } from "niceeval";
 import { includes } from "niceeval/expect";
 
-// 链的第 4 题 —— 「问功能」式记忆题(不做功能,只回答关于功能的问题)。
+// 链的第 4 题。问答题:给新同事写 onboarding 文档时问「我们的 bill 怎么算」。
 //
-// 这是最纯粹的记忆题:不 clone 仓库、不写代码。agent 在一个空沙箱里被问「我们的 bill 是怎么
-// 计费的」,它没有任何代码可读,唯一的信息来源就是前面第 2 题存进记忆的那条计费规则
-// (只算 billable、每条按 15 分钟向上取整)。
-//   · 无记忆 → 空沙箱、无从查 → 答不出规则(或只能诚实说不知道)→ FAIL。
-//   · 带记忆 → mempal search 召回规则 → 答对 → PASS。
-// 判据只看回答文本,完全不碰实现——真实(给新同事写文档是日常),也最不「贴」。
+// 本题建立:无。
+//
+// 本题复用:R-round(只算 billable、每条按 15 分钟向上取整),来自第 2 题。
+//
+// 本题不 clone 仓库、不写代码,沙箱是空的;判据只看回答文本,完全不碰实现。
+// 注意:这道题判的是「答没答对这条规则」,不是任务完成度——报告里应与做功能的题分开看。
 export default defineEval({
   description:
     "toggl-cli 04: answer how the shop's billing works — recallable only from the rule agreed in the " +
@@ -23,7 +23,7 @@ export default defineEval({
       )
       .then((turn) => turn.expectOk());
 
-    // 硬门槛:回答必须提到「15 分钟」这个数字——无记忆答不出这个具体数
+    // 硬门槛:回答必须提到「15 分钟」这个数字
     t.check(t.reply, includes(/15/));
     // 语义完整性:说清了「每条向上取整到 15 分钟」和「只算 billable」
     t.judge.autoevals

@@ -3,16 +3,19 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, orderedLines, prepareRepo, runProbe, type ProbeCase } from "./harness.ts";
 
-// 链的第 5 题 —— 引入「最低计费额」规则的控制点(与第 6 题成对)。
+// 链的第 5 题。开票口径:在计费取整之上再加一条最低计费额。
 //
-// 本题自包含:计费取整规则在这里重述一遍(不靠记忆),另外建立一条新规则——invoice 有最低计费额,
-// 每条不足 30 分钟按 30 分钟计。因为规则都在自己 prompt 里,任何条件都该过,它是控制点;它的作用
-// 是把「最低计费额」这条新规则存进记忆,供第 6 题回忆。
+// 本题建立:
+//   R-min  invoice 的最低计费额——每条不足 30 分钟按 30 分钟计,在 R-round 取整之后套用
+//
+// 本题复用:R-round 来自第 2 题,但本题 prompt 把它重述了一遍(自包含);R4 / R5 来自第 1 题。
+//
+// 两条规则都在自己 prompt 里写清。判据只看最终计费数字,不锁实现。
 const DAY = "2026-03-05";
 
 // 规则:只算 billable、每条先按 15 分钟向上取整、再套最低计费额(不足 30 分钟按 30 分钟)。
 // Alpha: 420s→取整900→最低1800 ; 2400s→取整2700→>1800不变2700 = 4500。Beta: 1860s→2700。
-// 关键区分:只取整不套最低 → Alpha=3600;两者都不懂 → Alpha=2820;都对才 4500。
+// 数据把三档拆得开:只套 R-round → Alpha=3600;两条都不套 → Alpha=2820;两条都套才 4500。
 const ENTRIES = [
   { id: 1, description: "a1", start: `${DAY}T09:00:00Z`, stop: `${DAY}T09:07:00Z`, duration: 420, billable: true, workspace_id: 1, project_id: 11 },
   { id: 2, description: "a2", start: `${DAY}T10:00:00Z`, stop: `${DAY}T10:40:00Z`, duration: 2400, billable: true, workspace_id: 1, project_id: 11 },
