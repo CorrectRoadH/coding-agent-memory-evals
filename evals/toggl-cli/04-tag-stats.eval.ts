@@ -3,20 +3,19 @@ import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
-// Chain link 4 of 5 — the cumulative check on argument handling. Same base commit again; none of the three earlier
-// commands exists in this checkout. The prompts state only what is genuinely new (tags
-// can overlap, `--top`), and lean on everything else:
+// 链的第 4 题 —— 参数处理的综合考。仍是同一个 base commit;前三个命令在这个 checkout 里都不存在。
+// prompt 只说真正新的东西(tag 可重叠、`--top`),其余全靠回忆:
 //
-//   R1  compact `1h 02m` / `45m` durations                     (link 1)
-//   R2  --json with integer `seconds` + `total_seconds`        (link 1)
-//   R4  `(no data)` on stdout + exit 0                         (link 1)
-//   R6  no window flags means today, not report's Monday→today (link 2)
-//   R8  bad argument value -> exit 2 before any API call       (link 3)
+//   R1  紧凑时长 `1h 02m` / `45m`                       (第 1 题)
+//   R2  --json,整数秒 `seconds` + `total_seconds`       (第 1 题)
+//   R4  空结果 stdout 打 `(no data)` + exit 0            (第 1 题)
+//   R6  不给窗口标志时默认今天,不是 report 的「本周一→今天」 (第 2 题)
+//   R8  非法参数值 → 任何 API 调用前 exit 2              (第 3 题)
 
 const DAY = today();
 
-// code = 3600 + 1800 = 5400s, deep = 3600 + 600 = 4200s, untagged = 2700s.
-// Tracked time overall is 8700s — tags overlap, so the total is not the sum of the rows.
+// code = 3600 + 1800 = 5400s、deep = 3600 + 600 = 4200s、无标签 = 2700s。
+// 总记录时长 8700s —— tag 会重叠,所以总计不是各行之和。
 const ENTRIES = [
   { id: 1, description: "spec", start: `${DAY}T09:00:00Z`, stop: `${DAY}T10:00:00Z`, duration: 3600, billable: false, workspace_id: 1, tags: ["deep", "code"], project_id: 11 },
   { id: 2, description: "review", start: `${DAY}T10:30:00Z`, stop: `${DAY}T11:00:00Z`, duration: 1800, billable: false, workspace_id: 1, tags: ["code"], project_id: 11 },
@@ -90,7 +89,7 @@ export default defineEval({
         { name: "json", args: ["tag", "stats", "--since", DAY, "--until", DAY, "--json"] },
         { name: "top-2", args: ["tag", "stats", "--since", DAY, "--until", DAY, "--top", "2"] },
         { name: "top-zero", args: ["tag", "stats", "--top", "0"] },
-        // No window flags: this one case carries the "defaults to today" convention on its own.
+        // 不带窗口标志:这一个 case 单独承载「默认今天」这条约定。
         { name: "default-window", args: ["tag", "stats"] },
         { name: "empty", args: ["tag", "stats", "--since", "2026-01-01", "--until", "2026-01-01"] },
         { name: "empty-json", args: ["tag", "stats", "--since", "2026-01-01", "--until", "2026-01-01", "--json"] },

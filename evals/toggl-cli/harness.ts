@@ -1,37 +1,31 @@
-// Shared plumbing for the toggl-cli chain. Not an eval file (no `.eval.ts` suffix), so
-// the runner ignores it during discovery.
+// toggl-cli 链的共享底座。不是 eval 文件(没有 `.eval.ts` 后缀),所以 runner 发现阶段会忽略它。
 //
-// Every eval in this folder starts from the SAME base commit of the real repository —
-// none of them builds on the code an earlier eval produced. That is deliberate: the only
-// thing that carries over between evals is what was said in the conversation (naming,
-// output style, defaults, rejected options), so a memory-equipped agent has an edge and a
-// memory-less one has nothing in the checkout to reverse-engineer it from.
+// 本文件夹里每道 eval 都从同一个 base commit clone 真实仓库——谁也不建立在前一道的产出之上。
+// 这是刻意的:跨 eval 传递的只有对话里说过的话(命名、输出风格、默认值、被否掉的选项),于是带记忆
+// 的 agent 有优势,不带记忆的在 checkout 里找不到任何可反推的线索。
 
 import { readFile } from "node:fs/promises";
 
 import { commandSucceeded } from "niceeval/expect";
 import type { TestContext } from "niceeval";
-// Sandbox / SandboxHookContext (the two arguments eval.setup receives) are not re-exported
-// from the package root — only the narrower SandboxHandle is — so they come from the
-// sandbox subpath. Candidate upstream FR: export them where `setup` is declared.
+// Sandbox / SandboxHookContext(eval.setup 收到的两个参数)不从包根导出——包根只导出了更窄的
+// SandboxHandle,所以它们要从 sandbox 子路径拿。候选上游 FR:在 `setup` 声明的地方也导出它们。
 import type { Sandbox, SandboxHookContext } from "niceeval/sandbox";
 
 const REPO_URL = "https://github.com/CorrectRoadH/toggl-cli.git";
 
-/** toggl-cli @ 8646f29 — the tip at the time these evals were written. */
+/** toggl-cli @ 8646f29 —— 写这些 eval 时的仓库 tip。 */
 export const BASE_COMMIT = "8646f29c87242b06eab974793a999d35b5a85b5e";
 
-/** Today in UTC (YYYY-MM-DD). The probe pins TZ=UTC so the CLI agrees with us. */
+/** UTC 当天(YYYY-MM-DD)。探针把 TZ 钉成 UTC,好让 CLI 跟我们对齐。 */
 export const today = () => new Date().toISOString().slice(0, 10);
 
 /**
- * eval.setup: system packages + Rust toolchain, installed as root so they land outside
- * the working copy and never show up in the agent diff.
+ * eval.setup:系统包 + Rust 工具链,以 root 装,好让它们落在工作副本之外、永不进 agent diff。
  *
- * `keyring` needs libdbus, `reqwest`/`openssl-sys` need libssl + pkg-config (documented in
- * the repo's own AGENTS.md). The toolchain goes to /usr/local/{rustup,cargo} rather than a
- * user home so that every shell the agent opens — and the grading shell — sees the same
- * cargo, regardless of whether it is a login shell that sources ~/.profile.
+ * `keyring` 需要 libdbus,`reqwest`/`openssl-sys` 需要 libssl + pkg-config(仓库自己的 AGENTS.md
+ * 里有记)。工具链装到 /usr/local/{rustup,cargo} 而不是某个用户 home,这样 agent 开的每个 shell、
+ * 以及判分用的 shell,看到的都是同一个 cargo,不管它是不是 source 过 ~/.profile 的登录 shell。
  */
 export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookContext) => {
   ctx.progress({ message: "installing build deps + rust toolchain" });
@@ -41,14 +35,14 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
     "if command -v apt-get >/dev/null 2>&1; then",
     "  apt-get update -qq",
     "  apt-get install -y -qq --no-install-recommends pkg-config libssl-dev libdbus-1-dev build-essential curl ca-certificates >/dev/null",
-    // Reclaim the package lists: attempts have died mid-run with a bare "terminated", and a
-    // sandbox that ran out of room is the likeliest reading, so every hundred MB counts.
+    // 回收 apt 包列表:有 attempt 中途死于一句光秃秃的 "terminated",最可能的解读是沙箱空间耗尽,
+    // 所以每一百 MB 都值得抠。
     "  apt-get clean && rm -rf /var/lib/apt/lists/*",
     "fi",
     "if ! command -v cargo >/dev/null 2>&1 && [ ! -x /usr/local/cargo/bin/cargo ]; then",
     "  export RUSTUP_HOME=/usr/local/rustup CARGO_HOME=/usr/local/cargo",
-    // profile=default matches the repo's rust-toolchain.toml, so `cargo fmt` and
-    // `cargo clippy` (which AGENTS.md tells the agent to run) are actually present.
+    // profile=default 与仓库的 rust-toolchain.toml 一致,这样 `cargo fmt` 和 `cargo clippy`
+    // (AGENTS.md 让 agent 跑的)才真的存在。
     "  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile default --default-toolchain stable --no-modify-path >/dev/null",
     "  chmod -R a+rwX /usr/local/rustup /usr/local/cargo",
     "fi",
@@ -58,13 +52,11 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
     "done",
     "printf 'export PATH=\"%s:$PATH\"\\n' \"$CARGO_BIN_DIR\" > /etc/profile.d/rust.sh",
     "chmod +x /etc/profile.d/rust.sh",
-    // Keep cargo's build directory OUT of the working copy. A debug build of this crate is
-    // ~1GB, and leaving it under the workdir made the post-run diff capture flaky (attempts died
-    // with "capturing diff · fetch failed" and "export agent windows failed"). /opt rather than
-    // /tmp on purpose: if the sandbox mounts /tmp as tmpfs, a 1GB build tree would be charged to
-    // RAM and get the sandbox OOM-terminated. A cargo config file rather than an env var so it
-    // applies to every cargo invocation — ours and the agent's — regardless of whether that
-    // shell sourced /etc/profile.d.
+    // 让 cargo 的构建目录留在工作副本之外。这个 crate 的 debug build 约 1GB,留在 workdir 下面会
+    // 让收尾抓 diff 的阶段变得不稳(attempt 死于 "capturing diff · fetch failed" 和
+    // "export agent windows failed")。放 /opt 而不是 /tmp 是刻意的:若沙箱把 /tmp 挂成 tmpfs,
+    // 1GB 构建树会记在内存上、把沙箱 OOM 掉。用配置文件而不是环境变量,好让它对每一次 cargo 调用
+    // (我们的和 agent 的)都生效,不管那个 shell 有没有 source 过 /etc/profile.d。
     "mkdir -p /opt/cargo-target && chmod 1777 /opt/cargo-target",
     'for home in /root /home/*; do',
     '  [ -d "$home" ] || continue',
@@ -86,12 +78,11 @@ export const installRustToolchain = async (sandbox: Sandbox, ctx: SandboxHookCon
 };
 
 /**
- * Clone the real repository at BASE_COMMIT into the workdir root and warm the build cache.
+ * 把真实仓库在 BASE_COMMIT clone 到 workdir 根目录,并预热构建缓存。
  *
- * The checkout has to sit at the workdir root: a nested subdirectory is recorded as a
- * gitlink by the diff ledger and the agent's changes disappear from the evidence.
- * History after the base commit is erased (remote/tags/reflog) so the agent cannot read
- * the future of the project out of its own checkout.
+ * checkout 必须落在 workdir 根:嵌套子目录会被 diff 分类账记成 gitlink,agent 的改动就从证据里
+ * 消失了。base commit 之后的历史(remote/tags/reflog)全抹掉,这样 agent 没法从自己的 checkout 里
+ * 读到这个项目的"未来"。
  */
 export const prepareRepo = async (t: TestContext) => {
   t.progress({ message: "cloning toggl-cli @ base commit" });
@@ -106,7 +97,7 @@ export const prepareRepo = async (t: TestContext) => {
       "git tag -l | xargs -r git tag -d >/dev/null",
       "git reflog expire --expire=now --all",
       "git gc -q --prune=now",
-      // same self-check the other real-repo evals use: nothing after the base commit is visible
+      // 与其它真实仓库 eval 同款的自检:base commit 之后不应有任何东西可见
       `TS=$(git show -s --format=%ci ${BASE_COMMIT})`,
       'COUNT=$(git log --oneline --since="$TS" | wc -l)',
       '[ "$COUNT" -eq 1 ]',
@@ -116,9 +107,8 @@ export const prepareRepo = async (t: TestContext) => {
     throw new Error(`toggl-cli checkout failed: ${(cloned.stderr || cloned.stdout).trim().slice(-500)}`);
   }
 
-  // Warm the dependency build once, up front. Without it the agent pays a multi-minute
-  // cold `cargo build` out of its own time budget — a difference between memory conditions
-  // that has nothing to do with memory.
+  // 预先把依赖构建预热一次。不预热的话,agent 要从自己的时间预算里付一次数分钟的冷 `cargo build`
+  // ——那会变成一个与记忆无关的条件间差异。
   t.progress({ message: "warming cargo build cache (cold dependency build)" });
   const built = await t.sandbox.runShell(
     ['export PATH="/usr/local/cargo/bin:$PATH"', "cargo build --tests --quiet"].join("\n"),
@@ -127,9 +117,8 @@ export const prepareRepo = async (t: TestContext) => {
     throw new Error(`baseline cargo build failed: ${(built.stderr || built.stdout).trim().slice(-800)}`);
   }
 
-  // Attempts have died mid-run with a bare "terminated" and no further explanation. Record
-  // what the sandbox had left after the warm-up so the next occurrence can be attributed
-  // (or ruled out) instead of guessed at.
+  // 有 attempt 中途死于一句光秃秃的 "terminated",没有更多线索。把预热之后沙箱还剩多少空间记下来,
+  // 下次再出就能坐实(或排除)是空间问题,而不是接着猜。
   const disk = await t.sandbox.runShell(
     "df -Pk / /opt 2>/dev/null | tail -n +2 | awk '{printf \"%s: %s KB free of %s KB; \", $6, $4, $2}'; " +
       "du -sk /opt/cargo-target 2>/dev/null | awk '{printf \"build tree %s KB\", $1}'",
@@ -141,7 +130,7 @@ export const prepareRepo = async (t: TestContext) => {
   });
 };
 
-/** One fake-API window: entries served when the request path contains `contains`. */
+/** 一个假 API 窗口:请求路径含 `contains` 时返回 `entries`。 */
 export interface ProbeWindow {
   contains: string;
   entries: unknown[];
@@ -157,25 +146,23 @@ export interface ProbePlan {
 export interface ProbeCase {
   name: string;
   args: string[];
-  /** null when the invocation timed out. */
+  /** 命令超时时为 null。 */
   exit: number | null;
   stdout: string;
   stderr: string;
-  /** Non-empty stdout lines with runs of whitespace collapsed to one space. */
+  /** 非空的 stdout 行,连续空白折叠成一个空格。 */
   lines: string[];
-  /** API paths the CLI requested during this case, query string included. */
+  /** 本 case 里 CLI 请求过的 API 路径(含 query string)。 */
   requests: string[];
 }
 
 /**
- * Check that `expected` shows up among a case's stdout lines, in order.
+ * 检查 `expected` 这几行是否按顺序出现在某个 case 的 stdout 里。
  *
- * Deliberately a subsequence check rather than an exact match: a title line, a `------`
- * rule or a `── 2026-07-23 Thursday ──` group header is a perfectly reasonable thing for
- * an implementation to add, and none of it has anything to do with the conventions these
- * evals grade. An exact match failed a run whose rendering was completely correct. What
- * still gets caught: wrong duration rendering, wrong order, missing rows, and a missing
- * `(no data)` line — because those change the lines themselves, not what surrounds them.
+ * 刻意用「按序子序列」而不是「逐行精确匹配」:标题行、`------` 分隔线、`── 2026-07-23 Thursday ──`
+ * 这类分组头,都是实现可以合理添加的东西,跟这些 eval 要考的约定毫无关系。逐行精确匹配曾把一次
+ * 渲染完全正确的运行判成失败。仍然抓得住的:时长渲染错、顺序错、缺行、空结果没打 `(no data)`
+ * ——因为那些改的是行本身,而不是行周围。
  */
 export const orderedLines = (probeCase: ProbeCase, expected: string[]) => {
   let cursor = 0;
@@ -191,11 +178,11 @@ export const orderedLines = (probeCase: ProbeCase, expected: string[]) => {
 };
 
 /**
- * Build the agent's code, run every planned CLI invocation against a throwaway HTTP stub,
- * and hand back what each one did. Assertions stay in the eval file — one per agreed
- * convention — so a failing run shows which convention was missed, not just "tests failed".
+ * 构建 agent 留下的代码,把计划里每条 CLI 调用都对着一个一次性 HTTP stub 跑一遍,把每条干了什么
+ * 交回来。断言留在 eval 文件里——一条约定一条——这样失败的运行能显示是哪条约定没做到,而不是
+ * 笼统一句"测试失败"。
  *
- * Gated: if the crate does not build, or the probe cannot run, the eval stops here.
+ * 前置门:crate 编译不过、或探针跑不起来,eval 就在这里停住。
  */
 export const runProbe = async (t: TestContext, plan: ProbePlan): Promise<Record<string, ProbeCase>> => {
   const fixture = (path: string) => new URL(`../fixtures/toggl-cli/${path}`, import.meta.url);
@@ -207,8 +194,8 @@ export const runProbe = async (t: TestContext, plan: ProbePlan): Promise<Record<
 
   t.progress({ message: "building the agent's code and probing the CLI" });
   const probe = await t.sandbox.runShell("bash tests/run-probe.sh");
-  // Belt and braces alongside the cargo target-dir redirect in setup: if anything did land
-  // in a workdir-local target/, drop it before niceeval walks the tree for the diff.
+  // 与 setup 里那个 cargo target-dir 重定向双保险:万一真有东西落进了 workdir 本地的 target/,
+  // 在 niceeval 遍历工作树抓 diff 之前先删掉。
   await t.sandbox.runShell("rm -rf target");
   await t.require(probe, commandSucceeded());
 

@@ -3,22 +3,21 @@ import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
-// Chain link 5 of 5 — the longest reach back. Same base commit as every other link, so
-// none of the four earlier commands exists here. The prompts below introduce exactly one
-// new thing (which hour an entry belongs to) and lean on the whole accumulated ruleset:
+// 链的第 5 题 —— 够得最远的一题。与每一题同一个 base commit,所以前四个命令在这儿都不存在。
+// 下面的 prompt 只引入一个新东西(条目属于哪个小时),其余全靠积累起来的整套规则:
 //
-//   R1  compact `1h 02m` / `45m` durations                     (link 1)
-//   R2  --json with integer `seconds` + `total_seconds`        (link 1)
-//   R3  shared helper lives in src/utilities.rs                (link 1)
-//   R4  `(no data)` on stdout + exit 0                         (link 1)
-//   R5  no new dependencies                                    (link 1)
-//   R6  no window flags means today, not report's Monday→today (link 2)
-//   R7  oldest first                                           (link 2)
+//   R1  紧凑时长 `1h 02m` / `45m`                       (第 1 题)
+//   R2  --json,整数秒 `seconds` + `total_seconds`       (第 1 题)
+//   R3  共享 helper 放 src/utilities.rs                 (第 1 题)
+//   R4  空结果 stdout 打 `(no data)` + exit 0            (第 1 题)
+//   R5  不加新依赖                                       (第 1 题)
+//   R6  不给窗口标志时默认今天,不是 report 的「本周一→今天」 (第 2 题)
+//   R7  旧的在前                                         (第 2 题)
 
 const DAY = today();
 
-// hour 9: 1800 + 2700 = 4500s. hour 11: 2700s. hour 14: 3720s. Tracked total 10920s.
-// The last entry is still running and must not be counted.
+// 9 点: 1800 + 2700 = 4500s。11 点: 2700s。14 点: 3720s。记录总计 10920s。
+// 最后一条仍在计时,不能计入。
 const ENTRIES = [
   { id: 3, description: "review", start: `${DAY}T14:00:00Z`, stop: `${DAY}T15:02:00Z`, duration: 3720, billable: false, workspace_id: 1, project_id: 12 },
   { id: 1, description: "spec", start: `${DAY}T09:00:00Z`, stop: `${DAY}T09:30:00Z`, duration: 1800, billable: false, workspace_id: 1, project_id: 11 },
@@ -89,7 +88,7 @@ export default defineEval({
       cases: [
         { name: "human", args: ["entry", "hours", "--since", DAY, "--until", DAY] },
         { name: "json", args: ["entry", "hours", "--since", DAY, "--until", DAY, "--json"] },
-        // No window flags: this one case carries the "defaults to today" convention on its own.
+        // 不带窗口标志:这一个 case 单独承载「默认今天」这条约定。
         { name: "default-window", args: ["entry", "hours"] },
         { name: "empty", args: ["entry", "hours", "--since", "2026-01-01", "--until", "2026-01-01"] },
         { name: "empty-json", args: ["entry", "hours", "--since", "2026-01-01", "--until", "2026-01-01", "--json"] },

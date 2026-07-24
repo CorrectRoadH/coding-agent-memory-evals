@@ -3,27 +3,24 @@ import { commandSucceeded, equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, orderedLines, type ProbeCase } from "./harness.ts";
 
-// Chain link 1 of 5 — the one that ESTABLISHES the conventions. Nothing here is recalled
-// from an earlier session, so every condition (memory or not) should be able to pass it;
-// it is the control point of the chain. What matters is that the three turns state, in
-// plain conversation, a set of project-wide rules that are *not* derivable from the
-// checkout:
+// 链的第 1 题 —— 「建立约定」的那一题。这里不回忆任何前一次会话的东西,所以任何条件(带不带
+// 记忆)都该能过它;它是整条链的控制点。关键在于:三轮对话用大白话说清了一组项目级规则,而这些
+// 规则从 checkout 里推不出来:
 //
-//   R1  compact durations `1h 02m` / `45m` / `0m` for all NEW commands
-//       (the repo itself only ever renders `H:MM:SS`, in two copy-pasted helpers)
-//   R2  every new command takes --json; in JSON a duration is integer seconds under
-//       `seconds`, the grand total is `total_seconds`, all keys snake_case
-//   R3  shared helpers live in src/utilities.rs — no third copy of a duration formatter
-//   R4  an empty result prints `(no data)` on stdout and exits 0
-//   R5  no new dependencies
+//   R1  所有新命令用紧凑时长 `1h 02m` / `45m` / `0m`
+//       (仓库自己只会渲染 `H:MM:SS`,而且是两处复制粘贴的 helper)
+//   R2  每个新命令都带 --json;JSON 里时长一律整数秒放在 `seconds`,总计是 `total_seconds`,键全 snake_case
+//   R3  共享 helper 放 src/utilities.rs —— 不要再出现第三份时长格式化函数
+//   R4  空结果在 stdout 打 `(no data)` 并 exit 0
+//   R5  不加新依赖
 //
-// Links 02-05 start from this same base commit — none of this code is there — and only
-// gesture at these rules ("the way we agreed", "our usual style"). See ./README.md.
+// 02-05 都从这同一个 base commit 起步——这些代码一行都不在——只会含糊提一句这些规则
+// (「照我们上次定的」「照我们惯用的风格」)。见 ./README.md。
 
 const DAY = "2026-03-05";
 
-// Alpha: 3600 + 1800 = 5400s. Beta: 3720s. No project: 2700s. Total 11820s.
-// The last entry is still running (negative duration) and must not be counted.
+// Alpha: 3600 + 1800 = 5400s。Beta: 3720s。无项目: 2700s。合计 11820s。
+// 最后一条仍在计时(负 duration),不能计入。
 const ENTRIES = [
   { id: 1, description: "spec", start: `${DAY}T09:00:00Z`, stop: `${DAY}T10:00:00Z`, duration: 3600, billable: false, workspace_id: 1, tags: ["deep"], project_id: 11 },
   { id: 2, description: "review", start: `${DAY}T10:30:00Z`, stop: `${DAY}T11:00:00Z`, duration: 1800, billable: false, workspace_id: 1, project_id: 11 },
@@ -45,12 +42,12 @@ export default defineEval({
     "toggl-cli 01: add `toggl entry stats` (per-project totals) and establish the project's " +
     "output/JSON/duration conventions for new commands",
   tags: ["toggl-cli", "chain"],
-  // A cold dependency build plus a multi-turn coding task does not fit in the default
-  // 10 minutes; the setup hook alone (apt + rustup + cargo build) can take several.
+  // 一次冷依赖构建加多轮编码任务塞不进默认的 10 分钟;光 setup 钩子(apt + rustup + cargo build)
+  // 就可能好几分钟。
   timeoutMs: 1_800_000,
   diff: {
-    // Cargo's build directory is gitignored already, but list it explicitly so a stray
-    // CARGO_TARGET_DIR or incremental artifact never lands in the diff ledger.
+    // cargo 的构建目录已经在 gitignore 里,但显式列出来,免得某个游离的 CARGO_TARGET_DIR
+    // 或增量产物落进 diff 分类账。
     ignore: ["target"],
   },
   setup: installRustToolchain,

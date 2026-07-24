@@ -3,29 +3,29 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, orderedLines, prepareRepo, runProbe, today, type ProbeCase } from "./harness.ts";
 
-// Chain link 6 — the CONTROL point for the alias mechanism (paired with link 7).
+// 链的第 6 题 —— 别名机制的「控制点」(与第 7 题成对)。
 //
-// Why this pair exists: under pass/fail scoring the earlier links (01-05) show no
-// difference between memory conditions, because every convention they lean on has a
-// "natural default" — an agent that ignores memory and just copies the repo's existing
-// style gets most assertions right and only trips on a few. That is real signal, but it
-// lives at the assertion level, not the pass/fail level.
+// 这对题为什么存在:在通过制下,前面 01-05 看不出记忆条件的差异,因为它们引用的每条约定都有
+// 「自然默认」——一个无视记忆、照抄仓库现有风格的 agent 能把大部分断言做对,只错几条。那是真实
+// 信号,但它活在断言级,不在通过/失败级。
 //
-// An alias has NO natural default. The repo's own command aliases are all synonyms
-// (`running`→`current`, `resume`, `edit`→`update`); nothing in the checkout suggests
-// "initials". So the rule established here — every command also answers to the initials
-// of its words — is pure memory: a run that remembers it passes link 7, a run that does
-// not cannot guess it and fails. That is how the alias turns a recalled fact into a
-// pass/fail difference.
+// 别名没有自然默认。仓库自己的命令别名全是近义词(`running`→`current`、`resume`、`edit`→`update`),
+// checkout 里没有任何东西暗示「用首字母」。所以这里建立的规则——每个命令还响应一个由各单词首字母
+// 拼成的别名——是纯记忆:记住它的运行能过第 7 题,没记住的猜不到、必挂。这就是别名把「记住的一个
+// 事实」翻译成「通过/失败的差异」的方式。
 //
-// This link STATES the rule in full (and gives this command's alias outright), so every
-// condition should pass it. Link 07 only gestures at it.
+// 本题把规则说全(并且直接给出本命令的别名),所以任何条件都该过它。第 7 题只含糊提一句。
+//
+// 06 刻意做成自包含:每条功能约定(紧凑时长、JSON 形状、默认今天、空窗口)都在它自己的 prompt 里
+// 写清,而不是用「照我们 usual 风格」引用。这样 06/07 这对可以单独跑——不必先重放 01-05 把那些
+// 约定播种进记忆——06 依然是一个任何条件都能过的干净控制点。06 唯一留给记忆的就是别名规则,而那
+// 正是第 7 题要考的。
 
-const MON = "2026-03-02"; // a Monday
+const MON = "2026-03-02"; // 一个周一
 const TUE = "2026-03-03";
 const WED = "2026-03-04";
 
-// Mon 3600s, Tue 1800s, Wed 2700s. Total 8100s. Shuffled; the last entry is still running.
+// Mon 3600s、Tue 1800s、Wed 2700s。合计 8100s。故意打乱顺序;最后一条仍在计时。
 const ENTRIES = [
   { id: 2, description: "tue", start: `${TUE}T09:00:00Z`, stop: `${TUE}T09:30:00Z`, duration: 1800, billable: false, workspace_id: 1, project_id: 11 },
   { id: 1, description: "mon", start: `${MON}T09:00:00Z`, stop: `${MON}T10:00:00Z`, duration: 3600, billable: false, workspace_id: 1, project_id: 11 },
@@ -60,19 +60,23 @@ export default defineEval({
         "toggl-cli. New command: `toggl entry weekday` — totals tracked time by day of the week.\n\n" +
           "- `toggl entry weekday [--since <when>] [--until <when>]`.\n" +
           "- One line per weekday that has time in it, in calendar order Mon→Sun: `<Mon|Tue|…>  <duration>`, " +
-          "two spaces between the columns. Weekdays with nothing are absent.\n" +
+          "two spaces between the columns. Weekdays with nothing are absent. A closing line `Total  <duration>`.\n" +
           "- The weekday is taken from each entry's start, in UTC. Still-running entries don't count.\n" +
-          "- A closing line `Total  <duration>`.\n\n" +
-          "Output style, duration rendering, the shared helper's home, window flags and their default, " +
-          "no new dependencies — all our usual conventions. Nothing new to decide there.",
+          "- Durations use a compact style: hours only when non-zero, minutes padded to two digits once " +
+          "hours are shown, never seconds. 3600s → `1h 00m`, 1800s → `30m`, 8100s → `2h 15m`. Put the " +
+          "formatter in `src/utilities.rs` (there's already a compact one there if you added earlier " +
+          "commands; if not, add it there — don't inline a new copy). No new dependencies.\n" +
+          "- With no `--since/--until`, the window is today (not report's Monday-of-this-week default).\n" +
+          "- An empty window prints `(no data)` on stdout and exits 0.",
       )
       .then((turn) => turn.expectOk());
 
     await t
       .send(
         "Now `--json`: a `days` array, one object per weekday carrying the three-letter weekday under " +
-          "`weekday` (Mon, Tue, …) plus that weekday's tracked time, and the grand total alongside. " +
-          "Duration representation and key naming: our usual rules.",
+          "`weekday` (Mon, Tue, …) plus that weekday's tracked time as integer seconds under `seconds`, and " +
+          "the grand total under `total_seconds`. In JSON mode stdout is only the JSON document. An empty " +
+          'window is `{"days":[],"total_seconds":0}`.',
       )
       .then((turn) => turn.expectOk());
 
@@ -83,9 +87,8 @@ export default defineEval({
           "gets the alias `ew`, so `toggl entry ew` does exactly what `toggl entry weekday` does. (Yes, I " +
           "know the repo's older aliases are synonyms like `update`/`current` — we're not doing that " +
           "anymore; the rule for anything new is initials.) Register `ew` for this one now.\n\n" +
-          "Handle the empty window the way all our commands do, then build and run the existing test " +
-          "suite. (`cargo test` also compiles tests/live_cli.rs, which needs real credentials to actually " +
-          "run — compiling is enough.)",
+          "Then build and run the existing test suite. (`cargo test` also compiles tests/live_cli.rs, " +
+          "which needs real credentials to actually run — compiling is enough.)",
       )
       .then((turn) => turn.expectOk());
 
@@ -95,7 +98,7 @@ export default defineEval({
       cases: [
         { name: "human", args: ["entry", "weekday", "--since", MON, "--until", WED] },
         { name: "json", args: ["entry", "weekday", "--since", MON, "--until", WED, "--json"] },
-        // The alias this link registers outright — every condition should have it.
+        // 本题直接注册的别名 —— 任何条件都该有它。
         { name: "alias", args: ["entry", "ew", "--since", MON, "--until", WED, "--json"] },
         { name: "default-window", args: ["entry", "weekday"] },
         { name: "empty", args: ["entry", "weekday", "--since", "2026-01-01", "--until", "2026-01-02"] },

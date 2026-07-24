@@ -3,25 +3,24 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
-// Chain link 2 of 5. Starts from the same base commit as link 1 — `entry stats` does not
-// exist in this checkout, so nothing below can be reverse-engineered from the code.
+// 链的第 2 题。与第 1 题从同一个 base commit 起步——`entry stats` 不在这个 checkout 里,所以
+// 下面的东西没法从代码反推。
 //
-// Recalled from link 1 (deliberately not restated in the prompts):
-//   R1  compact `1h 02m` / `45m` durations — every command in the repo renders H:MM:SS,
-//       so an agent without memory has every reason to copy that instead
-//   R2  --json with integer `seconds` and `total_seconds`
-//   R4  `(no data)` on stdout + exit 0 for an empty result
+// 从第 1 题回忆(prompt 里刻意不重述):
+//   R1  紧凑时长 `1h 02m` / `45m` —— 仓库里每个命令都渲染 H:MM:SS,
+//       所以没有记忆的 agent 完全有理由照抄那个
+//   R2  --json,整数秒 `seconds` 与 `total_seconds`
+//   R4  空结果在 stdout 打 `(no data)` + exit 0
 //
-// Established here for links 3-5 to recall:
-//   R6  new commands default to TODAY when no window is given (report's Monday→today
-//       default is legacy and deliberately not followed)
-//   R7  chronological order, oldest first
+// 本题建立、供 3-5 题回忆:
+//   R6  不给窗口时新命令默认为「今天」(report 的「本周一→今天」默认是遗留行为,刻意不跟)
+//   R7  时间正序,旧 → 新
 
 const FIRST_DAY = "2026-03-03";
 const LAST_DAY = "2026-03-05";
 
-// 03-03: 5400s. 03-04: 2700s. 03-05: 1800 + 1920 = 3720s. Total 11820s.
-// Deliberately shuffled: the API makes no ordering promise.
+// 03-03: 5400s。03-04: 2700s。03-05: 1800 + 1920 = 3720s。合计 11820s。
+// 故意打乱:API 不承诺任何顺序。
 const ENTRIES = [
   { id: 3, description: "standup", start: "2026-03-05T09:00:00Z", stop: "2026-03-05T09:30:00Z", duration: 1800, billable: false, workspace_id: 1, project_id: 12 },
   { id: 1, description: "spec", start: "2026-03-03T09:00:00Z", stop: "2026-03-03T10:30:00Z", duration: 5400, billable: false, workspace_id: 1, project_id: 11 },
@@ -94,7 +93,7 @@ export default defineEval({
 
     const probe = await runProbe(t, {
       windows: [
-        // Checked first: the default-window case must not be answered by the fixed-date payload.
+        // 先匹配:默认窗口这个 case 不能被固定日期的那份 payload 应答到。
         {
           contains: `start_date=${today()}`,
           entries: [

@@ -3,23 +3,22 @@ import { equals, isTrue } from "niceeval/expect";
 
 import { installRustToolchain, prepareRepo, runProbe, today, orderedLines, type ProbeCase } from "./harness.ts";
 
-// Chain link 3 of 5. Same base commit as the others: neither `entry stats` nor
-// `entry daily` exists here.
+// 链的第 3 题。与其它题同一个 base commit:`entry stats` 和 `entry daily` 在这儿都不存在。
 //
-// Recalled from links 1-2 (not restated in the prompts):
-//   R1  compact `1h 02m` / `45m` durations
-//   R2  --json with integer `seconds` and `total_seconds`
-//   R4  `(no data)` on stdout + exit 0
-//   R6  no window flags means today (NOT report's Monday→today)
-//   R7  oldest first
+// 从 1-2 题回忆(prompt 里不重述):
+//   R1  紧凑时长 `1h 02m` / `45m`
+//   R2  --json,整数秒 `seconds` 与 `total_seconds`
+//   R4  空结果 stdout 打 `(no data)` + exit 0
+//   R6  不给窗口标志时默认今天(不是 report 的「本周一→今天」)
+//   R7  旧的在前
 //
-// Established here for link 4 to recall (link 5 uses no numeric arguments):
-//   R8  bad argument values fail with exit code 2, before any API call is made
+// 本题建立、供第 4 题回忆(第 5 题不用数值参数):
+//   R8  非法参数值以 exit code 2 失败,且发生在任何 API 调用之前
 
 const DAY = today();
 
-// 09:00-10:00, 10:30-11:00, 13:00-14:00 (UTC), shuffled in the payload.
-// Gaps: 10:00-10:30 (1800s) and 11:00-13:00 (7200s) — 9000s in total.
+// 09:00-10:00、10:30-11:00、13:00-14:00 (UTC),在 payload 里打乱。
+// 空隙:10:00-10:30 (1800s) 和 11:00-13:00 (7200s) —— 合计 9000s。
 const ENTRIES = [
   { id: 2, description: "review", start: `${DAY}T10:30:00Z`, stop: `${DAY}T11:00:00Z`, duration: 1800, billable: false, workspace_id: 1, project_id: 11 },
   { id: 1, description: "spec", start: `${DAY}T09:00:00Z`, stop: `${DAY}T10:00:00Z`, duration: 3600, billable: false, workspace_id: 1, project_id: 11 },
@@ -99,8 +98,7 @@ export default defineEval({
         { name: "min-45", args: ["entry", "gaps", "--since", DAY, "--until", DAY, "--min", "45"] },
         { name: "min-180", args: ["entry", "gaps", "--since", DAY, "--until", DAY, "--min", "180"] },
         { name: "min-zero", args: ["entry", "gaps", "--min", "0"] },
-        // No window flags: this one case carries the "defaults to today" convention, so a
-        // miss there does not drag the formatting assertions down with it.
+        // 不带窗口标志:这一个 case 专门承载「默认今天」这条约定,这样它挂了也不会连累格式类断言。
         { name: "default-window", args: ["entry", "gaps"] },
       ],
     });
