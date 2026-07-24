@@ -38,13 +38,14 @@ This repo is a benchmark suite for coding-agent memory conditions. The core rule
 
 ## Repo Layout
 
-- `evals/memory/`: niceeval task definitions.
-- `workspaces/`: per-eval starter repositories copied into sandboxes.
+- `evals/`: niceeval task definitions, 每个上游仓库一个目录（`downshift/`、`react-datepicker/`、`react-hook-form/`、`react-tooltip/`、`yet-another-react-lightbox/`），外加自造的链式题 `toggl-cli/` 与冒烟题 `dogfood/`。
+- `evals/fixtures/`: 隐藏测试与探针脚本。**一律在 agent 最后一轮之后才写进沙箱**，agent 全程看不到也改不了判据——加新题时保持这个顺序。
+- `workspaces/`: 拷进沙箱的起始仓库。目前只有 `dogfood/` 还在用；PR 题改成 clone 真实上游仓库并 reset 到 base commit，所以这里多数目录是没接线的历史遗留。
 - `experiments/`: comparable run matrices for agents and models.
-- `experiments/shared/`: cross-experiment helpers (e.g. the mempal memory-condition wrapper); agent adapters come from `niceeval/adapter`, not this repo.
+- `experiments/shared/`: 记忆条件的跨实验封装（`mempal.ts`、`nowledge.ts`）；agent adapters come from `niceeval/adapter`, not this repo.
 - `docs/benchmarks.md`: benchmark survey and candidate task notes.
 - `niceeval.config.ts`: global judge and timeout defaults (agent/sandbox/concurrency are per-experiment).
-- Report publishing: `.niceeval/` is committed as the data source; Vercel's buildCommand is `niceeval view --out site` (see vercel.json — no custom scripts).
+- Report publishing: `.niceeval/` 原样提交，是站点唯一数据源。`vercel.json` 的 buildCommand 指向 `scripts/vercel-build.sh`，**不是裸的 `niceeval view`**——脚本做三件不能省的事：① 跳过仓库 install（评测依赖很重且与报告无关），改在 `/tmp` 装 `niceeval@latest` + react 再把 node_modules 符号链接回仓库根，让站点始终跟随最新 niceeval 而非仓库锁定的版本；② `--exp compare` 收窄出站范围，只有 compare 可比组进站点，dev-e2b 冒烟实验不出站；③ `--report reports/memory.tsx` 指定报告定义（`extends: standard`，跟随内建视图演进）。坑：Vercel 的 build cache 会把上次部署的 node_modules 恢复到仓库根，而 `ln -sfn` 对已存在的目录会把链接建进目录内部而不是替换它——脚本必须先 `rm -rf`，改这段时别把它删了。
 - `scripts/hooks/pre-commit`: 体积闸。niceeval 原样落盘工具输出，agent 一句 `grep -R` 扫进 node_modules 就能让单个 trace.json 破 100MB，撞死 GitHub 单文件硬上限。hook 会把 >50MB 的文件自动移出本次提交（不拦 commit，文件留在磁盘上）。**新 clone 后需手动启用一次**：`git config core.hooksPath scripts/hooks`。
 
 ## Adding Evals
