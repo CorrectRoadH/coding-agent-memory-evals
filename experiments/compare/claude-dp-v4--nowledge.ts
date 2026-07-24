@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { claudeCodeAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSandboxSetup } from "../shared/nowledge.ts";
+import { nowledgeClaudeConfig, nowledgeFlags, NOWLEDGE_PROVENANCE_FLAGS, nowledgeSandboxSetup } from "../shared/nowledge.ts";
 
 // claude-dp-v4 的 Nowledge Mem 变体:同模型同沙箱,只多一层 Nowledge Mem 记忆条件 ——
 // 官方 claude-code 插件(装上即挂 SessionStart 读 / UserPromptSubmit 指引 / Stop 写 的 lifecycle
@@ -27,6 +27,7 @@ export default defineExperiment({
     ...nowledgeClaudeConfig(),
   }),
   flags: { ...nowledgeFlags() },
+  provenanceFlags: NOWLEDGE_PROVENANCE_FLAGS,
   model: "deepseek-v4-flash",
   sandbox: e2bSandbox({ template: NICEEVAL_CLAUDE_CODE_E2B_TEMPLATE }).setup(nowledgeSandboxSetup()),
   runs: 1,

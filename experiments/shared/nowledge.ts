@@ -74,6 +74,15 @@ export function nowledgeFlags(): Record<string, string> {
   return { memory: "nowledge", nowledgeVersion: NOWLEDGE_VERSION, nowledgeEndpoint: endpoint };
 }
 
+/**
+ * `nowledgeEndpoint` 只是这轮连到哪个隧道的出处记录:quick tunnel URL 每次重启就换一个,
+ * 但连的是同一个固定实例、同一个库,attempt 里发生的事一模一样。声明成 provenance flag
+ * 让它留在报告里(flag() 能看出这轮连的哪个),同时不进指纹——否则每换一次隧道,
+ * 全部已跑完的结果都作废重跑(实测:换 URL 后 36 条一条都携带不到)。
+ * 每个用 nowledgeFlags() 的实验都要带上这个声明。
+ */
+export const NOWLEDGE_PROVENANCE_FLAGS = ["nowledgeEndpoint"];
+
 function hookLog(ctx: SandboxHookContext, message: string): void {
   ctx.progress({ message });
 }

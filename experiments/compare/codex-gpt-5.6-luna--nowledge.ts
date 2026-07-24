@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CODEX_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeCodexConfig, nowledgeFlags, nowledgeSandboxSetup } from "../shared/nowledge.ts";
+import { nowledgeCodexConfig, nowledgeFlags, NOWLEDGE_PROVENANCE_FLAGS, nowledgeSandboxSetup } from "../shared/nowledge.ts";
 
 // codex-gpt-5.6-luna 的 Nowledge Mem 变体:同模型同沙箱,只多一层 Nowledge Mem 记忆条件 ——
 // 官方 codex 集成(远程 HTTP MCP 读路径 + 插件 lifecycle hooks 写路径 + nmem CLI),
@@ -21,12 +21,13 @@ export default defineExperiment({
   labels: { line: "codex" },  // 报告归类:同 line 值连成一条线(baseline → 变体),见 niceeval docs「labels」
   agent: codexAgent(nowledgeCodexConfig()),
   flags: { ...nowledgeFlags() },
+  provenanceFlags: NOWLEDGE_PROVENANCE_FLAGS,
   model: "gpt-5.6-luna",
   sandbox: e2bSandbox({ template: NICEEVAL_CODEX_E2B_TEMPLATE }).setup(nowledgeSandboxSetup()),
   runs: 1,
   earlyExit: false,
   // 串行:中心化记忆库跨 attempt 共享,串行让累积顺序确定(对齐 claude-dp-v4--nowledge 语义)。
-  maxConcurrency: 1,
+  maxConcurrency: 4,
   // 与 codex baseline/mempal 对齐,astropy eval 两阶段都要源码构建。
   timeoutMs: 1200000,
 });

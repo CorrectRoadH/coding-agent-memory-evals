@@ -2,7 +2,7 @@ import { defineExperiment } from "niceeval";
 import { codexAgent } from "niceeval/adapter";
 import { e2bSandbox } from "niceeval/sandbox";
 import { NICEEVAL_CODEX_E2B_TEMPLATE } from "niceeval/sandbox/e2b-template";
-import { nowledgeCodexCliOnlyConfig, nowledgeFlags, nowledgeSandboxSetup } from "../shared/nowledge.ts";
+import { nowledgeCodexCliOnlyConfig, nowledgeFlags, NOWLEDGE_PROVENANCE_FLAGS, nowledgeSandboxSetup } from "../shared/nowledge.ts";
 
 // 诊断变体:codex-gpt-5.4-mini-nowledge 实测 MCP 调用率极低(compare/ 里 8 个 attempt 只 1 个
 // 碰过 nowledge-mem MCP 工具)。这个变体彻底不给 MCP(nowledgeCodexCliOnlyConfig 装完插件后
@@ -16,6 +16,7 @@ export default defineExperiment({
   description: "codex · gpt-5.4-mini + Nowledge Mem CLI-only(诊断:MCP 拿掉后 agent 会不会自己敲 nmem)",
   agent: codexAgent(nowledgeCodexCliOnlyConfig()),
   flags: { ...nowledgeFlags(), nowledgeMode: "cli-only" },
+  provenanceFlags: NOWLEDGE_PROVENANCE_FLAGS,
   model: "gpt-5.4-mini",
   sandbox: e2bSandbox({ template: NICEEVAL_CODEX_E2B_TEMPLATE }).setup(nowledgeSandboxSetup()),
   runs: 1,
