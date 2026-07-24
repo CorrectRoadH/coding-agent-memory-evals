@@ -52,12 +52,16 @@ checkout 里没有任何东西暗示「用首字母」。于是：
   空结果都在 07 自己的 prompt 里），唯独别名只说「照惯例注册」。别名该叫什么（`em`）只能来自 06 的
   首字母规则，checkout 里查不到。
 
-通过制下的预期，也是这一对要证明的：
+通过制下的预期，也是这一对实测证明的（claude-code · deepseek-v4-flash）：
 
 | | 06 | 07 |
 |---|---|---|
-| baseline（无记忆） | pass | **fail**（`entry em` 没注册） |
-| mempal（带记忆） | pass | **pass**（记起首字母规则 → 注册 `em`） |
+| baseline（无记忆） | **pass** ✓ | **fail** ✓（唯一挂点：`entry em` 没注册，功能全对） |
+| mempal（带记忆） | **pass** ✓ | **pass** ✓（记起首字母规则 → 注册 `em`） |
+
+**这就是通过制下记忆翻转 pass 率的直接证据**：07 唯一的区别是别名，无记忆猜不到 `em` → fail，
+有记忆记起「首字母」规则 → pass。对比之下 01–05 在通过制下 baseline 与 mempal 都是 1/5，
+差异只在断言级（36 vs 42）——因为它们的每条约定都有自然默认，记忆的收益不足以把整题从 fail 翻到 pass。
 
 三向验证里特别做了一个「强 RED」：把 `entry month` 实现得完全正确、只是不加别名 →
 `entry month` exit 0 但 `entry em` exit 2 → 07 fail。这坐实了 07 的通过/失败**只**挂在别名上，
