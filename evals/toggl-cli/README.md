@@ -47,22 +47,24 @@
 
 ## 实测证据（2026-07-24，codex · gpt-5.6-luna）
 
-清空记忆库后跑 baseline（无记忆）vs mempal（带记忆），核心翻转已坐实：
+清空记忆库后跑三条件对比。核心翻转对**两种不同的记忆机制**都成立：
 
-| eval | 类型 | baseline | mempal |
-|---|---|---|---|
-| 02-entry-bill | 控制点 | — | **passed** |
-| **03-entry-bill-weekly** | 做功能 | **failed** | **passed** ★ |
-| **04-billing-doc** | 问功能 | **failed** | **passed** ★ |
+| eval | 类型 | baseline（无记忆） | mempal | nowledge |
+|---|---|---|---|---|
+| 02-entry-bill | 控制点 | — | **passed** | **passed** |
+| **03-entry-bill-weekly** | 做功能 | **failed** | **passed** ★ | **passed** ★ |
+| **04-billing-doc** | 问功能 | **failed** | **passed** ★ | **passed** ★ |
 
 因果链清清楚楚：
-- **03 baseline** 算出 `[1800,1860]` / total `3660` —— 正是「精确求和、没取整」；mempal 召回规则算出 `5400`。
+- **03 baseline** 算出 `[1800,1860]` / total `3660` —— 正是「精确求和、没取整」；两个记忆条件都召回规则算出 `5400`。
 - **04 baseline** 直接答 *"I can't verify the rule because the workspace contains no repository..."*；
-  mempal 的 execution 显示它跑了 `mempal search "...billing rule"`、召回到 **"quarter-hour billing
-  rule"**，据此答对。
+  两个记忆条件各用各的 CLI 召回同一条规则——mempal 跑 `mempal search`、nowledge 跑 `nmem ... search`，
+  都拿到 **"quarter-hour billing rule"** 后答对。
 
-同一个 codex 模型，**无记忆过不了、有记忆能过**——两种题型都实测证明。05/06/07（R-min + 算术）
-机制同构、判据本地三向验证过，可按需补跑。
+**这是比「某个记忆实现能过」更强的结论**：mempal（agent 主动跑 CLI 存取）和 nowledge（中心化 server +
+自动 hooks）机制迥异,却都翻转了同样的题——记忆价值来自**题目设计本身**,而非某个记忆机制的特例。
+同一个 codex 模型,无记忆过不了、有记忆能过,做功能 + 问功能两种题型都如此。05/06/07（R-min + 算术）
+机制同构、判据本地三向验证过,可按需补跑。
 
 ## 判据：黑盒探针，不碰实现内部
 
