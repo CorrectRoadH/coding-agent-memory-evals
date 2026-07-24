@@ -1,0 +1,145 @@
+{
+  "id": "react-hook-form/pr-13599",
+  "description": "react-hook-form pr-13599: stale out-of-order _setValid() calls can overwrite a newer, correct isValid/isValidating result (real react-hook-form issue)",
+  "verdict": "errored",
+  "fingerprint": "d3916bbd4826bd316bafc3ec798593d0a08aee4e18773eace397f36c07288dd5",
+  "attempt": 0,
+  "durationMs": 1199991,
+  "assertions": [],
+  "scoring": "pass",
+  "error": {
+    "code": "timeout",
+    "message": "attempt timed out (1200000ms)",
+    "phase": "agent.run",
+    "stack": "Recent progress:\n  · assistant: I’m making the concurrency guard local to whole-form validity passes, so normal field-level res…\n  · tool: file change\n  · tool: file change · completed\n  · thinking: **Assessing race conditions in validation state updates****Planning tests for built-in validati…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF… · completed\n  · assistant: The targeted `formState` suite passes (37/37). One edge case needs tightening before I finish: …\n  · tool: file change\n  · tool: file change · completed\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF… · completed\n  · tool: /bin/bash -lc 'git status --short'\n  · tool: /bin/bash -lc 'git status --short' · completed\n  · tool: /bin/bash -lc 'git diff --check && git diff -- src/logic/createFormControl.ts'\n  · tool: /bin/bash -lc 'git diff --check && git diff -- src/logic/createFormControl.ts' · completed\n  · tool: /bin/bash -lc \"node -e \\\"const p=require('./package.json'); console.log(JSON.stringify(p.script…\n  · tool: /bin/bash -lc \"node -e \\\"const p=require('./package.json'); console.log(JSON.stringify(p.script… · completed\n  · assistant: Both targeted suites pass: `formState` 37/37 and resolver 12/12. The final diff is confined to …\n  · tool: /bin/bash -lc 'node_modules/.bin/tsc --noEmit'\n  · tool: /bin/bash -lc 'node_modules/.bin/tsc --noEmit' · completed"
+  },
+  "usage": {},
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 3870
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 339,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3871,
+          "durationMs": 339,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 606,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 4210,
+          "durationMs": 179,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 4389,
+          "durationMs": 207,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryl51mp_gi1chn'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 179,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 4817,
+          "durationMs": 179,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 1194995,
+      "failed": true,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 4999,
+          "durationMs": 2636,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 7635,
+          "durationMs": 7477,
+          "command": {
+            "display": "npm install -g --prefix /usr/local pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 15114,
+          "durationMs": 377,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 876
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 507
+    }
+  ],
+  "locator": "@1jx0y6u3",
+  "startedAt": "2026-07-24T06:54:46.108Z",
+  "artifacts": [
+    "events",
+    "o11y",
+    "diff",
+    "sources"
+  ]
+}

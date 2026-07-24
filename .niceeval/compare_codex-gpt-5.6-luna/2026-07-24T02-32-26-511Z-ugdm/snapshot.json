@@ -1,0 +1,39 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 9,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/codex-gpt-5.6-luna",
+  "experiment": {
+    "description": "codex · gpt-5.6-luna",
+    "flags": {
+      "memory": "baseline"
+    },
+    "labels": {
+      "line": "codex"
+    },
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "selectedEvalIds": [
+      "toggl-cli/02-entry-daily",
+      "toggl-cli/03-entry-gaps",
+      "toggl-cli/04-tag-stats",
+      "toggl-cli/07-entry-month"
+    ],
+    "evalFilterFingerprint": "5dd65f0df7f77c9a",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-codex:v0.6.1"
+      },
+      "fingerprint": "a9a1ccbf6199944d"
+    }
+  },
+  "agent": "codex",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-24T02:25:22.975Z",
+  "completedAt": "2026-07-24T02:49:16.745Z"
+}

@@ -1,0 +1,145 @@
+{
+  "id": "react-hook-form/pr-13579",
+  "description": "react-hook-form pr-13579: per-event metadata (the field `name`) leaks across subscribe() notifications — a later, unrelated update reports a stale `name` from an earlier clearErrors() call instead of undefined (real react-hook-form issue #13575)",
+  "verdict": "errored",
+  "fingerprint": "f3119aa9fd929fa09000e300c2eda3cb8f3bac182ac91dcc53e5c2dd1a10de2a",
+  "attempt": 0,
+  "durationMs": 1199992,
+  "assertions": [],
+  "scoring": "pass",
+  "error": {
+    "code": "timeout",
+    "message": "attempt timed out (1200000ms)",
+    "phase": "agent.run",
+    "stack": "Recent progress:\n  · tool: file change\n  · tool: file change · completed\n  · thinking: **Running initial tests**\n  · assistant: The source change now treats `name` and `type` as notification metadata only; `_formState` reta…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF…\n  · tool: /bin/bash -lc 'node_modules/.bin/jest --config ./scripts/jest/jest.config.js src/__tests__/useF… · completed\n  · thinking: **Inspecting typecheck and lint concerns****Searching for omit utility**\n  · assistant: The focused suite passes: 14 tests, including the new regression. I’m doing a final diff and st…\n  · thinking: **Investigating JavaScript syntax error**\n  · thinking: **Assessing reserved word usage in package.json**\n  · tool: /bin/bash -lc 'git diff --check && git diff -- src/logic/createFormControl.ts src/__tests__/use…\n  · tool: /bin/bash -lc 'git diff --check && git diff -- src/logic/createFormControl.ts src/__tests__/use… · completed\n  · tool: /bin/bash -lc 'sed -n \"1,140p\" package.json'\n  · tool: /bin/bash -lc 'sed -n \"1,140p\" package.json' · completed\n  · tool: /bin/bash -lc 'rg -n \"no-unused-vars|unused-imports|eslint\" .eslintrc* package.json scripts 2>/…\n  · tool: /bin/bash -lc 'rg -n \"no-unused-vars|unused-imports|eslint\" .eslintrc* package.json scripts 2>/… · completed\n  · thinking: **Refining unused variable handling**\n  · assistant: The diff is clean, but the destructured `name`/`type` variables are intentionally unused and co…\n  · tool: file change\n  · tool: file change · completed"
+  },
+  "usage": {},
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 5882
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 330,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 5883,
+          "durationMs": 330,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 587,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 6213,
+          "durationMs": 178,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 6391,
+          "durationMs": 189,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryl1bdj_2dlwd6'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 201,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 6800,
+          "durationMs": 201,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 1192991,
+      "failed": true,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 7005,
+          "durationMs": 2577,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 9582,
+          "durationMs": 7727,
+          "command": {
+            "display": "npm install -g --prefix /usr/local pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 17311,
+          "durationMs": 423,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 514
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 477
+    }
+  ],
+  "locator": "@1bzww6p5",
+  "startedAt": "2026-07-24T06:51:50.112Z",
+  "artifacts": [
+    "events",
+    "o11y",
+    "diff",
+    "sources"
+  ]
+}

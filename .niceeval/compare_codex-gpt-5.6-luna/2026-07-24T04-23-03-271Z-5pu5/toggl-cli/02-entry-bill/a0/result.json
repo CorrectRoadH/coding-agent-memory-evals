@@ -1,0 +1,271 @@
+{
+  "id": "toggl-cli/02-entry-bill",
+  "description": "toggl-cli 02: add `toggl entry bill` (billable time per project) and establish the shop's billing rounding rule — round every entry up to the next 15 minutes",
+  "verdict": "errored",
+  "fingerprint": "5197977d55ea99222b5539137549b90ecb6d9479b4a7764827d2b248e7ac8cd6",
+  "attempt": 0,
+  "durationMs": 241303,
+  "assertions": [],
+  "scoring": "pass",
+  "usage": {},
+  "error": {
+    "code": "unexpected-error",
+    "message": "2: [unknown] terminated",
+    "phase": "eval.run",
+    "stack": "SandboxError: 2: [unknown] terminated\n    at handleRpcError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:109:12)\n    at handleRpcErrorWithHealthCheck (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/envd/rpc.ts:142:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async CommandHandle.handleEvents (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/commandHandle.ts:367:29)\n    at async CommandHandle.wait (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/e2b@2.31.0/node_modules/e2b/src/sandbox/commands/commandHandle.ts:167:5)\n    at async E2BSandbox.runShell (/Users/ctrdh/Code/niceeval/src/sandbox/e2b.ts:159:19)\n    at async wrap (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:1153:22)\n    at async Object.send (/Users/ctrdh/Code/niceeval/src/agents/codex.ts:282:19)\n    at async sendWithTurnRetry (/Users/ctrdh/Code/niceeval/src/context/send-retry.ts:111:16)\n    at async SessionManager.sendSerialized (/Users/ctrdh/Code/niceeval/src/context/session.ts:293:16)"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ii0h1snc3i3o82lk6d4w2"
+  },
+  "diagnostics": [
+    {
+      "code": "sandbox-space-after-warmup",
+      "level": "warning",
+      "message": "/: 16038184 KB free of 22224428 KB; /: 16038184 KB free of 22224428 KB; build tree 774450 KB",
+      "phase": "eval.run"
+    }
+  ],
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 6826
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 8934,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 6828,
+          "durationMs": 8932,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.setup",
+      "durationMs": 32139,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 15761,
+          "durationMs": 32138,
+          "command": {
+            "display": "bash -lc set -euo pipefail\nexport DEBIAN_FRONTEND=noninteractive\nif command -v apt-get >/dev/null 2>&1; then\n  apt-get update -qq\n  apt-get install -y -qq --no…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 8071,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 47900,
+          "durationMs": 3270,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 51170,
+          "durationMs": 3181,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryfqxy3_67u3hy'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 2065,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 55971,
+          "durationMs": 2065,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 181186,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 58038,
+          "durationMs": 4472,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin https://github.com/CorrectRoadH/toggl-cli.git .toggl-clone\nmv .toggl-clone/.git .git\nrm -rf .toggl-clone\ngit reset -q …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 62510,
+          "durationMs": 85711,
+          "command": {
+            "display": "export PATH=\"/usr/local/cargo/bin:$PATH\"\ncargo build --tests --quiet",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "df",
+          "startOffsetMs": 148221,
+          "durationMs": 2192,
+          "command": {
+            "display": "df -Pk / /opt 2>/dev/null | tail -n +2 | awk '{printf \"%s: %s KB free of %s KB; \", $6, $4, $2}'; du -sk /opt/cargo-target 2>/dev/null | awk '{printf \"build tre…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 150424,
+          "durationMs": 9491,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 159916,
+          "durationMs": 76080,
+          "failed": true,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'toggl-cli. We invoice clients from tracked …"
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 150424,
+          "durationMs": 85574,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 235998,
+          "durationMs": 3223,
+          "failed": true,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…"
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 826,
+      "children": [
+        {
+          "id": "n13",
+          "kind": "operation",
+          "label": "export workspace diff · 0 windows · 0 files",
+          "startOffsetMs": 239222,
+          "durationMs": 826,
+          "children": [
+            {
+              "id": "n14",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 239222,
+              "durationMs": 538,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1255
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 1029
+    }
+  ],
+  "locator": "@19k61i8j",
+  "startedAt": "2026-07-24T04:23:03.289Z",
+  "artifacts": [
+    "events",
+    "trace",
+    "o11y",
+    "diff",
+    "sources"
+  ]
+}

@@ -1,0 +1,1 @@
+[{"timingNodeId":"n10","phase":"agent.setup","display":"test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude","exitCode":1,"stdout":"","stderr":""},{"timingNodeId":"n12","phase":"agent.setup","display":"test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude","exitCode":1,"stdout":"","stderr":""}]

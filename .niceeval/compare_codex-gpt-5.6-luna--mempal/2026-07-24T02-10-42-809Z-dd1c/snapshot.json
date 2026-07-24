@@ -1,0 +1,45 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 9,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/codex-gpt-5.6-luna--mempal",
+  "experiment": {
+    "description": "codex · gpt-5.6-luna · mempal",
+    "flags": {
+      "memory": "mempal",
+      "mempalVersion": "0.9.0",
+      "mempalCohort": "local"
+    },
+    "labels": {
+      "line": "codex"
+    },
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "maxConcurrency": 1,
+    "selectedEvalIds": [
+      "toggl-cli/01-entry-stats",
+      "toggl-cli/02-entry-daily",
+      "toggl-cli/03-entry-gaps",
+      "toggl-cli/04-tag-stats",
+      "toggl-cli/05-entry-hours",
+      "toggl-cli/06-entry-weekday",
+      "toggl-cli/07-entry-month"
+    ],
+    "evalFilterFingerprint": "565f808e988b7bea",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "memorybench-codex-mempal-5dbc2b042525-0-9-0"
+      },
+      "fingerprint": "aef6898b3637f373"
+    }
+  },
+  "agent": "codex",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-24T01:54:43.275Z",
+  "completedAt": "2026-07-24T02:49:16.267Z"
+}

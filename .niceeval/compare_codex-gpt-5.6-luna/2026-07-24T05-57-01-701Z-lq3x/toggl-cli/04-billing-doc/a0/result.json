@@ -1,0 +1,248 @@
+{
+  "id": "toggl-cli/04-billing-doc",
+  "description": "toggl-cli 04: answer how the shop's billing works — recallable only from the rule agreed in the `entry bill` session (round up to 15 minutes, billable only)",
+  "verdict": "failed",
+  "fingerprint": "a0a10ec2a5a25f5686c7ec69e77b276c673f4cbb4109cf3f047d503a26b6cae5",
+  "attempt": 0,
+  "durationMs": 157451,
+  "assertions": [
+    {
+      "name": "includes(/15/)",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/toggl-cli/04-billing-doc.eval.ts",
+        "line": 27,
+        "column": 7
+      },
+      "outcome": "failed",
+      "score": 0,
+      "expected": "matches /15/",
+      "received": "I can’t verify the exact rule from this workspace because it contains no project files or `toggl` command. Please provide the repository path or the `entry bill` implementation, and I’ll turn it into precise onboarding wording."
+    },
+    {
+      "name": "judge:autoevals:closedQA",
+      "severity": "soft",
+      "loc": {
+        "file": "evals/toggl-cli/04-billing-doc.eval.ts",
+        "line": 30,
+        "column": 8
+      },
+      "detail": "evaluation error: Error: 502 status code (no body)\n    at Function.generate (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openai@6.45.0_zod@3.25.76/node_modules/openai/src/core/error.ts:101:14)\n    at OpenAI.makeStatusError (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openai@6.45.0_zod@3.25.76/node_modules/openai/src/client.ts:636:28)\n    at OpenAI.makeRequest (/Users/ctrdh/Code/niceeval/node_modules/.pnpm/openai@6.45.0_zod@3.25.76/node_modules/openai/src/client.ts:925:24)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async cachedChatCompletion (file:///Users/ctrdh/Code/niceeval/node_modules/.pnpm/autoevals@0.0.132/node_modules/autoevals/jsdist/index.mjs:12435:10)\n    at async OpenAIClassifier (file:///Users/ctrdh/Code/niceeval/node_modules/.pnpm/autoevals@0.0.132/node_modules/autoevals/jsdist/index.mjs:12928:16)\n    at async Object.ClosedQA (file:///Users/ctrdh/Code/niceeval/node_modules/.pnpm/autoevals@0.0.132/node_modules/autoevals/jsdist/index.mjs:13040:12)\n    at async Object.evaluate (/Users/ctrdh/Code/niceeval/src/scoring/judge.ts:151:26)\n    at async AssertionCollector.finalize (/Users/ctrdh/Code/niceeval/src/scoring/collector.ts:263:38)\n    at async runAttemptBody (/Users/ctrdh/Code/niceeval/src/runner/attempt.ts:957:42)",
+      "outcome": "failed",
+      "score": 0,
+      "threshold": 0.6
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 59440,
+    "outputTokens": 575,
+    "cacheReadTokens": 54016,
+    "reasoningTokens": 125,
+    "requests": 1
+  },
+  "estimatedCostUSD": 0.06829160000000001,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "iigeyqd471ahbmezsy5g9"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 1961
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 333,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1963,
+          "durationMs": 331,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1068,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 2295,
+          "durationMs": 249,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2544,
+          "durationMs": 480,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryg3ruy_7nro17'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 308,
+      "children": [
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 3363,
+          "durationMs": 308,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 26408,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 3675,
+          "durationMs": 309,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 3985,
+          "durationMs": 25859,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'Quick one — I'\\''m writing the onboarding d…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 29844,
+          "durationMs": 231,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 3675,
+          "durationMs": 26400,
+          "sessionIndex": 1,
+          "turnIndex": 1,
+          "usage": {
+            "inputTokens": 59440,
+            "outputTokens": 575,
+            "cacheReadTokens": 54016,
+            "reasoningTokens": 125,
+            "requests": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 540,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 0 files",
+          "startOffsetMs": 30079,
+          "durationMs": 539,
+          "children": [
+            {
+              "id": "n10",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 30079,
+              "durationMs": 257,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 125328
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1504
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 527
+    }
+  ],
+  "locator": "@1wdvwn4u",
+  "startedAt": "2026-07-24T04:33:50.554Z",
+  "artifacts": [
+    "events",
+    "trace",
+    "o11y",
+    "diff",
+    "sources"
+  ],
+  "artifactBase": "compare_codex-gpt-5.6-luna/2026-07-24T04-23-03-271Z-5pu5/toggl-cli/04-billing-doc/a0"
+}

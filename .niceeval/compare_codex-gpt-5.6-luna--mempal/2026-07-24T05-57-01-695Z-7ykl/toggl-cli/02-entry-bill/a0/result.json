@@ -1,0 +1,604 @@
+{
+  "id": "toggl-cli/02-entry-bill",
+  "description": "toggl-cli 02: add `toggl entry bill` (billable time per project) and establish the shop's billing rounding rule — round every entry up to the next 15 minutes",
+  "verdict": "passed",
+  "fingerprint": "85fe1a81672193dabe4001e254361962c6143e7f7a6b6d9da4463ccc6af04ec6",
+  "attempt": 0,
+  "durationMs": 622745,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/toggl-cli/harness.ts",
+        "line": 200,
+        "column": 3
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "bash tests/run-probe.sh"
+    },
+    {
+      "name": "equals(0)",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 97,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals([[\"Alpha\",2700],[\"Beta\",2700]])",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 98,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(5400)",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 102,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(5400)",
+      "severity": "gate",
+      "groupPath": [
+        "只算 billable、忽略非计费与运行中(总计不含那 3600s)"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 107,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(expected these lines, in this order: [\"(no data)\"]\nactual stdout lines: [\"(no data)\"])",
+      "severity": "gate",
+      "groupPath": [
+        "空窗口打印 (no data) 并 exit 0"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 112,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(0)",
+      "severity": "gate",
+      "groupPath": [
+        "空窗口打印 (no data) 并 exit 0"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 113,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 3140486,
+    "outputTokens": 16120,
+    "cacheReadTokens": 2783744,
+    "reasoningTokens": 2569,
+    "requests": 2
+  },
+  "estimatedCostUSD": 3.5155803999999997,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ikq9zoc1vmq76m3xcbhy6"
+  },
+  "diagnostics": [
+    {
+      "code": "sandbox-space-after-warmup",
+      "level": "warning",
+      "message": "/: 15503948 KB free of 22224428 KB; /: 15503948 KB free of 22224428 KB; build tree 770840 KB",
+      "phase": "eval.run"
+    }
+  ],
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2034
+    },
+    {
+      "name": "sandbox.setup",
+      "durationMs": 2238,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "hook",
+          "label": "setup#0",
+          "startOffsetMs": 2035,
+          "durationMs": 2238,
+          "children": [
+            {
+              "id": "n2",
+              "kind": "command",
+              "label": "command",
+              "startOffsetMs": 2034,
+              "durationMs": 222,
+              "command": {
+                "display": "command -v mempal",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n3",
+              "kind": "command",
+              "label": "test",
+              "startOffsetMs": 2256,
+              "durationMs": 483,
+              "command": {
+                "display": "test -n \"$(find \"$HOME/.cache/huggingface\" -name \"*.safetensors\" -print -quit 2>/dev/null)\"",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n4",
+              "kind": "command",
+              "label": "tar",
+              "startOffsetMs": 3379,
+              "durationMs": 466,
+              "command": {
+                "display": "tar xzf /tmp/__fe_rs_c808bf9d-25d5-439f-b2b3-92caf484eb43.tar.gz -C /",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n5",
+              "kind": "command",
+              "label": "rm",
+              "startOffsetMs": 3845,
+              "durationMs": 210,
+              "command": {
+                "display": "rm -f /tmp/__fe_rs_c808bf9d-25d5-439f-b2b3-92caf484eb43.tar.gz",
+                "exitCode": 0
+              }
+            },
+            {
+              "id": "n6",
+              "kind": "command",
+              "label": "mkdir",
+              "startOffsetMs": 4055,
+              "durationMs": 216,
+              "command": {
+                "display": "mkdir -p \"$HOME/.mempal-notes\"",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 362,
+      "children": [
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 4272,
+          "durationMs": 362,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.setup",
+      "durationMs": 26223,
+      "children": [
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 4635,
+          "durationMs": 26222,
+          "command": {
+            "display": "bash -lc set -euo pipefail\nexport DEBIAN_FRONTEND=noninteractive\nif command -v apt-get >/dev/null 2>&1; then\n  apt-get update -qq\n  apt-get install -y -qq --no…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 2043,
+      "children": [
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 30858,
+          "durationMs": 270,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 31128,
+          "durationMs": 211,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryh9cz2_cx92vf'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 31548,
+          "durationMs": 207,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' '.agents/skills/' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 31950,
+          "durationMs": 210,
+          "command": {
+            "display": "cat >> 'AGENTS.md' <<'NICEEVAL_EOF_y252zn'\n\n## Skills\n\nSkill files are installed in `.agents/skills/`:\n\n- mempal-memory: .agents/skills/mempal-memory/SKILL.md\n…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 32160,
+          "durationMs": 345,
+          "failed": true,
+          "command": {
+            "display": "test -d .git && mkdir -p .git/info && printf '%s\\n' 'AGENTS.md' >> .git/info/exclude",
+            "exitCode": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 205,
+      "children": [
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 32900,
+          "durationMs": 205,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 586433,
+      "children": [
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 33110,
+          "durationMs": 911,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin https://github.com/CorrectRoadH/toggl-cli.git .toggl-clone\nmv .toggl-clone/.git .git\nrm -rf .toggl-clone\ngit reset -q …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 34021,
+          "durationMs": 61760,
+          "command": {
+            "display": "export PATH=\"/usr/local/cargo/bin:$PATH\"\ncargo build --tests --quiet",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "df",
+          "startOffsetMs": 95781,
+          "durationMs": 407,
+          "command": {
+            "display": "df -Pk / /opt 2>/dev/null | tail -n +2 | awk '{printf \"%s: %s KB free of %s KB; \", $6, $4, $2}'; du -sk /opt/cargo-target 2>/dev/null | awk '{printf \"build tre…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 96198,
+          "durationMs": 243,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n19",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 96442,
+          "durationMs": 405513,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'toggl-cli. We invoice clients from tracked …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n20",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 501958,
+          "durationMs": 224,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n21",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 96199,
+          "durationMs": 405984,
+          "sessionIndex": 1,
+          "turnIndex": 1,
+          "usage": {
+            "inputTokens": 1065361,
+            "outputTokens": 6132,
+            "cacheReadTokens": 901120,
+            "reasoningTokens": 970,
+            "requests": 1
+          }
+        },
+        {
+          "id": "n22",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 502190,
+          "durationMs": 210,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n23",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 502400,
+          "durationMs": 112035,
+          "command": {
+            "display": "codex exec resume 019f9285-5a4d-7a62-8b32-eac1774c5fef --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n24",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 614437,
+          "durationMs": 249,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n25",
+          "kind": "turn",
+          "label": "s1/t2",
+          "startOffsetMs": 502191,
+          "durationMs": 112496,
+          "sessionIndex": 1,
+          "turnIndex": 2,
+          "usage": {
+            "inputTokens": 2075125,
+            "outputTokens": 9988,
+            "cacheReadTokens": 1882624,
+            "reasoningTokens": 1599,
+            "requests": 1
+          }
+        },
+        {
+          "id": "n26",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 614945,
+          "durationMs": 4341,
+          "command": {
+            "display": "bash tests/run-probe.sh",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n27",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 619287,
+          "durationMs": 240,
+          "command": {
+            "display": "rm -rf target",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 586,
+      "children": [
+        {
+          "id": "n28",
+          "kind": "operation",
+          "label": "export workspace diff · 2 windows · 4 files",
+          "startOffsetMs": 619540,
+          "durationMs": 584,
+          "children": [
+            {
+              "id": "n29",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 619539,
+              "durationMs": 332,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 2619
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.teardown",
+      "durationMs": 1148,
+      "children": [
+        {
+          "id": "n30",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 622747,
+          "durationMs": 211,
+          "command": {
+            "display": "printf \"%s\" \"$HOME\"",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n31",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 622958,
+          "durationMs": 204,
+          "command": {
+            "display": "test -d '/home/user/.mempal'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n32",
+          "kind": "command",
+          "label": "tar",
+          "startOffsetMs": 623163,
+          "durationMs": 316,
+          "command": {
+            "display": "tar czf /tmp/__fe_cp_d869f15c-9fc6-47b7-9d76-7dc69c84fd3d.tar.gz --ignore-failed-read '/home/user/.mempal' '/home/user/.mempal-notes'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n33",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 623678,
+          "durationMs": 214,
+          "command": {
+            "display": "rm -f /tmp/__fe_cp_d869f15c-9fc6-47b7-9d76-7dc69c84fd3d.tar.gz",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 647
+    }
+  ],
+  "locator": "@13u55asw",
+  "startedAt": "2026-07-24T05:05:42.229Z",
+  "artifacts": [
+    "commands",
+    "events",
+    "trace",
+    "o11y",
+    "agentSetup",
+    "diff",
+    "sources"
+  ],
+  "artifactBase": "compare_codex-gpt-5.6-luna--mempal/2026-07-24T05-05-42-207Z-09g0/toggl-cli/02-entry-bill/a0"
+}

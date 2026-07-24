@@ -7,7 +7,7 @@ import { nowledgeClaudeConfig, nowledgeFlags, nowledgeSandboxSetup } from "../sh
 // dev-e2b 的 Nowledge Mem 记忆条件冒烟(claude-code 侧):与 baseline(claude-e2b.ts)同任务同模型,
 // 只叠加 Nowledge Mem 官方 claude-code 集成。codex 侧那些摩擦这里全不存在——插件官方 hooks.json
 // 声明的 SessionStart(读)/UserPromptSubmit(读指引)/Stop(写)在 `claude plugin install` 后即生效,
-// 读写都走 nmem CLI(client 配置由 nowledge.sandboxSetup() 指向隧道),不需 install 脚本 /
+// 读写都走 nmem CLI(client 配置由 nowledgeSandboxSetup() 指向远程实例),不需 install 脚本 /
 // hook-trust bypass / 远程 MCP 覆盖(插件根无 .mcp.json)。细节见 experiments/shared/nowledge.ts
 // 的 Claude Code 段。
 // mem 服务端是 .env 里的固定远程实例(见 shared/nowledge.ts 文件头),无生命周期,直接

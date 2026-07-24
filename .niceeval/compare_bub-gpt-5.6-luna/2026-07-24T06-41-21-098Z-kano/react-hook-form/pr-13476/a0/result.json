@@ -1,0 +1,246 @@
+{
+  "id": "react-hook-form/pr-13476",
+  "description": "react-hook-form pr-13476: trigger() after a field-array remove() can wipe out nested per-index errors when a mixed root+nested error object is present (real react-hook-form issue)",
+  "verdict": "errored",
+  "fingerprint": "c4c50169a2d648f4d234cb1836b7dc3c42f6f62b8d9a31b388f52b74ee5560b3",
+  "attempt": 0,
+  "durationMs": 137595,
+  "assertions": [],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 142859,
+    "outputTokens": 3007,
+    "cacheReadTokens": 39424,
+    "requests": 7
+  },
+  "estimatedCostUSD": 0.1648434,
+  "error": {
+    "code": "turn-failed",
+    "message": "This send returned failed (turn status = failed): agent run exited with code 1 · last error: Concurrency limit exceeded for user, please retry later\noutput tail:\n│ ❱ 205 │   │   │   │   │   │   raise APIError(                                │\n│   206 │   │   │   │   │   │   │   message=message,                           │\n│   207 │   │   │   │   │   │   │   request=self.response.request,             │\n│   208 │   │   │   │   │   │   │   body=data[\"error\"],                        │\n╰──────────────────────────────────────────────────────────────────────────────╯\nAPIError: Concurrency limit exceeded for user, please retry later",
+    "phase": "eval.run"
+  },
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "imkypq4vwjr28t3lpc7k2"
+  },
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 766
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 1113
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 417,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 1879,
+          "durationMs": 417,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 1126,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "printf",
+          "startOffsetMs": 2296,
+          "durationMs": 214,
+          "command": {
+            "display": "printf '%s' $HOME",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "test",
+          "startOffsetMs": 2510,
+          "durationMs": 216,
+          "command": {
+            "display": "test -x $HOME/.local/bin/bub && test \"$(cat '/home/user/.local/share/niceeval/bub-install-hash' 2>/dev/null)\" = '83770925b77a'",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 2973,
+          "durationMs": 211,
+          "command": {
+            "display": "mkdir -p $(dirname /home/user/workspace/AGENTS.md) && cat > /home/user/workspace/AGENTS.md <<'FE_EOF_mrykybcs_7nesc1'\nYou are a coding agent working in a Next.…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 132553,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 3423,
+          "durationMs": 3379,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin --single-branch https://github.com/react-hook-form/react-hook-form.git .rhf-clone\nmv .rhf-clone/.git .git\nrm -rf .rhf-…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "npm",
+          "startOffsetMs": 6802,
+          "durationMs": 7988,
+          "command": {
+            "display": "npm install -g --prefix /usr/local pnpm@10.34.5 && CYPRESS_INSTALL_BINARY=0 pnpm install --no-frozen-lockfile --ignore-scripts",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 14797,
+          "durationMs": 428,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "$HOME/.local/bin/bub",
+          "startOffsetMs": 15226,
+          "durationMs": 120298,
+          "failed": true,
+          "command": {
+            "display": "$HOME/.local/bin/bub --workspace /home/user/workspace run 'Your working directory is a checkout of the real react-hook-form repository at the commit where the …",
+            "exitCode": 1
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 135764,
+          "durationMs": 210,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 14798,
+          "durationMs": 121177,
+          "failed": true,
+          "sessionIndex": 1,
+          "turnIndex": 1,
+          "usage": {
+            "inputTokens": 142859,
+            "outputTokens": 3007,
+            "cacheReadTokens": 39424,
+            "requests": 7
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 479,
+      "children": [
+        {
+          "id": "n11",
+          "kind": "operation",
+          "label": "export workspace diff · 1 window · 1 file",
+          "startOffsetMs": 135976,
+          "durationMs": 479,
+          "children": [
+            {
+              "id": "n12",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 135975,
+              "durationMs": 248,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 0
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1140
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 1346
+    }
+  ],
+  "locator": "@15uhh6fg",
+  "startedAt": "2026-07-24T06:49:33.534Z",
+  "artifacts": [
+    "commands",
+    "events",
+    "trace",
+    "o11y",
+    "diff",
+    "sources"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "format": "niceeval.results",
+  "schemaVersion": 9,
+  "producer": {
+    "name": "niceeval",
+    "version": "0.4.6"
+  },
+  "experimentId": "compare/codex-gpt-5.6-luna--nowledge",
+  "experiment": {
+    "description": "codex · gpt-5.6-luna · Nowledge Mem",
+    "flags": {
+      "memory": "nowledge",
+      "nowledgeVersion": "0.10.29"
+    },
+    "labels": {
+      "line": "codex"
+    },
+    "runs": 1,
+    "earlyExit": false,
+    "timeoutMs": 1200000,
+    "maxConcurrency": 1,
+    "selectedEvalIds": [
+      "toggl-cli/02-entry-bill",
+      "toggl-cli/03-entry-bill-weekly",
+      "toggl-cli/04-billing-doc"
+    ],
+    "evalFilterFingerprint": "fbe02675cbcde34f",
+    "sandbox": {
+      "provider": "e2b",
+      "params": {
+        "template": "correctroads-default-team/niceeval-codex:v0.6.1"
+      },
+      "fingerprint": "a9a1ccbf6199944d"
+    }
+  },
+  "agent": "codex",
+  "model": "gpt-5.6-luna",
+  "startedAt": "2026-07-24T03:42:40.392Z",
+  "completedAt": "2026-07-24T04:02:28.705Z"
+}

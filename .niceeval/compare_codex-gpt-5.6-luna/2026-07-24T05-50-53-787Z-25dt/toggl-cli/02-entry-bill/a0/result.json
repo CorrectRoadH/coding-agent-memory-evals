@@ -1,0 +1,446 @@
+{
+  "id": "toggl-cli/02-entry-bill",
+  "description": "toggl-cli 02: add `toggl entry bill` (billable time per project) and establish the shop's billing rounding rule — round every entry up to the next 15 minutes",
+  "verdict": "passed",
+  "fingerprint": "5197977d55ea99222b5539137549b90ecb6d9479b4a7764827d2b248e7ac8cd6",
+  "attempt": 0,
+  "durationMs": 371310,
+  "assertions": [
+    {
+      "name": "commandSucceeded()",
+      "severity": "gate",
+      "loc": {
+        "file": "evals/toggl-cli/harness.ts",
+        "line": 200,
+        "column": 3
+      },
+      "outcome": "passed",
+      "score": 1,
+      "evidence": "bash tests/run-probe.sh"
+    },
+    {
+      "name": "equals(0)",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 97,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals([[\"Alpha\",2700],[\"Beta\",2700]])",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 98,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(5400)",
+      "severity": "gate",
+      "groupPath": [
+        "命令存在,且按 15 分钟向上取整后汇总可计费时长"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 102,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(5400)",
+      "severity": "gate",
+      "groupPath": [
+        "只算 billable、忽略非计费与运行中(总计不含那 3600s)"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 107,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "isTrue(expected these lines, in this order: [\"(no data)\"]\nactual stdout lines: [\"(no data)\"])",
+      "severity": "gate",
+      "groupPath": [
+        "空窗口打印 (no data) 并 exit 0"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 112,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    },
+    {
+      "name": "equals(0)",
+      "severity": "gate",
+      "groupPath": [
+        "空窗口打印 (no data) 并 exit 0"
+      ],
+      "loc": {
+        "file": "evals/toggl-cli/02-entry-bill.eval.ts",
+        "line": 113,
+        "column": 9
+      },
+      "outcome": "passed",
+      "score": 1
+    }
+  ],
+  "scoring": "pass",
+  "usage": {
+    "inputTokens": 1563516,
+    "outputTokens": 13398,
+    "cacheReadTokens": 1426688,
+    "reasoningTokens": 2623,
+    "requests": 2
+  },
+  "estimatedCostUSD": 1.7865728,
+  "coverage": {
+    "events": {
+      "status": "complete"
+    },
+    "actions": {
+      "status": "complete"
+    },
+    "messages": {
+      "status": "complete"
+    },
+    "usage": {
+      "status": "complete"
+    },
+    "status": {
+      "status": "complete"
+    },
+    "data": {
+      "status": "complete"
+    }
+  },
+  "sandbox": {
+    "provider": "e2b",
+    "sandboxId": "ib490lyehtliemqkmvato"
+  },
+  "diagnostics": [
+    {
+      "code": "sandbox-space-after-warmup",
+      "level": "warning",
+      "message": "/: 16038192 KB free of 22224428 KB; /: 16038192 KB free of 22224428 KB; build tree 774446 KB",
+      "phase": "eval.run"
+    }
+  ],
+  "phases": [
+    {
+      "name": "sandbox.queue",
+      "durationMs": 0
+    },
+    {
+      "name": "sandbox.create",
+      "durationMs": 2040
+    },
+    {
+      "name": "workspace.baseline",
+      "durationMs": 328,
+      "children": [
+        {
+          "id": "n1",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 2042,
+          "durationMs": 325,
+          "command": {
+            "display": "git init -q \"/tmp/.niceeval-ledger\" && git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.setup",
+      "durationMs": 23460,
+      "children": [
+        {
+          "id": "n2",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 2370,
+          "durationMs": 23459,
+          "command": {
+            "display": "bash -lc set -euo pipefail\nexport DEBIAN_FRONTEND=noninteractive\nif command -v apt-get >/dev/null 2>&1; then\n  apt-get update -qq\n  apt-get install -y -qq --no…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "agent.setup",
+      "durationMs": 619,
+      "children": [
+        {
+          "id": "n3",
+          "kind": "command",
+          "label": "command",
+          "startOffsetMs": 25830,
+          "durationMs": 200,
+          "command": {
+            "display": "command -v codex >/dev/null 2>&1 || npm install -g @openai/codex@0.144.1",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n4",
+          "kind": "command",
+          "label": "mkdir",
+          "startOffsetMs": 26030,
+          "durationMs": 208,
+          "command": {
+            "display": "mkdir -p $(dirname ~/.codex/config.toml) && cat > ~/.codex/config.toml <<'FE_EOF_mryinefs_56ey3j'\nmodel = \"gpt-5.6-luna\"\nmodel_provider = \"s2a\"\nmodel_reasoning…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "telemetry.configure",
+      "durationMs": 224,
+      "children": [
+        {
+          "id": "n5",
+          "kind": "command",
+          "label": "cat",
+          "startOffsetMs": 26449,
+          "durationMs": 223,
+          "command": {
+            "display": "cat >> ~/.codex/config.toml <<'EOF'\n\n[otel]\nenvironment = \"niceeval\"\nexporter = \"none\"\nmetrics_exporter = \"none\"\n\n[otel.trace_exporter.otlp-http]\nendpoint = \"h…",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "eval.run",
+      "durationMs": 342359,
+      "children": [
+        {
+          "id": "n6",
+          "kind": "command",
+          "label": "set",
+          "startOffsetMs": 26677,
+          "durationMs": 794,
+          "command": {
+            "display": "set -euo pipefail\ngit clone -q -o origin https://github.com/CorrectRoadH/toggl-cli.git .toggl-clone\nmv .toggl-clone/.git .git\nrm -rf .toggl-clone\ngit reset -q …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n7",
+          "kind": "command",
+          "label": "export",
+          "startOffsetMs": 27472,
+          "durationMs": 82472,
+          "command": {
+            "display": "export PATH=\"/usr/local/cargo/bin:$PATH\"\ncargo build --tests --quiet",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n8",
+          "kind": "command",
+          "label": "df",
+          "startOffsetMs": 109944,
+          "durationMs": 255,
+          "command": {
+            "display": "df -Pk / /opt 2>/dev/null | tail -n +2 | awk '{printf \"%s: %s KB free of %s KB; \", $6, $4, $2}'; du -sk /opt/cargo-target 2>/dev/null | awk '{printf \"build tre…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n9",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 110212,
+          "durationMs": 252,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n10",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 110465,
+          "durationMs": 162512,
+          "command": {
+            "display": "codex exec --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust 'toggl-cli. We invoice clients from tracked …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n11",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 272996,
+          "durationMs": 216,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n12",
+          "kind": "turn",
+          "label": "s1/t1",
+          "startOffsetMs": 110213,
+          "durationMs": 163000,
+          "sessionIndex": 1,
+          "turnIndex": 1,
+          "usage": {
+            "inputTokens": 482332,
+            "outputTokens": 5238,
+            "cacheReadTokens": 422144,
+            "reasoningTokens": 991,
+            "requests": 1
+          }
+        },
+        {
+          "id": "n13",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 273219,
+          "durationMs": 190,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n14",
+          "kind": "command",
+          "label": "codex",
+          "startOffsetMs": 273410,
+          "durationMs": 93603,
+          "command": {
+            "display": "codex exec resume 019f92a9-449a-7ac1-8516-bf478addfd6c --json --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check --dangerously-bypass-hook-trust …",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n15",
+          "kind": "command",
+          "label": "git",
+          "startOffsetMs": 367013,
+          "durationMs": 193,
+          "command": {
+            "display": "git -c advice.addEmbeddedRepo=false add -A -f -- . ':(glob,exclude)**/.git' ':(glob,exclude)**/.git/**' ':(glob,exclude)**/node_modules' ':(glob,exclude)**/nod…",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n16",
+          "kind": "turn",
+          "label": "s1/t2",
+          "startOffsetMs": 273220,
+          "durationMs": 93987,
+          "sessionIndex": 1,
+          "turnIndex": 2,
+          "usage": {
+            "inputTokens": 1081184,
+            "outputTokens": 8160,
+            "cacheReadTokens": 1004544,
+            "reasoningTokens": 1632,
+            "requests": 1
+          }
+        },
+        {
+          "id": "n17",
+          "kind": "command",
+          "label": "bash",
+          "startOffsetMs": 367456,
+          "durationMs": 1344,
+          "command": {
+            "display": "bash tests/run-probe.sh",
+            "exitCode": 0
+          }
+        },
+        {
+          "id": "n18",
+          "kind": "command",
+          "label": "rm",
+          "startOffsetMs": 368800,
+          "durationMs": 227,
+          "command": {
+            "display": "rm -rf target",
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "workspace.diff",
+      "durationMs": 521,
+      "children": [
+        {
+          "id": "n19",
+          "kind": "operation",
+          "label": "export workspace diff · 2 windows · 4 files",
+          "startOffsetMs": 369032,
+          "durationMs": 521,
+          "children": [
+            {
+              "id": "n20",
+              "kind": "command",
+              "label": "set",
+              "startOffsetMs": 369031,
+              "durationMs": 286,
+              "command": {
+                "display": "set -eu\nD='/tmp/.niceeval-ledger-export'\nrm -rf \"$D\" && mkdir -p \"$D\"\nOUT=$D/export.bin\n: > \"$OUT\"\nfail() { printf \"%s\\n\" \"$1\" >&2; exit 2; }\nemit() { printf \"…",
+                "exitCode": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scoring.evaluate",
+      "durationMs": 1
+    },
+    {
+      "name": "telemetry.collect",
+      "durationMs": 1756
+    },
+    {
+      "name": "agent.teardown",
+      "durationMs": 1
+    },
+    {
+      "name": "sandbox.stop",
+      "durationMs": 440
+    }
+  ],
+  "locator": "@1dv4um1d",
+  "startedAt": "2026-07-24T05:44:42.025Z",
+  "artifacts": [
+    "events",
+    "trace",
+    "o11y",
+    "diff",
+    "sources"
+  ]
+}
